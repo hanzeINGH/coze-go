@@ -1,8 +1,14 @@
 package coze
 
 import (
+	"bufio"
+	"context"
 	"encoding/json"
+	"net/http"
 	"strconv"
+	"strings"
+
+	"github.com/coze/coze/internal"
 )
 
 // WorkflowRunResult represents the result of a workflow run
@@ -83,7 +89,7 @@ func parseWorkflowEventDone(id int, logID string) *WorkflowEvent {
 	}
 }
 
-func ParseEvent(eventLine map[string]string, logID string) (*WorkflowEvent, error) {
+func ParseWorkflowEvent(eventLine map[string]string, logID string) (*WorkflowEvent, error) {
 	id, _ := strconv.Atoi(eventLine["id"])
 	event := WorkflowEventType(eventLine["event"])
 	data := eventLine["data"]
@@ -224,5 +230,95 @@ type ResumeRunReq struct {
 }
 
 type workflowRun struct {
+	client    *internal.Client
 	Histories *workflowRunHistories
+}
+
+func newWorkflowRun(client *internal.Client) *workflowRun {
+	return &workflowRun{
+		client:    client,
+		Histories: newWorkflowRunHistories(client),
+	}
+}
+
+func (r *workflowRun) Run(ctx context.Context, req RunWorkflowReq) (*RunWorkflowResp, error) {
+	method := http.MethodPost
+	uri := "/v1/workflows/run"
+	resp := &RunWorkflowResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+type WorkflowEventReader struct {
+	*streamReader[WorkflowEvent]
+}
+
+func (r *workflowRun) Resume(ctx context.Context, req ResumeRunReq) (*WorkflowEventReader, error) {
+	method := http.MethodPost
+	uri := "/v1/workflow/stream_resume"
+	resp, err := r.client.RowRequest(ctx, method, uri, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &WorkflowEventReader{
+		streamReader: &streamReader[WorkflowEvent]{
+			response:  resp,
+			reader:    bufio.NewReader(resp.Body),
+			logID:     internal.GetLogID(resp.Header),
+			processor: parseWorkflowEvent,
+		},
+	}, nil
+}
+
+func (r *workflowRun) Stream(ctx context.Context, req RunWorkflowReq) (*WorkflowEventReader, error) {
+	method := http.MethodPost
+	uri := "/v1/workflow/stream_run"
+	resp, err := r.client.RowRequest(ctx, method, uri, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &WorkflowEventReader{
+		streamReader: &streamReader[WorkflowEvent]{
+			response:  resp,
+			reader:    bufio.NewReader(resp.Body),
+			logID:     internal.GetLogID(resp.Header),
+			processor: parseWorkflowEvent,
+		},
+	}, nil
+}
+
+func parseWorkflowEvent(lineBytes []byte, reader *bufio.Reader, logID string) (*WorkflowEvent, bool, error) {
+	line := string(lineBytes)
+	if strings.HasPrefix(line, "id:") {
+		id := strings.TrimSpace(line[3:])
+		data, err := reader.ReadString('\n')
+		if err != nil {
+			return nil, false, err
+		}
+		event := strings.TrimSpace(data[6:])
+		data, err = reader.ReadString('\n')
+		if err != nil {
+			return nil, false, err
+		}
+		data = strings.TrimSpace(data[5:])
+
+		eventLine := map[string]string{
+			"id":    id,
+			"event": event,
+			"data":  data,
+		}
+
+		eventData, err := ParseWorkflowEvent(eventLine, logID)
+		if err != nil {
+			return nil, false, err
+		}
+
+		return eventData, eventData.IsDone(), nil
+	}
+	return nil, false, nil
 }

@@ -1,5 +1,19 @@
 package coze
 
+import (
+	"bufio"
+	"context"
+	"encoding/json"
+	"errors"
+	"log"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/chyroc/go-ptr"
+	"github.com/coze/coze/internal"
+)
+
 // ChatStatus The running status of the session.
 type ChatStatus string
 
@@ -135,7 +149,7 @@ type ToolOutput struct {
 // CreateChatReq represents the request to create a chat
 type CreateChatReq struct {
 	// Indicate which conversation the chat is taking place in.
-	ConversationID string `json:"conversation_id,omitempty"`
+	ConversationID string `json:"-"`
 
 	// The ID of the bot that the API interacts with.
 	BotID string `json:"bot_id"`
@@ -186,11 +200,11 @@ type RetrieveChatReq struct {
 type SubmitToolOutputsReq struct {
 	// The Conversation ID can be viewed in the 'conversation_id' field of the Response when
 	// initiating a conversation through the Chat API.
-	ConversationID string `json:"conversation_id"`
+	ConversationID string `json:"-"`
 
 	// The Chat ID can be viewed in the 'id' field of the Response when initiating a chat through the
 	// Chat API. If it is a streaming response, check the 'id' field in the chat event of the Response.
-	ChatID string `json:"chat_id"`
+	ChatID string `json:"-"`
 
 	// The execution result of the tool. For detailed instructions, refer to the ToolOutput Object
 	ToolOutputs []ToolOutput `json:"tool_outputs"`
@@ -198,40 +212,28 @@ type SubmitToolOutputsReq struct {
 	Stream *bool `json:"stream,omitempty"`
 }
 
-// ChatListMessageReq represents the request to list messages
-type ChatListMessageReq struct {
-	// The Conversation ID can be viewed in the 'conversation_id' field of the Response when
-	// initiating a conversation through the Chat API.
-	ConversationID string `json:"conversation_id"`
-
-	// The Chat ID can be viewed in the 'id' field of the Response when initiating a chat through the
-	// Chat API. If it is a streaming response, check the 'id' field in the chat event of the Response.
-	ChatID string `json:"chat_id"`
-}
-
 // CreateChatResp represents the response to create a chat
 type CreateChatResp struct {
-	Chat *Chat `json:"chat"`
+	internal.BaseResponse
+	Chat *Chat `json:"data"`
 }
 
 // CancelChatResp represents the response to cancel a chat
 type CancelChatResp struct {
-	Chat *Chat `json:"chat"`
+	internal.BaseResponse
+	Chat *Chat `json:"data"`
 }
 
 // RetrieveChatResp represents the response to retrieve a chat
 type RetrieveChatResp struct {
-	Chat *Chat `json:"chat"`
+	internal.BaseResponse
+	Chat *Chat `json:"data"`
 }
 
 // SubmitToolOutputsResp represents the response to submit tool outputs
 type SubmitToolOutputsResp struct {
-	Chat *Chat `json:"chat"`
-}
-
-// ChatListMessageResp represents the response to list messages
-type ChatListMessageResp struct {
-	Messages []Message `json:"messages"`
+	internal.BaseResponse
+	Chat *Chat `json:"data"`
 }
 
 // ChatEvent represents a chat event in the streaming response
@@ -242,6 +244,36 @@ type ChatEvent struct {
 	LogID   string        `json:"log_id,omitempty"`
 }
 
+func ChatEventParseParse(eventLine map[string]string, logID string) (*ChatEvent, error) {
+	eventType := ChatEventType(eventLine["event"])
+	data := eventLine["data"]
+	switch eventType {
+	case ChatEventDone:
+		return &ChatEvent{Event: eventType, LogID: logID}, nil
+	case ChatEventError:
+		// todo
+		return nil, errors.New(data)
+	case ChatEventConversationMessageDelta, ChatEventConversationMessageCompleted, ChatEventConversationAudioDelta:
+		message := &Message{}
+		if err := json.Unmarshal([]byte(data), message); err != nil {
+			return nil, err
+		}
+		return &ChatEvent{Event: eventType, Message: message, LogID: logID}, nil
+	case ChatEventConversationChatCreated, ChatEventConversationChatInProgress, ChatEventConversationChatCompleted, ChatEventConversationChatFailed, ChatEventConversationChatRequiresAction:
+		chat := &Chat{}
+		if err := json.Unmarshal([]byte(data), chat); err != nil {
+			return nil, err
+		}
+		return &ChatEvent{Event: eventType, Chat: chat, LogID: logID}, nil
+	default:
+		return &ChatEvent{Event: eventType, LogID: logID}, nil
+	}
+}
+
+func (c *ChatEvent) IsDone() bool {
+	return c.Event == ChatEventDone || c.Event == ChatEventError
+}
+
 // ChatPoll represents polling information for a chat
 type ChatPoll struct {
 	Chat     *Chat     `json:"chat"`
@@ -249,5 +281,187 @@ type ChatPoll struct {
 }
 
 type chats struct {
+	client   *internal.Client
 	Messages *chatMessages
+}
+
+func newChats(client *internal.Client) *chats {
+	return &chats{
+		client:   client,
+		Messages: newChatMessages(client),
+	}
+}
+
+func (r *chats) Chat(ctx context.Context, req CreateChatReq) (*CreateChatResp, error) {
+	method := http.MethodPost
+	uri := "/v3/chat"
+	resp := &CreateChatResp{}
+	req.Stream = ptr.Ptr(false)
+	req.AutoSaveHistory = ptr.Ptr(true)
+	err := r.client.Request(ctx, method, uri, req, resp, internal.WithQuery("conversation_id", req.ConversationID))
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *chats) CreateAndPoll(ctx context.Context, req CreateChatReq, timeout *int) (*ChatPoll, error) {
+	req.Stream = ptr.Ptr(false)
+	req.AutoSaveHistory = ptr.Ptr(true)
+
+	chatResp, err := r.Chat(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	chat := chatResp.Chat
+	conversationID := chat.ConversationID
+	now := time.Now()
+	for {
+		time.Sleep(time.Second)
+		if timeout != nil && time.Since(now) > time.Duration(*timeout)*time.Second {
+			log.Println("Chat timeout: ", *timeout, " seconds, cancel Chat")
+			cancelResp, err := r.Cancel(ctx, CancelChatReq{
+				ConversationID: conversationID,
+				ChatID:         chat.ID,
+			})
+			if err != nil {
+				return nil, err
+			}
+			chat = cancelResp.Chat
+			break
+		}
+		retrieveChat, err := r.Retrieve(ctx, RetrieveChatReq{
+			ConversationID: conversationID,
+			ChatID:         chat.ID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		if retrieveChat.Chat.Status == ChatStatusCompleted {
+			chat = retrieveChat.Chat
+			log.Println("Chat completed, spend: ", time.Since(now))
+			break
+		}
+	}
+	messages, err := r.Messages.List(ctx, ChatListMessageReq{
+		ConversationID: conversationID,
+		ChatID:         chat.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &ChatPoll{
+		Chat:     chat,
+		Messages: messages.Messages,
+	}, nil
+}
+
+func (r *chats) Stream(ctx context.Context, req CreateChatReq) (*ChatEventReader, error) {
+	method := http.MethodPost
+	uri := "/v3/chat"
+	req.Stream = ptr.Ptr(true)
+	resp, err := r.client.RowRequest(ctx, method, uri, req, internal.WithQuery("conversation_id", req.ConversationID))
+	if err != nil {
+		return nil, err
+	}
+
+	return &ChatEventReader{
+		streamReader: &streamReader[ChatEvent]{
+			response:  resp,
+			reader:    bufio.NewReader(resp.Body),
+			logID:     internal.GetLogID(resp.Header),
+			processor: parseChatEvent,
+		},
+	}, nil
+}
+
+type ChatEventReader struct {
+	*streamReader[ChatEvent]
+}
+
+func parseChatEvent(lineBytes []byte, reader *bufio.Reader, logID string) (*ChatEvent, bool, error) {
+	line := string(lineBytes)
+	if strings.HasPrefix(line, "event:") {
+		event := strings.TrimSpace(line[6:])
+		data, err := reader.ReadString('\n')
+		if err != nil {
+			return nil, false, err
+		}
+		data = strings.TrimSpace(data[5:])
+
+		eventLine := map[string]string{
+			"event": event,
+			"data":  data,
+		}
+
+		eventData, err := ChatEventParseParse(eventLine, logID)
+		if err != nil {
+			return nil, false, err
+		}
+
+		return eventData, eventData.IsDone(), nil
+	}
+	return nil, false, nil
+}
+
+func (r *chats) Cancel(ctx context.Context, req CancelChatReq) (*CancelChatResp, error) {
+	method := http.MethodPost
+	uri := "/v3/chat/cancel"
+	resp := &CancelChatResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *chats) Retrieve(ctx context.Context, req RetrieveChatReq) (*RetrieveChatResp, error) {
+	method := http.MethodGet
+	uri := "/v3/chat/retrieve"
+	resp := &RetrieveChatResp{}
+	err := r.client.Request(ctx, method, uri, nil, resp,
+		internal.WithQuery("conversation_id", req.ConversationID),
+		internal.WithQuery("chat_id", req.ChatID),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *chats) SubmitToolOutputs(ctx context.Context, req SubmitToolOutputsReq) (*SubmitToolOutputsResp, error) {
+	method := http.MethodPost
+	uri := "/v3/chat/submit_tool_outputs"
+	resp := &SubmitToolOutputsResp{}
+	req.Stream = ptr.Ptr(false)
+	err := r.client.Request(ctx, method, uri, req, resp,
+		internal.WithQuery("conversation_id", req.ConversationID),
+		internal.WithQuery("chat_id", req.ChatID),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *chats) StreamSubmitToolOutputs(ctx context.Context, req SubmitToolOutputsReq) (*ChatEventReader, error) {
+	method := http.MethodPost
+	req.Stream = ptr.Ptr(true)
+	uri := "/v3/chat/submit_tool_outputs"
+	resp, err := r.client.RowRequest(ctx, method, uri, req,
+		internal.WithQuery("conversation_id", req.ConversationID),
+		internal.WithQuery("chat_id", req.ChatID),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ChatEventReader{
+		streamReader: &streamReader[ChatEvent]{
+			response:  resp,
+			reader:    bufio.NewReader(resp.Body),
+			logID:     internal.GetLogID(resp.Header),
+			processor: parseChatEvent,
+		},
+	}, nil
 }

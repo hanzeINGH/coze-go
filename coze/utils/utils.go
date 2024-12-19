@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/rand"
+	"encoding/json"
 )
 
 func GenerateRandomString(length int) (string, error) {
@@ -26,4 +27,12 @@ func hexChar(b byte) byte {
 		return '0' + b
 	}
 	return 'a' + (b - 10)
+}
+
+func MustToJson(obj any) string {
+	jsonArray, err := json.Marshal(obj)
+	if err != nil {
+		return "{}"
+	}
+	return string(jsonArray)
 }

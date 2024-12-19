@@ -23,4 +23,9 @@ go.work.sum
 
 # env file
 .env
-.idea
+/.idea
+/.vscode
+/output
+coverage.out
+*.log
+/log

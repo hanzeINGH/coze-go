@@ -38,7 +38,7 @@ func main() {
 	}
 	ctx := context.Background()
 
-	oauth, err := coze.NewPKCEOAuthClient(clientID, coze.WithBaseURL(cozeAPIBase))
+	oauth, err := coze.NewPKCEOAuthClient(clientID, coze.WithAuthBaseURL(cozeAPIBase))
 	if err != nil {
 		fmt.Printf("Failed to create OAuth client: %v\n", err)
 		return

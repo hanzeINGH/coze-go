@@ -1,5 +1,14 @@
 package coze
 
+import (
+	"context"
+	"net/http"
+	"strconv"
+
+	"github.com/coze/coze/internal"
+	"github.com/coze/coze/pagination"
+)
+
 // BotMode 机器人模式
 type BotMode int
 
@@ -74,30 +83,158 @@ type BotPromptInfo struct {
 	Prompt string `json:"prompt"`
 }
 
-// CreateBotResp 创建机器人响应
-type CreateBotResp struct {
-	BotID string `json:"bot_id"`
+type CreateBotReq struct {
+	SpaceID        string            `json:"space_id"`        // 空间 ID
+	Name           string            `json:"name"`            // 名称
+	Description    string            `json:"description"`     // 描述
+	IconFileID     string            `json:"icon_file_id"`    // 图标文件 ID
+	PromptInfo     BotPromptInfo     `json:"prompt_info"`     // 提示信息
+	OnboardingInfo BotOnboardingInfo `json:"onboarding_info"` // 上线信息
 }
 
-// ListBotResp 列出机器人响应
-type ListBotResp struct {
-	Bots  []SimpleBot `json:"space_bots"`
-	Total int         `json:"total"`
+// CreateBotResp 创建机器人响应
+type CreateBotResp struct {
+	internal.BaseResponse
+	Data struct {
+		BotID string `json:"bot_id"`
+	} `json:"data"`
+}
+
+// PublishBotReq 表示发布机器人请求的结构体
+type PublishBotReq struct {
+	BotID        string   `json:"bot_id"`        // 机器人 ID
+	ConnectorIDs []string `json:"connector_ids"` // 连接器 ID 列表
 }
 
 // PublishBotResp 发布机器人响应
 type PublishBotResp struct {
-	BotID      string `json:"bot_id"`
-	BotVersion string `json:"version"`
+	internal.BaseResponse
+	Data struct {
+		BotID      string `json:"bot_id"`
+		BotVersion string `json:"version"`
+	} `json:"data"`
+}
+
+// ListBotReq 表示列出机器人请求的结构体
+type ListBotReq struct {
+	SpaceID  string `json:"space_id"`  // 空间 ID
+	PageNum  int    `json:"page_num"`  // 页码
+	PageSize int    `json:"page_size"` // 每页大小
+}
+
+// ListBotResp 列出机器人响应
+type ListBotResp struct {
+	internal.BaseResponse
+	Data struct {
+		Bots  []SimpleBot `json:"space_bots"`
+		Total int         `json:"total"`
+	} `json:"data"`
+}
+
+// RetrieveBotReq 表示检索机器人请求的结构体
+type RetrieveBotReq struct {
+	BotID string `json:"bot_id"` // 机器人 ID
 }
 
 // RetrieveBotResp 获取机器人响应
 type RetrieveBotResp struct {
-	Bot *Bot `json:"bot"`
+	internal.BaseResponse
+	Data struct {
+		Bot *Bot `json:"bot"`
+	} `json:"data"`
+}
+
+// UpdateBotReq 表示更新机器人请求的结构体
+type UpdateBotReq struct {
+	BotID          string            `json:"bot_id"`          // 机器人 ID
+	Name           string            `json:"name"`            // 名称
+	Description    string            `json:"description"`     // 描述
+	IconFileID     string            `json:"icon_file_id"`    // 图标文件 ID
+	PromptInfo     BotPromptInfo     `json:"prompt_info"`     // 提示信息
+	OnboardingInfo BotOnboardingInfo `json:"onboarding_info"` // 上线信息
+	Knowledge      BotKnowledge      `json:"knowledge"`       // 知识
 }
 
 // UpdateBotResp 更新机器人响应
-type UpdateBotResp struct{}
+type UpdateBotResp struct {
+	internal.BaseResponse
+}
 
 type bots struct {
+	client *internal.Client
+}
+
+func newBots(client *internal.Client) *bots {
+	return &bots{client: client}
+}
+
+func (r *bots) Create(ctx context.Context, req CreateBotReq) (*CreateBotResp, error) {
+	method := http.MethodPost
+	uri := "/v1/bot/create"
+	resp := &CreateBotResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *bots) Update(ctx context.Context, req UpdateBotReq) (*UpdateBotResp, error) {
+	method := http.MethodPost
+	uri := "/v1/bot/update"
+	resp := &UpdateBotResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *bots) Publish(ctx context.Context, req PublishBotReq) (*PublishBotResp, error) {
+	method := http.MethodPost
+	uri := "/v1/bot/publish"
+	resp := &PublishBotResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *bots) Retrieve(ctx context.Context, req RetrieveBotReq) (*RetrieveBotResp, error) {
+	method := http.MethodGet
+	uri := "/v1/bot/get_online_info"
+	resp := &RetrieveBotResp{}
+	err := r.client.Request(ctx, method, uri, nil, resp, internal.WithQuery("bot_id", req.BotID))
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *bots) List(ctx context.Context, req ListBotReq) (*pagination.PageNumBasedPager[SimpleBot], error) {
+	if req.PageSize == 0 {
+		req.PageSize = 20
+	}
+	if req.PageNum == 0 {
+		req.PageNum = 1
+	}
+	return pagination.NewPageNumBasedPager[SimpleBot](
+		func(request *pagination.PageRequest) (*pagination.PageResponse[SimpleBot], error) {
+			uri := "/v1/space/published_bots_list"
+			resp := &ListBotResp{}
+			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
+				internal.WithQuery("space_id", req.SpaceID),
+				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
+				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
+			if err != nil {
+				return nil, err
+			}
+			return &pagination.PageResponse[SimpleBot]{
+				Total:   resp.Data.Total,
+				HasMore: len(resp.Data.Bots) >= request.PageSize,
+				Data:    resp.Data.Bots,
+				LogID:   resp.LogID,
+			}, nil
+		}, req.PageSize, req.PageNum)
 }

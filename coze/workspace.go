@@ -1,6 +1,14 @@
 package coze
 
-import "encoding/json"
+import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"strconv"
+
+	"github.com/coze/coze/internal"
+	"github.com/coze/coze/pagination"
+)
 
 // ListWorkspaceReq 列表请求参数
 type ListWorkspaceReq struct {
@@ -17,8 +25,11 @@ func NewListWorkspaceReq() *ListWorkspaceReq {
 
 // ListWorkspaceResp 列表响应
 type ListWorkspaceResp struct {
-	TotalCount int          `json:"total_count"`
-	Workspaces []*Workspace `json:"workspaces"`
+	internal.BaseResponse
+	Data struct {
+		TotalCount int         `json:"total_count"`
+		Workspaces []Workspace `json:"workspaces"`
+	}
 }
 
 // Workspace 工作空间信息
@@ -100,4 +111,35 @@ func (t *WorkspaceType) UnmarshalJSON(data []byte) error {
 }
 
 type workspace struct {
+	client *internal.Client
+}
+
+func newWorkspace(client *internal.Client) *workspace {
+	return &workspace{client: client}
+}
+
+func (r *workspace) List(ctx context.Context, req ListWorkspaceReq) (*pagination.PageNumBasedPager[Workspace], error) {
+	if req.PageSize == 0 {
+		req.PageSize = 20
+	}
+	if req.PageNum == 0 {
+		req.PageNum = 1
+	}
+	return pagination.NewPageNumBasedPager[Workspace](
+		func(request *pagination.PageRequest) (*pagination.PageResponse[Workspace], error) {
+			uri := "/v1/workspaces"
+			resp := &ListWorkspaceResp{}
+			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
+				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
+				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
+			if err != nil {
+				return nil, err
+			}
+			return &pagination.PageResponse[Workspace]{
+				Total:   resp.Data.TotalCount,
+				HasMore: len(resp.Data.Workspaces) >= request.PageSize,
+				Data:    resp.Data.Workspaces,
+				LogID:   resp.LogID,
+			}, nil
+		}, req.PageSize, req.PageNum)
 }

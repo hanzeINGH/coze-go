@@ -1,5 +1,13 @@
 package coze
 
+import (
+	"context"
+	"fmt"
+	"net/http"
+
+	"github.com/coze/coze/internal"
+)
+
 // WorkflowRunMode represents how the workflow runs
 type WorkflowRunMode int
 
@@ -39,6 +47,7 @@ type RetrieveRunHistoryReq struct {
 
 // RunWorkflowResp represents response for running workflow
 type RunWorkflowResp struct {
+	internal.BaseResponse
 	// Execution ID of asynchronous execution.
 	ExecuteID string `json:"execute_id,omitempty"`
 
@@ -52,7 +61,8 @@ type RunWorkflowResp struct {
 
 // RetrieveRunHistoryResp represents response for retrieving workflow run history
 type RetrieveRunHistoryResp struct {
-	Histories []WorkflowRunHistory `json:"histories"`
+	internal.BaseResponse
+	Histories []WorkflowRunHistory `json:"data"`
 }
 
 // WorkflowRunHistory represents the history of a workflow run
@@ -104,4 +114,20 @@ type WorkflowRunHistory struct {
 }
 
 type workflowRunHistories struct {
+	client *internal.Client
+}
+
+func newWorkflowRunHistories(client *internal.Client) *workflowRunHistories {
+	return &workflowRunHistories{client: client}
+}
+
+func (r *workflowRunHistories) Retrieve(ctx context.Context, req RetrieveRunHistoryReq) (*RetrieveRunHistoryResp, error) {
+	method := http.MethodGet
+	uri := fmt.Sprintf("/v1/workflows/%s/run_histories/%s", req.WorkflowID, req.ExecuteID)
+	resp := &RetrieveRunHistoryResp{}
+	err := r.client.Request(ctx, method, uri, nil, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }

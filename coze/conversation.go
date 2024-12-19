@@ -1,5 +1,15 @@
 package coze
 
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/coze/coze/internal"
+	"github.com/coze/coze/pagination"
+)
+
 // Conversation represents conversation information
 type Conversation struct {
 	// The ID of the conversation
@@ -56,25 +66,97 @@ type ClearConversationReq struct {
 
 // CreateConversationResp represents response for creating conversation
 type CreateConversationResp struct {
-	Conversation *Conversation `json:"conversation"`
+	internal.BaseResponse
+	Conversation *Conversation `json:"data"`
 }
 
 // ListConversationResp represents response for listing conversations
 type ListConversationResp struct {
-	HasMore       bool           `json:"has_more"`
-	Conversations []Conversation `json:"conversations"`
+	internal.BaseResponse
+	Data struct {
+		HasMore       bool           `json:"has_more"`
+		Conversations []Conversation `json:"conversations"`
+	} `json:"data"`
 }
 
 // RetrieveConversationResp represents response for retrieving conversation
 type RetrieveConversationResp struct {
-	Conversation *Conversation `json:"conversation"`
+	internal.BaseResponse
+	Conversation *Conversation `json:"data"`
 }
 
 // ClearConversationResp represents response for clearing conversation
 type ClearConversationResp struct {
-	ConversationID string `json:"conversation_id"`
+	internal.BaseResponse
+	Data struct {
+		ConversationID string `json:"conversation_id"`
+	} `json:"data"`
 }
 
 type conversations struct {
+	client   *internal.Client
 	Messages *conversationMessage
+}
+
+func newConversations(client *internal.Client) *conversations {
+	return &conversations{
+		client:   client,
+		Messages: newConversationMessage(client),
+	}
+}
+
+func (r *conversations) List(ctx context.Context, req ListConversationReq) (*pagination.PageNumBasedPager[Conversation], error) {
+	if req.PageSize == 0 {
+		req.PageSize = 20
+	}
+	if req.PageNum == 0 {
+		req.PageNum = 1
+	}
+	return pagination.NewPageNumBasedPager[Conversation](
+		func(request *pagination.PageRequest) (*pagination.PageResponse[Conversation], error) {
+			uri := "/v1/conversations"
+			resp := &ListConversationResp{}
+			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
+				internal.WithQuery("bot_id", req.BotID),
+				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
+				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
+			if err != nil {
+				return nil, err
+			}
+			return &pagination.PageResponse[Conversation]{
+				HasMore: resp.Data.HasMore,
+				Data:    resp.Data.Conversations,
+				LogID:   resp.LogID,
+			}, nil
+		}, req.PageSize, req.PageNum)
+}
+
+func (r *conversations) Create(ctx context.Context, req CreateConversationReq) (*CreateConversationResp, error) {
+	uri := "/v1/conversation/create"
+	resp := &CreateConversationResp{}
+	err := r.client.Request(ctx, http.MethodPost, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *conversations) Retrieve(ctx context.Context, req RetrieveConversationReq) (*RetrieveConversationResp, error) {
+	uri := "/v1/conversation/retrieve"
+	resp := &RetrieveConversationResp{}
+	err := r.client.Request(ctx, http.MethodGet, uri, nil, resp, internal.WithQuery("conversation_id", req.ConversationID))
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *conversations) Clear(ctx context.Context, req ClearConversationReq) (*ClearConversationResp, error) {
+	uri := fmt.Sprintf("/v1/conversations/%s/clear", req.ConversationID)
+	resp := &ClearConversationResp{}
+	err := r.client.Request(ctx, http.MethodPost, uri, nil, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }

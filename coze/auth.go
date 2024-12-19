@@ -29,6 +29,7 @@ type DeviceAuthReq struct {
 
 // DeviceAuthResp represents the device authorization response
 type DeviceAuthResp struct {
+	internal.BaseResponse
 	DeviceCode      string `json:"device_code"`
 	UserCode        string `json:"user_code"`
 	VerificationURI string `json:"verification_uri"`
@@ -54,6 +55,7 @@ type GetAccessTokenReq struct {
 
 // GetPKCEAuthURLResp represents the PKCE authorization URL response
 type GetPKCEAuthURLResp struct {
+	internal.BaseResponse
 	CodeVerifier     string `json:"code_verifier"`
 	AuthorizationURL string `json:"authorization_url"`
 }
@@ -74,10 +76,10 @@ func (g GrantType) String() string {
 
 // OAuthToken represents the OAuth token response
 type OAuthToken struct {
+	internal.BaseResponse
 	AccessToken  string `json:"access_token"`
-	ExpiresIn    int    `json:"expires_in"`
+	ExpiresIn    int64  `json:"expires_in"`
 	RefreshToken string `json:"refresh_token,omitempty"`
-	LogID        string `json:"log_id,omitempty"`
 }
 
 // Scope represents the OAuth scope
@@ -171,14 +173,14 @@ type oauthOpt struct {
 
 type OAuthClientOption func(*oauthOpt)
 
-// WithBaseURL 添加基准url
-func WithBaseURL(baseURL string) OAuthClientOption {
+// WithAuthBaseURL 添加基准url
+func WithAuthBaseURL(baseURL string) OAuthClientOption {
 	return func(opt *oauthOpt) {
 		opt.baseURL = baseURL
 	}
 }
 
-func WithHttpClient(client *http.Client) OAuthClientOption {
+func WithAuthHttpClient(client *http.Client) OAuthClientOption {
 	return func(opt *oauthOpt) {
 		opt.httpClient = client
 	}
@@ -293,7 +295,7 @@ func (c *OAuthClient) getAccessToken(ctx context.Context, params getAccessTokenP
 	if params.Secret != "" {
 		opt = append(opt, internal.WithHeader(AuthorizeHeader, fmt.Sprintf("Bearer %s", params.Secret)))
 	}
-	if err := c.httpClient.Request(ctx, "POST", getTokenPath, req, result, opt...); err != nil {
+	if err := c.httpClient.Request(ctx, http.MethodPost, getTokenPath, req, result, opt...); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -478,7 +480,7 @@ func (c *DeviceOAuthClient) doGetDeviceCode(ctx context.Context, workspaceID *st
 		ClientID: c.clientID,
 	}
 	result := &DeviceAuthResp{}
-	err := c.httpClient.Request(ctx, "POST", urlPath, req, result)
+	err := c.httpClient.Request(ctx, http.MethodPost, urlPath, req, result)
 	if err != nil {
 		return nil, err
 	}
@@ -526,7 +528,7 @@ func (c *DeviceOAuthClient) GetAccessToken(ctx context.Context, deviceCode strin
 
 func (c *DeviceOAuthClient) doGetAccessToken(ctx context.Context, req *GetAccessTokenReq) (*OAuthToken, error) {
 	result := &OAuthToken{}
-	if err := c.httpClient.Request(ctx, "POST", getTokenPath, req, result); err != nil {
+	if err := c.httpClient.Request(ctx, http.MethodPost, getTokenPath, req, result); err != nil {
 		return nil, err
 	}
 	return result, nil

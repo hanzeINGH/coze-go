@@ -40,7 +40,7 @@ func main() {
 	   The sdk offers the WebOAuthClient class to establish an authorization for Web OAuth.
 	   Firstly, it is required to initialize the WebOAuthApp with the client ID and client secret.
 	*/
-	oauth, err := coze.NewWebOAuthClient(clientID, clientSecret, coze.WithBaseURL(cozeAPIBase))
+	oauth, err := coze.NewWebOAuthClient(clientID, clientSecret, coze.WithAuthBaseURL(cozeAPIBase))
 	if err != nil {
 		fmt.Printf("Failed to create OAuth client: %v\n", err)
 		return

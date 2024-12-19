@@ -1,5 +1,7 @@
 package coze
 
+import "github.com/coze/coze/utils"
+
 // Message represents a message in conversation
 type Message struct {
 	// The entity that sent this message.
@@ -33,14 +35,47 @@ type Message struct {
 	UpdatedAt int64  `json:"updated_at"`
 }
 
+// BuildUserQuestionText 构建用户提问文本消息
+func BuildUserQuestionText(content string, metaData map[string]string) Message {
+	return Message{
+		Role:        MessageRoleUser,
+		Type:        MessageTypeQuestion,
+		Content:     content,
+		ContentType: MessageContentTypeText,
+		MetaData:    metaData,
+	}
+}
+
+// BuildUserQuestionObjects 构建用户提问对象消息
+func BuildUserQuestionObjects(objects []MessageObjectString, metaData map[string]string) Message {
+	return Message{
+		Role:        MessageRoleUser,
+		Type:        MessageTypeQuestion,
+		Content:     utils.MustToJson(objects),
+		ContentType: MessageContentTypeObjectString,
+		MetaData:    metaData,
+	}
+}
+
+// BuildAssistantAnswer 构建助手回答消息
+func BuildAssistantAnswer(content string, metaData map[string]string) Message {
+	return Message{
+		Role:        MessageRoleAssistant,
+		Type:        MessageTypeAnswer,
+		Content:     content,
+		ContentType: MessageContentTypeText,
+		MetaData:    metaData,
+	}
+}
+
 // MessageRole represents the role of message sender
 type MessageRole string
 
 const (
 	MessageRoleUnknown MessageRole = "unknown"
-	// Indicates that the content of the message is sent by the user.
+	// MessageRoleUser Indicates that the content of the message is sent by the user.
 	MessageRoleUser MessageRole = "user"
-	// Indicates that the content of the message is sent by the bot.
+	// MessageRoleAssistant Indicates that the content of the message is sent by the bot.
 	MessageRoleAssistant MessageRole = "assistant"
 )
 
@@ -48,28 +83,25 @@ const (
 type MessageType string
 
 const (
-	// User input content.
+	// MessageTypeQuestion User input content.
 	MessageTypeQuestion MessageType = "question"
 
-	// The message content returned by the Bot to the user, supporting incremental return.
+	// MessageTypeAnswer The message content returned by the Bot to the user, supporting incremental return.
 	MessageTypeAnswer MessageType = "answer"
 
-	// Intermediate results of the function (function call) called during the Bot conversation
-	// process.
+	// MessageTypeFunctionCall Intermediate results of the function (function call) called during the
+	// Bot conversation process.
 	MessageTypeFunctionCall MessageType = "function_call"
 
-	// Results returned after calling the tool (function call).
+	// MessageTypeToolOutput Results returned after calling the tool (function call).
 	MessageTypeToolOutput MessageType = "tool_output"
 
-	// Results returned after calling the tool (function call).
+	// MessageTypeToolResponse Results returned after calling the tool (function call).
 	MessageTypeToolResponse MessageType = "tool_response"
 
-	// If the user question suggestion switch is turned on in the Bot configuration, the reply content
-	// related to the recommended questions will be returned.
+	// MessageTypeFollowUp If the user question suggestion switch is turned on in the Bot configuration,
+	// the reply content related to the recommended questions will be returned.
 	MessageTypeFollowUp MessageType = "follow_up"
-
-	// In the scenario of multiple answers, the server will return a verbose package.
-	MessageTypeVerbose MessageType = "verbose"
 
 	MessageTypeUnknown MessageType = ""
 )
@@ -79,19 +111,19 @@ type MessageContentType string
 
 const (
 	MessageContentTypeUnknown MessageContentType = "unknown"
-	// Text.
+	// MessageContentTypeText Text.
 	MessageContentTypeText MessageContentType = "text"
 
-	// Multimodal content, that is, a combination of text and files, or a combination of text and
-	// images.
+	// MessageContentTypeObjectString Multimodal content, that is, a combination of text and files,
+	// or a combination of text and images.
 	MessageContentTypeObjectString MessageContentType = "object_string"
 
-	// Message card. This enum value only appears in the interface response and is not supported as an
+	// MessageContentTypeCard This enum value only appears in the interface response and is not supported as an
 	// input parameter.
 	MessageContentTypeCard MessageContentType = "card"
 
-	// If there is a voice message in the input message, the conversation.audio.delta event will be
-	// returned in the streaming response event.
+	// MessageContentTypeAudio If there is a voice message in the input message,
+	// the conversation.audio.delta event will be returned in the streaming response event.
 	MessageContentTypeAudio MessageContentType = "audio"
 )
 
@@ -122,7 +154,7 @@ const (
 	MessageObjectStringTypeAudio   MessageObjectStringType = "audio"
 )
 
-// Helper functions for creating MessageObjectString
+// NewTextMessageObject Helper functions for creating MessageObjectString
 func NewTextMessageObject(text string) *MessageObjectString {
 	return &MessageObjectString{
 		Type: MessageObjectStringTypeText,
@@ -130,35 +162,44 @@ func NewTextMessageObject(text string) *MessageObjectString {
 	}
 }
 
-func NewImageMessageObject(fileID, fileURL string) *MessageObjectString {
-	if fileID == "" && fileURL == "" {
-		panic("file_id or file_url must be specified")
-	}
+func NewImageMessageObjectByURL(fileURL string) *MessageObjectString {
 	return &MessageObjectString{
 		Type:    MessageObjectStringTypeImage,
-		FileID:  fileID,
 		FileURL: fileURL,
 	}
 }
 
-func NewFileMessageObject(fileID, fileURL string) *MessageObjectString {
-	if fileID == "" && fileURL == "" {
-		panic("file_id or file_url must be specified")
+func NewImageMessageObjectByID(fileID string) *MessageObjectString {
+	return &MessageObjectString{
+		Type:   MessageObjectStringTypeImage,
+		FileID: fileID,
 	}
+}
+
+func NewFileMessageObjectByID(fileID string) *MessageObjectString {
+	return &MessageObjectString{
+		Type:   MessageObjectStringTypeFile,
+		FileID: fileID,
+	}
+}
+
+func NewFileMessageObjectByURL(fileURL string) *MessageObjectString {
 	return &MessageObjectString{
 		Type:    MessageObjectStringTypeFile,
-		FileID:  fileID,
 		FileURL: fileURL,
 	}
 }
 
-func NewAudioMessageObject(fileID, fileURL string) *MessageObjectString {
-	if fileID == "" && fileURL == "" {
-		panic("file_id or file_url must be specified")
+func NewAudioMessageObjectByID(fileID string) *MessageObjectString {
+	return &MessageObjectString{
+		Type:   MessageObjectStringTypeAudio,
+		FileID: fileID,
 	}
+}
+
+func NewAudioMessageObjectByURL(fileURL string) *MessageObjectString {
 	return &MessageObjectString{
 		Type:    MessageObjectStringTypeAudio,
-		FileID:  fileID,
 		FileURL: fileURL,
 	}
 }

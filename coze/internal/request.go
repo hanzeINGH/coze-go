@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
-	"os"
-	"path/filepath"
 
 	"github.com/coze/coze/auth_error"
 )
@@ -58,58 +57,58 @@ func WithQuery(key, value string) RequestOption {
 }
 
 // Request 发送请求
-func (c *Client) Request(ctx context.Context, method, path string, body interface{}, instance interface{}, opts ...RequestOption) error {
-	urlInfo := fmt.Sprintf("%s%s", c.baseURL, path)
-
-	var bodyReader io.Reader
-	if body != nil {
-		data, err := json.Marshal(body)
-		if err != nil {
-			return fmt.Errorf("marshal request body: %w", err)
-		}
-		bodyReader = bytes.NewReader(data)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, method, urlInfo, bodyReader)
-	if err != nil {
-		return fmt.Errorf("create request: %w", err)
-	}
-
-	// 设置默认请求头
-	req.Header.Set("Content-Type", "application/json")
-
-	// 应用请求选项
-	for _, opt := range opts {
-		if err := opt(req); err != nil {
-			return fmt.Errorf("apply option: %w", err)
-		}
-	}
-
-	resp, err := c.doer.Do(req)
+func (c *Client) Request(ctx context.Context, method, path string, body any, instance any, opts ...RequestOption) error {
+	resp, err := c.RowRequest(ctx, method, path, body, opts...)
 	if err != nil {
 		return fmt.Errorf("do request: %w", err)
 	}
 
+	return packInstance(instance, resp)
+}
+
+func packInstance(instance any, resp *http.Response) error {
+	err := checkHttpResp(resp)
+	if err != nil {
+		return err
+	}
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("read response body: %w", err)
 	}
+	logID := GetLogID(resp.Header)
+	err = json.Unmarshal(bodyBytes, instance)
+	if err != nil {
+		// todo log
+		return err
+	}
+	if baseResp, ok := instance.(BaseResp); ok {
+		baseResp.SetLogID(logID)
+		if baseResp.GetCode() != 0 {
+			// todo 打包一个 error
+			return err
+		}
+	}
+	return nil
+}
+
+func checkHttpResp(resp *http.Response) error {
+	logID := GetLogID(resp.Header)
 	// 鉴权的情况，需要解析
 	if resp.StatusCode != http.StatusOK {
+		bodyBytes, err := io.ReadAll(resp.Body)
 		errorInfo := auth_error.CozeError{}
 		err = json.Unmarshal(bodyBytes, &errorInfo)
 		if err != nil {
 			// todo log
-			return fmt.Errorf("unmarshal error response: %w", err)
+			return errors.New(string(bodyBytes) + "log_id:%s" + logID)
 		}
-		return auth_error.NewCozeAuthExceptionWithoutParent(&errorInfo, resp.StatusCode, getLogID(resp.Header))
+		return auth_error.NewCozeAuthExceptionWithoutParent(&errorInfo, resp.StatusCode, logID)
 	}
-
-	return json.Unmarshal(bodyBytes, instance)
+	return nil
 }
 
 //// Stream 处理流式响应
-//func (c *Client) Stream(ctx context.Context, method, path string, body interface{}, handler func([]byte) error, opts ...RequestOption) error {
+//func (c *Client) Stream(ctx context.Context, method, path string, body any, handler func([]byte) error, opts ...RequestOption) error {
 //	resp, err := c.Request(ctx, method, path, nil, body, opts...)
 //	if err != nil {
 //		return err
@@ -135,45 +134,71 @@ func (c *Client) Request(ctx context.Context, method, path string, body interfac
 //}
 
 // UploadFile 上传文件
-func (c *Client) UploadFile(ctx context.Context, path string, files map[string]string, fields map[string]string, opts ...RequestOption) (*http.Response, error) {
+func (c *Client) UploadFile(ctx context.Context, path string, reader io.Reader, fileName string, fields map[string]string, instance any, opts ...RequestOption) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	// 添加文件
-	for fieldName, filePath := range files {
-		file, err := os.Open(filePath)
-		if err != nil {
-			return nil, fmt.Errorf("open file %s: %w", filePath, err)
-		}
-		defer file.Close()
+	part, err := writer.CreateFormFile("file", fileName)
+	if err != nil {
+		return fmt.Errorf("create form file: %w", err)
+	}
 
-		part, err := writer.CreateFormFile(fieldName, filepath.Base(filePath))
-		if err != nil {
-			return nil, fmt.Errorf("create form file: %w", err)
-		}
-
-		if _, err = io.Copy(part, file); err != nil {
-			return nil, fmt.Errorf("copy file content: %w", err)
-		}
+	if _, err = io.Copy(part, reader); err != nil {
+		return fmt.Errorf("copy file content: %w", err)
 	}
 
 	// 添加其他字段
 	for key, value := range fields {
 		if err := writer.WriteField(key, value); err != nil {
-			return nil, fmt.Errorf("write field %s: %w", key, err)
+			return fmt.Errorf("write field %s: %w", key, err)
 		}
 	}
 
 	if err := writer.Close(); err != nil {
-		return nil, fmt.Errorf("close multipart writer: %w", err)
+		return fmt.Errorf("close multipart writer: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s%s", c.baseURL, path), body)
 	if err != nil {
-		return nil, fmt.Errorf("create request: %w", err)
+		return fmt.Errorf("create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	// 应用请求选项
+	for _, opt := range opts {
+		if err := opt(req); err != nil {
+			return fmt.Errorf("apply option: %w", err)
+		}
+	}
+
+	resp, err := c.doer.Do(req)
+	if err != nil {
+		return fmt.Errorf("do request: %w", err)
+	}
+
+	return packInstance(instance, resp)
+}
+
+func (c *Client) RowRequest(ctx context.Context, method, path string, body any, opts ...RequestOption) (*http.Response, error) {
+	urlInfo := fmt.Sprintf("%s%s", c.baseURL, path)
+
+	var bodyReader io.Reader
+	if body != nil {
+		data, err := json.Marshal(body)
+		if err != nil {
+			return nil, fmt.Errorf("marshal request body: %w", err)
+		}
+		bodyReader = bytes.NewReader(data)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, urlInfo, bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("create request: %w", err)
+	}
+
+	// 设置默认请求头
+	req.Header.Set("Content-Type", "application/json")
 
 	// 应用请求选项
 	for _, opt := range opts {
@@ -184,13 +209,15 @@ func (c *Client) UploadFile(ctx context.Context, path string, files map[string]s
 
 	resp, err := c.doer.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("do request: %w", err)
+		return nil, err
 	}
-
-	return resp, nil
+	err = checkHttpResp(resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, err
 }
 
-// 使用示例：
 type MockDoer struct {
 	Response *http.Response
 	Error    error

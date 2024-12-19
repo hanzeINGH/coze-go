@@ -1,5 +1,7 @@
 package coze
 
+import "github.com/coze/coze/internal"
+
 // AudioFormat 音频格式类型
 type AudioFormat string
 
@@ -36,4 +38,12 @@ type audio struct {
 	Rooms  *rooms
 	Speech *speech
 	Voice  *voice
+}
+
+func newAudio(client *internal.Client) *audio {
+	return &audio{
+		Rooms:  newRooms(client),
+		Speech: newSpeech(client),
+		Voice:  newVoice(client),
+	}
 }

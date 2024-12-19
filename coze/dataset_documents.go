@@ -1,5 +1,13 @@
 package coze
 
+import (
+	"context"
+	"net/http"
+
+	"github.com/coze/coze/internal"
+	"github.com/coze/coze/pagination"
+)
+
 // Document represents a document in the dataset
 type Document struct {
 	// The ID of the file.
@@ -231,20 +239,96 @@ type UpdateDocumentReq struct {
 
 // CreateDocumentResp represents response for creating document
 type CreateDocumentResp struct {
+	internal.BaseResponse
 	DocumentInfos []Document `json:"document_infos"`
 }
 
 // ListDocumentResp represents response for listing documents
 type ListDocumentResp struct {
+	internal.BaseResponse
 	Total         int64      `json:"total"`
 	DocumentInfos []Document `json:"document_infos"`
 }
 
 // DeleteDocumentResp represents response for deleting documents
-type DeleteDocumentResp struct{}
+type DeleteDocumentResp struct {
+	internal.BaseResponse
+}
 
 // UpdateDocumentResp represents response for updating document
-type UpdateDocumentResp struct{}
+type UpdateDocumentResp struct {
+	internal.BaseResponse
+}
 
 type documents struct {
+	client          *internal.Client
+	commonHeaderOpt []internal.RequestOption
+}
+
+func newDocuments(client *internal.Client) *documents {
+	return &documents{client: client, commonHeaderOpt: []internal.RequestOption{
+		internal.WithHeader("Agw-Js-Conv", "true"),
+	}}
+}
+
+func (r *documents) Create(ctx context.Context, req CreateDocumentReq) (*CreateDocumentResp, error) {
+	method := http.MethodPost
+	uri := "/open_api/knowledge/document/create"
+	resp := &CreateDocumentResp{}
+	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *documents) Update(ctx context.Context, req UpdateDocumentReq) (*UpdateDocumentResp, error) {
+	method := http.MethodPost
+	uri := "/open_api/knowledge/document/update"
+	resp := &UpdateDocumentResp{}
+	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *documents) Delete(ctx context.Context, req DeleteDocumentReq) (*DeleteDocumentResp, error) {
+	method := http.MethodPost
+	uri := "/open_api/knowledge/document/delete"
+	resp := &DeleteDocumentResp{}
+	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *documents) List(ctx context.Context, req ListDocumentReq) (*pagination.PageNumBasedPager[Document], error) {
+	if req.Page == 0 {
+		req.Page = 20
+	}
+	if req.Size == 0 {
+		req.Size = 1
+	}
+	return pagination.NewPageNumBasedPager[Document](
+		func(request *pagination.PageRequest) (*pagination.PageResponse[Document], error) {
+			uri := "/open_api/knowledge/document/list"
+			resp := &ListDocumentResp{}
+			doReq := &ListDocumentReq{
+				DatasetID: req.DatasetID,
+				Size:      request.PageSize,
+				Page:      request.PageNum,
+			}
+			err := r.client.Request(ctx, http.MethodPost, uri, doReq, resp, r.commonHeaderOpt...)
+			if err != nil {
+				return nil, err
+			}
+			return &pagination.PageResponse[Document]{
+				Total:   int(resp.Total),
+				HasMore: request.PageSize <= len(resp.DocumentInfos),
+				Data:    resp.DocumentInfos,
+				LogID:   resp.LogID,
+			}, nil
+		}, req.Size, req.Page)
 }
