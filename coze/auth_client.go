@@ -11,24 +11,33 @@ type Auth interface {
 	Token(ctx context.Context) (string, error)
 }
 
-// TokenAuth 表示基于令牌的认证
-type TokenAuth struct {
+var _ Auth = &tokenAuthImpl{}
+var _ Auth = &jwtOAuthImpl{}
+
+// tokenAuthImpl implements the Auth interface with fixed access token.
+type tokenAuthImpl struct {
 	accessToken string
 }
 
-// NewTokenAuth 创建一个新的令牌认证实例
-func NewTokenAuth(accessToken string) *TokenAuth {
-	return &TokenAuth{
+// NewTokenAuth creates a new token authentication instance.
+func NewTokenAuth(accessToken string) Auth {
+	return &tokenAuthImpl{
 		accessToken: accessToken,
 	}
 }
 
-// Token 获取访问令牌
-func (a *TokenAuth) Token(ctx context.Context) (string, error) {
+func NewJWTAuth(client JWTOAuthClient, opt *JWTGetAccessTokenOptions) Auth {
+	return &jwtOAuthImpl{
+		client: client,
+	}
+}
+
+// Token returns the access token.
+func (a *tokenAuthImpl) Token(ctx context.Context) (string, error) {
 	return a.accessToken, nil
 }
 
-type JWTOAuth struct {
+type jwtOAuthImpl struct {
 	TTL         int
 	SessionName *string
 	Scope       *Scope
@@ -37,11 +46,11 @@ type JWTOAuth struct {
 	expireIn    int64
 }
 
-func (j *JWTOAuth) needRefresh() bool {
+func (j *jwtOAuthImpl) needRefresh() bool {
 	return j.accessToken == nil || time.Now().Unix() > j.expireIn
 }
 
-func (j *JWTOAuth) Token(ctx context.Context) (string, error) {
+func (j *jwtOAuthImpl) Token(ctx context.Context) (string, error) {
 	if !j.needRefresh() {
 		return ptr.Value(j.accessToken), nil
 	}
