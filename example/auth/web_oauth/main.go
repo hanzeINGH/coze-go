@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/coze/coze"
+	"github.com/coze-dev/coze-go/coze"
 )
 
 /*
@@ -53,8 +53,8 @@ func main() {
 	/*
 	 * The space permissions for which the Access Token is granted can be specified. As following codes:
 	 */
-	//oauthURL = oauth.GetOAuthURLWithWorkspace(redirectURI, "state", "workspaceID")
-	//fmt.Println(oauthURL)
+	// oauthURL = oauth.GetOAuthURLWithWorkspace(redirectURI, "state", "workspaceID")
+	// fmt.Println(oauthURL)
 
 	/*
 	   After the user clicks the authorization consent button, the coze web page will redirect
@@ -86,18 +86,18 @@ func main() {
 	/*
 	 * you can get request log by getLogID method
 	 */
-	//fmt.Println(resp.LogID)
+	// fmt.Println(resp.LogID)
 
-	//// use the access token to init Coze client
-	//coze, err := NewCozeAPI(&CozeAPIConfig{
+	// // use the access token to init Coze client
+	// coze, err := NewCozeAPI(&CozeAPIConfig{
 	//	Auth:    NewTokenAuth(resp.AccessToken),
 	//	BaseURL: cozeAPIBase,
-	//})
-	//if err != nil {
+	// })
+	// if err != nil {
 	//	fmt.Printf("Failed to create Coze client: %v\n", err)
 	//	return
-	//}
+	// }
 	//
-	//// When the token expires, you can also refresh and re-obtain the token
+	// // When the token expires, you can also refresh and re-obtain the token
 
 }

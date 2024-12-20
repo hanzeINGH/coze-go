@@ -10,7 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/coze/coze/auth_error"
+	"github.com/coze-dev/coze-go/coze/auth_error"
 )
 
 // Doer 是一个执行 HTTP 请求的接口
@@ -107,8 +107,8 @@ func checkHttpResp(resp *http.Response) error {
 	return nil
 }
 
-//// Stream 处理流式响应
-//func (c *Client) Stream(ctx context.Context, method, path string, body any, handler func([]byte) error, opts ...RequestOption) error {
+// // Stream 处理流式响应
+// func (c *Client) Stream(ctx context.Context, method, path string, body any, handler func([]byte) error, opts ...RequestOption) error {
 //	resp, err := c.Request(ctx, method, path, nil, body, opts...)
 //	if err != nil {
 //		return err
@@ -131,7 +131,7 @@ func checkHttpResp(resp *http.Response) error {
 //	}
 //
 //	return nil
-//}
+// }
 
 // UploadFile 上传文件
 func (c *Client) UploadFile(ctx context.Context, path string, reader io.Reader, fileName string, fields map[string]string, instance any, opts ...RequestOption) error {

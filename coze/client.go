@@ -3,7 +3,7 @@ package coze
 import (
 	"net/http"
 
-	"github.com/coze/coze/internal"
+	"github.com/coze-dev/coze-go/coze/internal"
 )
 
 type CozeAPI struct {

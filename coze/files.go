@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/chyroc/go-ptr"
-	"github.com/coze/coze/internal"
+	"github.com/coze-dev/coze-go/coze/internal"
 )
 
 // FileInfo represents information about a file

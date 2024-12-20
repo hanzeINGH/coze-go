@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/coze/coze/internal"
+	"github.com/coze-dev/coze-go/coze/internal"
 )
 
 // ChatListMessageReq represents the request to list messages

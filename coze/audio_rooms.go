@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/coze/coze/internal"
+	"github.com/coze-dev/coze-go/coze/internal"
 )
 
 // AudioCodec 音频编解码器

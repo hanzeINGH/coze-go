@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/coze/coze"
+	"github.com/coze-dev/coze-go/coze"
 )
 
 /*
@@ -67,10 +67,10 @@ func main() {
 		The jwt oauth process does not support refreshing tokens. When the token expires,
 		just directly call get_access_token to generate a new token.
 	*/
-	//coze := service.NewCozeAPI(
+	// coze := service.NewCozeAPI(
 	//	service.WithAuth(auth.NewJWTOAuth(oauth)),
 	//	service.WithAuthBaseURL(coze.WithAuthBaseURL(cozeAPIBase),
-	//)
-	//// you can also specify the scope and session for it
-	//_ = coze // 避免未使用变量警告
+	// )
+	// // you can also specify the scope and session for it
+	// _ = coze // 避免未使用变量警告
 }

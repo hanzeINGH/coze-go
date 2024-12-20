@@ -10,16 +10,16 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/coze/coze/internal"
+	"github.com/coze-dev/coze-go/coze/internal"
 )
 
 type streamable interface {
 	ChatEvent | WorkflowEvent
 }
 
-//type eventProcessor[T streamable] interface {
+// type eventProcessor[T streamable] interface {
 //	ProcessLine(line []byte, reader *bufio.Reader, logID string) (T, bool, error)
-//}
+// }
 
 type eventProcessor[T streamable] func(line []byte, reader *bufio.Reader, logID string) (*T, bool, error)
 
@@ -73,16 +73,16 @@ func (s *streamReader[T]) checkRespErr() error {
 	if contentType != "" && strings.Contains(contentType, "application/json") {
 		respStr, err := ioutil.ReadAll(s.response.Body)
 		if err != nil {
-			//logger.Warn("Error reading response body: ", err)
+			// logger.Warn("Error reading response body: ", err)
 			return err
 		}
 		var baseResp internal.BaseResponse
 		if err := json.Unmarshal(respStr, &baseResp); err != nil {
-			//logger.Warn("Error unmarshalling response: ", err)
+			// logger.Warn("Error unmarshalling response: ", err)
 			return err
 		}
 		if baseResp.Code != 0 {
-			//logger.Warn("API error: %d %s", baseResp.Code, baseResp.Msg)
+			// logger.Warn("API error: %d %s", baseResp.Code, baseResp.Msg)
 			// todo
 			return errors.New(fmt.Sprintf("API error: %d %s", baseResp.Code, baseResp.Msg))
 		}

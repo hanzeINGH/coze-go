@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/chyroc/go-ptr"
-	"github.com/coze/coze/internal"
-	"github.com/coze/coze/pagination"
-	"github.com/coze/coze/utils"
+	"github.com/coze-dev/coze-go/coze/internal"
+	"github.com/coze-dev/coze-go/coze/pagination"
+	"github.com/coze-dev/coze-go/coze/utils"
 )
 
 // CreateMessageReq represents request for creating message

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/coze/coze"
+	"github.com/coze-dev/coze-go/coze"
 )
 
 /*
@@ -87,14 +87,14 @@ func main() {
 	fmt.Printf("%+v\n", resp)
 
 	// use the access token to init Coze client
-	//coze, err := NewCozeAPI(&CozeAPIConfig{
+	// coze, err := NewCozeAPI(&CozeAPIConfig{
 	//	Auth:    NewTokenAuth(resp.AccessToken),
 	//	BaseURL: cozeAPIBase,
-	//})
-	//if err != nil {
+	// })
+	// if err != nil {
 	//	fmt.Printf("Failed to create Coze client: %v\n", err)
 	//	return
-	//}
+	// }
 
 	// When the token expires, you can also refresh and re-obtain the token
 	resp, err = oauth.RefreshToken(ctx, resp.RefreshToken)

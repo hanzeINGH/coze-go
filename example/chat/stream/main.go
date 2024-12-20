@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/coze/coze"
+	"github.com/coze-dev/coze-go/coze"
 )
 
 func main() {

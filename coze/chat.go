@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/chyroc/go-ptr"
-	"github.com/coze/coze/internal"
+	"github.com/coze-dev/coze-go/coze/internal"
 )
 
 // ChatStatus The running status of the session.

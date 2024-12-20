@@ -15,9 +15,9 @@ import (
 	"time"
 
 	"github.com/chyroc/go-ptr"
-	"github.com/coze/coze/auth_error"
-	"github.com/coze/coze/internal"
-	"github.com/coze/coze/utils"
+	"github.com/coze-dev/coze-go/coze/auth_error"
+	"github.com/coze-dev/coze-go/coze/internal"
+	"github.com/coze-dev/coze-go/coze/utils"
 	"github.com/golang-jwt/jwt"
 )
 

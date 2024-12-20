@@ -1,6 +1,6 @@
 package coze
 
-import "github.com/coze/coze/utils"
+import "github.com/coze-dev/coze-go/coze/utils"
 
 // Message represents a message in conversation
 type Message struct {

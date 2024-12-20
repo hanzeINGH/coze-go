@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/coze/coze/internal"
+	"github.com/coze-dev/coze-go/coze/internal"
 )
 
 // WorkflowRunResult represents the result of a workflow run

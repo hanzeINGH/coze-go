@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/coze/coze"
+	"github.com/coze-dev/coze-go/coze"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 package coze
 
-import "github.com/coze/coze/internal"
+import "github.com/coze-dev/coze-go/coze/internal"
 
 // AudioFormat 音频格式类型
 type AudioFormat string

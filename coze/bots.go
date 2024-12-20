@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/coze/coze/internal"
-	"github.com/coze/coze/pagination"
+	"github.com/coze-dev/coze-go/coze/internal"
+	"github.com/coze-dev/coze-go/coze/pagination"
 )
 
 // BotMode 机器人模式
