@@ -1,0 +1,100 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	"github.com/coze-dev/coze-go"
+)
+
+// This examples is for describing how to create a bot, update a bot and publish a bot to the API.
+func main() {
+	// Get an access_token through personal access token or oauth.
+	token := os.Getenv("COZE_API_TOKEN")
+	authCli := coze.NewTokenAuth(token)
+
+	// Init the Coze client through the access_token.
+	cozeCli := coze.NewCozeAPI(authCli, coze.WithBaseURL(os.Getenv("COZE_API_BASE")))
+
+	// step one, create a bot
+	workspaceID := os.Getenv("WORKSPACE_ID")
+
+	// Call the upload file interface to get the avatar id.
+	avatarPath := os.Getenv("IMAGE_FILE_PATH")
+	ctx := context.Background()
+	avatarInfo, err := cozeCli.Files.Upload(ctx, coze.NewUploadFilesReqWithPath(avatarPath))
+	if err != nil {
+		fmt.Println("Error uploading avatar:", err)
+		return
+	}
+	fmt.Println(avatarInfo)
+
+	// build the request
+	createResp, err := cozeCli.Bots.Create(ctx, &coze.CreateBotsReq{
+		SpaceID:     workspaceID,
+		Description: "the description of your bot",
+		Name:        "the name of your bot",
+		PromptInfo: &coze.BotPromptInfo{
+			Prompt: "your prompt",
+		},
+		OnboardingInfo: &coze.BotOnboardingInfo{
+			Prologue:           "the prologue of your bot",
+			SuggestedQuestions: []string{"question 1", "question 2"},
+		},
+		IconFileID: avatarInfo.FileInfo.ID,
+	})
+	if err != nil {
+		fmt.Println("Error creating bot:", err)
+		return
+	}
+	botID := createResp.Data.BotID
+	fmt.Println(createResp)
+
+	//
+	// step two, update the bot, you can update the bot after being created
+	// in this examples, we will update the avatar of the bot
+
+	publishResp, err := cozeCli.Bots.Publish(ctx, &coze.PublishBotsReq{
+		BotID:        botID,
+		ConnectorIDs: []string{"1024"},
+	})
+	if err != nil {
+		fmt.Println("Error publishing bot:", err)
+		return
+	}
+	fmt.Println(publishResp)
+
+	//
+	// step three, you can also modify the bot configuration and republish it.
+	// in this examples, we will update the avatar of the bot
+
+	newAvatarPath := os.Getenv("IMAGE_FILE_PATH")
+	newAvatarInfo, err := cozeCli.Files.Upload(ctx, coze.NewUploadFilesReqWithPath(newAvatarPath))
+	if err != nil {
+		fmt.Println("Error uploading new avatar:", err)
+		return
+	}
+	fmt.Println(newAvatarInfo)
+
+	// Update bot
+	_, err = cozeCli.Bots.Update(ctx, &coze.UpdateBotsReq{
+		BotID:      botID,
+		IconFileID: newAvatarInfo.FileInfo.ID,
+	})
+	if err != nil {
+		fmt.Println("Error updating bot:", err)
+		return
+	}
+
+	// Republish bot
+	publishResp, err = cozeCli.Bots.Publish(ctx, &coze.PublishBotsReq{
+		BotID:        botID,
+		ConnectorIDs: []string{"1024"},
+	})
+	if err != nil {
+		fmt.Println("Error republishing bot:", err)
+		return
+	}
+	fmt.Println(publishResp)
+}
