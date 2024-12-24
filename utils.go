@@ -6,6 +6,18 @@ import (
 	"net/http"
 )
 
+func ptrValue[T any](s *T) T {
+	if s != nil {
+		return *s
+	}
+	var empty T
+	return empty
+}
+
+func ptr[T any](s T) *T {
+	return &s
+}
+
 func generateRandomString(length int) (string, error) {
 	bytes := make([]byte, length/2)
 	if _, err := rand.Read(bytes); err != nil {
