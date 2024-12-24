@@ -19,14 +19,25 @@ func main() {
 
 	ctx := context.Background()
 	filePath := os.Getenv("FILE_PATH")
+	file, err := os.Open(filePath)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
 
-	// upload file
-	uploadResp, err := cozeCli.Files.Upload(ctx, coze.NewUploadFilesReqWithPath(filePath))
+	// the developers can directly use file to upload
+	uploadResp, err := cozeCli.Files.Upload(ctx, file)
 	if err != nil {
 		fmt.Println("Error uploading file:", err)
 		return
 	}
 	fileInfo := uploadResp.FileInfo
+	// The developers can also upload file by bytes stream
+	// uploadResp, err = cozeCli.Files.Upload(ctx, coze.NewUploadFileReq(bytes.NewReader([]byte("hello world"))," your file name"))
+	// if err != nil{
+	//	 fmt.Println("Error uploading file:", err)
+	//	 return
+	// }
 
 	// wait the server to process the file
 	time.Sleep(time.Second)

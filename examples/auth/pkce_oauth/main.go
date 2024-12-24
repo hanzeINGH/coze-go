@@ -63,7 +63,7 @@ func main() {
 	//			WorkspaceID: utils.Ptr("workspace_id"),
 	//		})
 	// if err != nil {
-	// 	fmt.Printf("Failed to generate OAuth URL with workspace: %v\n", err)
+	// 	fmt.Printf("Failed to generate OAuth URL with workspaces: %v\n", err)
 	// 	return
 	// }
 	// System.out.println(oauthURL);

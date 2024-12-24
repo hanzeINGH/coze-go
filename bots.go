@@ -9,6 +9,77 @@ import (
 	"github.com/coze-dev/coze-go/pagination"
 )
 
+func (r *bots) Create(ctx context.Context, req *CreateBotsReq) (*CreateBotsResp, error) {
+	method := http.MethodPost
+	uri := "/v1/bot/create"
+	resp := &CreateBotsResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *bots) Update(ctx context.Context, req *UpdateBotsReq) (*UpdateBotsResp, error) {
+	method := http.MethodPost
+	uri := "/v1/bot/update"
+	resp := &UpdateBotsResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *bots) Publish(ctx context.Context, req *PublishBotsReq) (*PublishBotsResp, error) {
+	method := http.MethodPost
+	uri := "/v1/bot/publish"
+	resp := &PublishBotsResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *bots) Retrieve(ctx context.Context, req *RetrieveBotsReq) (*RetrieveBotsResp, error) {
+	method := http.MethodGet
+	uri := "/v1/bot/get_online_info"
+	resp := &RetrieveBotsResp{}
+	err := r.client.Request(ctx, method, uri, nil, resp, internal.WithQuery("bot_id", req.BotID))
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *bots) List(ctx context.Context, req *ListBotsReq) (*pagination.NumberPaged[SimpleBot], error) {
+	if req.PageSize == 0 {
+		req.PageSize = 20
+	}
+	if req.PageNum == 0 {
+		req.PageNum = 1
+	}
+	return pagination.NewNumberPaged[SimpleBot](
+		func(request *pagination.PageRequest) (*pagination.PageResponse[SimpleBot], error) {
+			uri := "/v1/space/published_bots_list"
+			resp := &ListBotsResp{}
+			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
+				internal.WithQuery("space_id", req.SpaceID),
+				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
+				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
+			if err != nil {
+				return nil, err
+			}
+			return &pagination.PageResponse[SimpleBot]{
+				Total:   resp.Data.Total,
+				HasMore: len(resp.Data.Bots) >= request.PageSize,
+				Data:    resp.Data.Bots,
+				LogID:   resp.LogID,
+			}, nil
+		}, req.PageSize, req.PageNum)
+}
+
 // BotMode 机器人模式
 type BotMode int
 
@@ -163,75 +234,4 @@ type bots struct {
 
 func newBots(client *internal.Client) *bots {
 	return &bots{client: client}
-}
-
-func (r *bots) Create(ctx context.Context, req *CreateBotsReq) (*CreateBotsResp, error) {
-	method := http.MethodPost
-	uri := "/v1/bot/create"
-	resp := &CreateBotsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (r *bots) Update(ctx context.Context, req *UpdateBotsReq) (*UpdateBotsResp, error) {
-	method := http.MethodPost
-	uri := "/v1/bot/update"
-	resp := &UpdateBotsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (r *bots) Publish(ctx context.Context, req *PublishBotsReq) (*PublishBotsResp, error) {
-	method := http.MethodPost
-	uri := "/v1/bot/publish"
-	resp := &PublishBotsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (r *bots) Retrieve(ctx context.Context, req *RetrieveBotsReq) (*RetrieveBotsResp, error) {
-	method := http.MethodGet
-	uri := "/v1/bot/get_online_info"
-	resp := &RetrieveBotsResp{}
-	err := r.client.Request(ctx, method, uri, nil, resp, internal.WithQuery("bot_id", req.BotID))
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (r *bots) List(ctx context.Context, req *ListBotsReq) (*pagination.NumberPaged[SimpleBot], error) {
-	if req.PageSize == 0 {
-		req.PageSize = 20
-	}
-	if req.PageNum == 0 {
-		req.PageNum = 1
-	}
-	return pagination.NewNumberPaged[SimpleBot](
-		func(request *pagination.PageRequest) (*pagination.PageResponse[SimpleBot], error) {
-			uri := "/v1/space/published_bots_list"
-			resp := &ListBotsResp{}
-			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
-				internal.WithQuery("space_id", req.SpaceID),
-				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
-				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
-			if err != nil {
-				return nil, err
-			}
-			return &pagination.PageResponse[SimpleBot]{
-				Total:   resp.Data.Total,
-				HasMore: len(resp.Data.Bots) >= request.PageSize,
-				Data:    resp.Data.Bots,
-				LogID:   resp.LogID,
-			}, nil
-		}, req.PageSize, req.PageNum)
 }

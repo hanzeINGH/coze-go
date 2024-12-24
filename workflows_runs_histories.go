@@ -8,6 +8,25 @@ import (
 	"github.com/coze-dev/coze-go/internal"
 )
 
+type workflowRunHistories struct {
+	client *internal.Client
+}
+
+func newWorkflowRunHistories(client *internal.Client) *workflowRunHistories {
+	return &workflowRunHistories{client: client}
+}
+
+func (r *workflowRunHistories) Retrieve(ctx context.Context, req *RetrieveWorkflowsRunHistoriesReq) (*RetrieveWorkflowRunHistoriesResp, error) {
+	method := http.MethodGet
+	uri := fmt.Sprintf("/v1/workflows/%s/run_histories/%s", req.WorkflowID, req.ExecuteID)
+	resp := &RetrieveWorkflowRunHistoriesResp{}
+	err := r.client.Request(ctx, method, uri, nil, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // WorkflowRunMode represents how the workflow runs
 type WorkflowRunMode int
 
@@ -36,7 +55,7 @@ const (
 	WorkflowExecuteStatusFail WorkflowExecuteStatus = "Fail"
 )
 
-// RetrieveWorkflowsRunHistoriesReq represents request for retrieving workflow run history
+// RetrieveWorkflowsRunHistoriesReq represents request for retrieving workflow runs history
 type RetrieveWorkflowsRunHistoriesReq struct {
 	// The ID of the workflow.
 	ExecuteID string `json:"execute_id"`
@@ -59,13 +78,13 @@ type RunWorkflowsResp struct {
 	Cost     string `json:"cost,omitempty"`
 }
 
-// RetrieveWorkflowRunHistoriesResp represents response for retrieving workflow run history
+// RetrieveWorkflowRunHistoriesResp represents response for retrieving workflow runs history
 type RetrieveWorkflowRunHistoriesResp struct {
 	internal.BaseResponse
 	Histories []*WorkflowRunHistory `json:"data"`
 }
 
-// WorkflowRunHistory represents the history of a workflow run
+// WorkflowRunHistory represents the history of a workflow runs
 type WorkflowRunHistory struct {
 	// The ID of execute.
 	ExecuteID string `json:"execute_id"`
@@ -108,26 +127,7 @@ type WorkflowRunHistory struct {
 	// Status message. You can get detailed error information when the API call fails.
 	ErrorMessage string `json:"error_message"`
 
-	// Workflow trial run debugging page. Visit this page to view the running results, input and
+	// Workflow trial runs debugging page. Visit this page to view the running results, input and
 	// output information of each workflow node.
 	DebugUrl string `json:"debug_url"`
-}
-
-type workflowRunHistories struct {
-	client *internal.Client
-}
-
-func newWorkflowRunHistories(client *internal.Client) *workflowRunHistories {
-	return &workflowRunHistories{client: client}
-}
-
-func (r *workflowRunHistories) Retrieve(ctx context.Context, req *RetrieveWorkflowsRunHistoriesReq) (*RetrieveWorkflowRunHistoriesResp, error) {
-	method := http.MethodGet
-	uri := fmt.Sprintf("/v1/workflows/%s/run_histories/%s", req.WorkflowID, req.ExecuteID)
-	resp := &RetrieveWorkflowRunHistoriesResp{}
-	err := r.client.Request(ctx, method, uri, nil, resp)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
 }

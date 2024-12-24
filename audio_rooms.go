@@ -7,6 +7,25 @@ import (
 	"github.com/coze-dev/coze-go/internal"
 )
 
+type audioRooms struct {
+	client *internal.Client
+}
+
+func newRooms(client *internal.Client) *audioRooms {
+	return &audioRooms{client: client}
+}
+
+func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*CreateAudioRoomsResp, error) {
+	method := http.MethodPost
+	uri := "/v1/audio/audioRooms"
+	resp := &CreateAudioRoomsResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // AudioCodec 音频编解码器
 type AudioCodec string
 
@@ -44,23 +63,4 @@ type CreateAudioRoomsResp struct {
 		Token  string `json:"token"`
 		UID    string `json:"uid"`
 	} `json:"data"`
-}
-
-type audioRooms struct {
-	client *internal.Client
-}
-
-func newRooms(client *internal.Client) *audioRooms {
-	return &audioRooms{client: client}
-}
-
-func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*CreateAudioRoomsResp, error) {
-	method := http.MethodPost
-	uri := "/v1/audio/audioRooms"
-	resp := &CreateAudioRoomsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
 }

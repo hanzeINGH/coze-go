@@ -28,10 +28,10 @@ func main() {
 	cozeCli := coze.NewCozeAPI(authCli, coze.WithBaseURL(os.Getenv("COZE_API_BASE")))
 
 	//
-	// Step one, create chat
-	// Call the coze.chat().stream() method to create a chat. The create method is a streaming
-	// chat and will return a Flowable ChatEvent. Developers should iterate the iterator to get
-	// chat event and handle them.
+	// Step one, create chats
+	// Call the coze.chats().stream() method to create a chats. The create method is a streaming
+	// chats and will return a Flowable ChatEvent. Developers should iterate the iterator to get
+	// chats event and handle them.
 	// //
 	req := &coze.CreateChatsReq{
 		BotID:  botID,
@@ -43,7 +43,7 @@ func main() {
 
 	resp, err := cozeCli.Chats.Stream(ctx, req)
 	if err != nil {
-		log.Warnf("Error starting chat: %v", err)
+		log.Warnf("Error starting chats: %v", err)
 		return
 	}
 

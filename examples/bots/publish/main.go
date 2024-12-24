@@ -23,7 +23,12 @@ func main() {
 	// Call the upload file interface to get the avatar id.
 	avatarPath := os.Getenv("IMAGE_FILE_PATH")
 	ctx := context.Background()
-	avatarInfo, err := cozeCli.Files.Upload(ctx, coze.NewUploadFilesReqWithPath(avatarPath))
+	file, err := os.Open(avatarPath)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	avatarInfo, err := cozeCli.Files.Upload(ctx, coze.NewUploadFileReq(file, file.Name()))
 	if err != nil {
 		fmt.Println("Error uploading avatar:", err)
 		return
@@ -69,8 +74,12 @@ func main() {
 	// step three, you can also modify the bot configuration and republish it.
 	// in this examples, we will update the avatar of the bot
 
-	newAvatarPath := os.Getenv("IMAGE_FILE_PATH")
-	newAvatarInfo, err := cozeCli.Files.Upload(ctx, coze.NewUploadFilesReqWithPath(newAvatarPath))
+	newFile, err := os.Open(os.Getenv("IMAGE_FILE_PATH"))
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	newAvatarInfo, err := cozeCli.Files.Upload(ctx, coze.NewUploadFileReq(newFile, newFile.Name()))
 	if err != nil {
 		fmt.Println("Error uploading new avatar:", err)
 		return

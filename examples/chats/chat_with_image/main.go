@@ -10,8 +10,8 @@ import (
 	"github.com/coze-dev/coze-go"
 )
 
-// This examples is about how to use the streaming interface to start a chat request
-// with image upload and handle chat events
+// This examples is about how to use the streaming interface to start a chats request
+// with image upload and handle chats events
 func main() {
 	// Get an access_token through personal access token or oauth.
 	token := os.Getenv("COZE_API_TOKEN")
@@ -26,8 +26,12 @@ func main() {
 	ctx := context.Background()
 
 	// Call the upload file interface to get the image id.
-	imagePath := os.Getenv("IMAGE_FILE_PATH")
-	imageInfo, err := cozeCli.Files.Upload(ctx, coze.NewUploadFilesReqWithPath(imagePath))
+	images, err := os.Open(os.Getenv("IMAGE_FILE_PATH"))
+	if err != nil {
+		fmt.Println("Error opening image:", err)
+		return
+	}
+	imageInfo, err := cozeCli.Files.Upload(ctx, images)
 	if err != nil {
 		fmt.Println("Error uploading image:", err)
 		return
@@ -35,10 +39,10 @@ func main() {
 	fmt.Printf("upload image success, image id:%s\n", imageInfo.FileInfo.ID)
 
 	//
-	// Step one, create chat
-	// Call the coze.Create.Stream() method to create a chat. The create method is a streaming
-	// chat and will return a channel of ChatEvent. Developers should iterate the channel to get
-	// chat events and handle them.
+	// Step one, create chats
+	// Call the coze.Create.Stream() method to create a chats. The create method is a streaming
+	// chats and will return a channel of ChatEvent. Developers should iterate the channel to get
+	// chats events and handle them.
 
 	req := &coze.CreateChatsReq{
 		BotID:  botID,

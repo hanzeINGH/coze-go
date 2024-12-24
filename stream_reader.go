@@ -2,9 +2,6 @@ package coze
 
 import (
 	"bufio"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -77,16 +74,7 @@ func (s *streamReader[T]) checkRespErr() error {
 			log.Warnf("Error reading response body: ", err)
 			return err
 		}
-		var baseResp internal.BaseResponse
-		if err := json.Unmarshal(respStr, &baseResp); err != nil {
-			log.Warnf("Error unmarshalling response: ", err)
-			return err
-		}
-		if baseResp.GetCode() != 0 {
-			log.Warnf("API error: %d %s", baseResp.GetCode(), baseResp.GetMsg())
-			return errors.New(fmt.Sprintf("API error: %d %s", baseResp.GetCode(), baseResp.GetMsg()))
-		}
-		return nil
+		return internal.IsResponseSuccess(&internal.BaseResponse{}, respStr, s.logID)
 	}
 	return nil
 }

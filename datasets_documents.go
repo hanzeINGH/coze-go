@@ -9,6 +9,79 @@ import (
 	"github.com/coze-dev/coze-go/pagination"
 )
 
+type datasetsDocuments struct {
+	client          *internal.Client
+	commonHeaderOpt []internal.RequestOption
+}
+
+func newDocuments(client *internal.Client) *datasetsDocuments {
+	return &datasetsDocuments{client: client, commonHeaderOpt: []internal.RequestOption{
+		internal.WithHeader("Agw-Js-Conv", "true"),
+	}}
+}
+
+func (r *datasetsDocuments) Create(ctx context.Context, req *CreateDatasetsDocumentsReq) (*CreateDatasetsDocumentsResp, error) {
+	method := http.MethodPost
+	uri := "/open_api/knowledge/document/create"
+	resp := &CreateDatasetsDocumentsResp{}
+	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *datasetsDocuments) Update(ctx context.Context, req *UpdateDatasetsDocumentsReq) (*UpdateDatasetsDocumentsResp, error) {
+	method := http.MethodPost
+	uri := "/open_api/knowledge/document/update"
+	resp := &UpdateDatasetsDocumentsResp{}
+	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *datasetsDocuments) Delete(ctx context.Context, req *DeleteDatasetsDocumentsReq) (*DeleteDatasetsDocumentsResp, error) {
+	method := http.MethodPost
+	uri := "/open_api/knowledge/document/delete"
+	resp := &DeleteDatasetsDocumentsResp{}
+	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *datasetsDocuments) List(ctx context.Context, req *ListDatasetsDocumentsReq) (*pagination.NumberPaged[Document], error) {
+	if req.Page == 0 {
+		req.Page = 20
+	}
+	if req.Size == 0 {
+		req.Size = 1
+	}
+	return pagination.NewNumberPaged[Document](
+		func(request *pagination.PageRequest) (*pagination.PageResponse[Document], error) {
+			uri := "/open_api/knowledge/document/list"
+			resp := &ListDatasetsDocumentsResp{}
+			doReq := &ListDatasetsDocumentsReq{
+				DatasetID: req.DatasetID,
+				Size:      request.PageSize,
+				Page:      request.PageNum,
+			}
+			err := r.client.Request(ctx, http.MethodPost, uri, doReq, resp, r.commonHeaderOpt...)
+			if err != nil {
+				return nil, err
+			}
+			return &pagination.PageResponse[Document]{
+				Total:   int(resp.Total),
+				HasMore: request.PageSize <= len(resp.DocumentInfos),
+				Data:    resp.DocumentInfos,
+				LogID:   resp.LogID,
+			}, nil
+		}, req.Size, req.Page)
+}
+
 // Document represents a document in the datasets
 type Document struct {
 	// The ID of the file.
@@ -317,77 +390,4 @@ func BuildAutoUpdateRule(interval int) *DocumentUpdateRule {
 		UpdateType:     DocumentUpdateTypeAutoUpdate,
 		UpdateInterval: interval,
 	}
-}
-
-type datasetsDocuments struct {
-	client          *internal.Client
-	commonHeaderOpt []internal.RequestOption
-}
-
-func newDocuments(client *internal.Client) *datasetsDocuments {
-	return &datasetsDocuments{client: client, commonHeaderOpt: []internal.RequestOption{
-		internal.WithHeader("Agw-Js-Conv", "true"),
-	}}
-}
-
-func (r *datasetsDocuments) Create(ctx context.Context, req *CreateDatasetsDocumentsReq) (*CreateDatasetsDocumentsResp, error) {
-	method := http.MethodPost
-	uri := "/open_api/knowledge/document/create"
-	resp := &CreateDatasetsDocumentsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (r *datasetsDocuments) Update(ctx context.Context, req *UpdateDatasetsDocumentsReq) (*UpdateDatasetsDocumentsResp, error) {
-	method := http.MethodPost
-	uri := "/open_api/knowledge/document/update"
-	resp := &UpdateDatasetsDocumentsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (r *datasetsDocuments) Delete(ctx context.Context, req *DeleteDatasetsDocumentsReq) (*DeleteDatasetsDocumentsResp, error) {
-	method := http.MethodPost
-	uri := "/open_api/knowledge/document/delete"
-	resp := &DeleteDatasetsDocumentsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (r *datasetsDocuments) List(ctx context.Context, req *ListDatasetsDocumentsReq) (*pagination.NumberPaged[Document], error) {
-	if req.Page == 0 {
-		req.Page = 20
-	}
-	if req.Size == 0 {
-		req.Size = 1
-	}
-	return pagination.NewNumberPaged[Document](
-		func(request *pagination.PageRequest) (*pagination.PageResponse[Document], error) {
-			uri := "/open_api/knowledge/document/list"
-			resp := &ListDatasetsDocumentsResp{}
-			doReq := &ListDatasetsDocumentsReq{
-				DatasetID: req.DatasetID,
-				Size:      request.PageSize,
-				Page:      request.PageNum,
-			}
-			err := r.client.Request(ctx, http.MethodPost, uri, doReq, resp, r.commonHeaderOpt...)
-			if err != nil {
-				return nil, err
-			}
-			return &pagination.PageResponse[Document]{
-				Total:   int(resp.Total),
-				HasMore: request.PageSize <= len(resp.DocumentInfos),
-				Data:    resp.DocumentInfos,
-				LogID:   resp.LogID,
-			}, nil
-		}, req.Size, req.Page)
 }

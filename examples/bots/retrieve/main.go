@@ -13,7 +13,7 @@ import (
 func main() {
 	// Get an access_token through personal access token or oauth.
 	token := os.Getenv("COZE_API_TOKEN")
-	botID := os.Getenv("COZE_BOT_ID")
+	botID := os.Getenv("PUBLISHED_BOT_ID")
 	authCli := coze.NewTokenAuth(token)
 
 	// Init the Coze client through the access_token.

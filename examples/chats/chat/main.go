@@ -11,7 +11,7 @@ import (
 )
 
 //
-// This examples describes how to use the chat interface to initiate conversations,
+// This examples describes how to use the chats interface to initiate conversations,
 // poll the status of the conversation, and obtain the messages after the conversation is completed.
 //
 
@@ -29,10 +29,10 @@ func main() {
 	ctx := context.Background()
 
 	//
-	// Step one, create chat
-	// Call the coze.Create.Create() method to create a chat. The create method is a non-streaming
-	// chat and will return a Create class. Developers should periodically check the status of the
-	// chat and handle them separately according to different states.
+	// Step one, create chats
+	// Call the coze.Create.Create() method to create a chats. The create method is a non-streaming
+	// chats and will return a Create class. Developers should periodically check the status of the
+	// chats and handle them separately according to different states.
 	//
 	req := &coze.CreateChatsReq{
 		BotID:  botID,
@@ -44,7 +44,7 @@ func main() {
 
 	chatResp, err := cozeCli.Chats.Create(ctx, req)
 	if err != nil {
-		fmt.Println("Error creating chat:", err)
+		fmt.Println("Error creating chats:", err)
 		return
 	}
 	fmt.Println(chatResp)
@@ -53,11 +53,11 @@ func main() {
 	conversationID := chat.ConversationID
 
 	//
-	// Step two, poll the result of chat
-	// Assume the development allows at most one chat to run for 10 seconds. If it exceeds 10 seconds,
-	// the chat will be cancelled.
-	// And when the chat status is not completed, poll the status of the chat once every second.
-	// After the chat is completed, retrieve all messages in the chat.
+	// Step two, poll the result of chats
+	// Assume the development allows at most one chats to runs for 10 seconds. If it exceeds 10 seconds,
+	// the chats will be cancelled.
+	// And when the chats status is not completed, poll the status of the chats once every second.
+	// After the chats is completed, retrieve all messages in the chats.
 	//
 	timeout := time.After(10) // time.Second
 	ticker := time.NewTicker(time.Second)
@@ -66,13 +66,13 @@ func main() {
 	for chat.Status == coze.ChatStatusInProgress {
 		select {
 		case <-timeout:
-			// The chat can be cancelled before its completed.
+			// The chats can be cancelled before its completed.
 			cancelResp, err := cozeCli.Chats.Cancel(ctx, &coze.CancelChatsReq{
 				ConversationID: conversationID,
 				ChatID:         chatID,
 			})
 			if err != nil {
-				fmt.Println("Error cancelling chat:", err)
+				fmt.Println("Error cancelling chats:", err)
 			}
 			fmt.Println(cancelResp)
 			break
@@ -82,7 +82,7 @@ func main() {
 				ChatID:         chatID,
 			})
 			if err != nil {
-				fmt.Println("Error retrieving chat:", err)
+				fmt.Println("Error retrieving chats:", err)
 				continue
 			}
 			fmt.Println(resp)

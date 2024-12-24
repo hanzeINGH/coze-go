@@ -10,6 +10,40 @@ import (
 	"github.com/coze-dev/coze-go/pagination"
 )
 
+type workspace struct {
+	client *internal.Client
+}
+
+func newWorkspace(client *internal.Client) *workspace {
+	return &workspace{client: client}
+}
+
+func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*pagination.NumberPaged[Workspace], error) {
+	if req.PageSize == 0 {
+		req.PageSize = 20
+	}
+	if req.PageNum == 0 {
+		req.PageNum = 1
+	}
+	return pagination.NewNumberPaged[Workspace](
+		func(request *pagination.PageRequest) (*pagination.PageResponse[Workspace], error) {
+			uri := "/v1/workspaces"
+			resp := &ListWorkspaceResp{}
+			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
+				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
+				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
+			if err != nil {
+				return nil, err
+			}
+			return &pagination.PageResponse[Workspace]{
+				Total:   resp.Data.TotalCount,
+				HasMore: len(resp.Data.Workspaces) >= request.PageSize,
+				Data:    resp.Data.Workspaces,
+				LogID:   resp.LogID,
+			}, nil
+		}, req.PageSize, req.PageNum)
+}
+
 // ListWorkspaceReq 列表请求参数
 type ListWorkspaceReq struct {
 	PageNum  int `json:"page_num"`
@@ -100,38 +134,4 @@ func (t *WorkspaceType) UnmarshalJSON(data []byte) error {
 		*t = WorkspaceType(s)
 	}
 	return nil
-}
-
-type workspace struct {
-	client *internal.Client
-}
-
-func newWorkspace(client *internal.Client) *workspace {
-	return &workspace{client: client}
-}
-
-func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*pagination.NumberPaged[Workspace], error) {
-	if req.PageSize == 0 {
-		req.PageSize = 20
-	}
-	if req.PageNum == 0 {
-		req.PageNum = 1
-	}
-	return pagination.NewNumberPaged[Workspace](
-		func(request *pagination.PageRequest) (*pagination.PageResponse[Workspace], error) {
-			uri := "/v1/workspaces"
-			resp := &ListWorkspaceResp{}
-			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
-				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
-				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
-			if err != nil {
-				return nil, err
-			}
-			return &pagination.PageResponse[Workspace]{
-				Total:   resp.Data.TotalCount,
-				HasMore: len(resp.Data.Workspaces) >= request.PageSize,
-				Data:    resp.Data.Workspaces,
-				LogID:   resp.LogID,
-			}, nil
-		}, req.PageSize, req.PageNum)
 }

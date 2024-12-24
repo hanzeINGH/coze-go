@@ -28,7 +28,7 @@ func main() {
 	req := &coze.RunWorkflowsReq{
 		WorkflowID: workflowID,
 		Parameters: data,
-		IsAsync:    true, // if you want the workflow run asynchronously, you must set isAsync to true.
+		IsAsync:    true, // if you want the workflow runs asynchronously, you must set isAsync to true.
 	}
 
 	resp, err := cozeCli.Workflows.Runs.Create(ctx, req)
@@ -36,7 +36,7 @@ func main() {
 		fmt.Println("Error running workflow:", err)
 		return
 	}
-	fmt.Println("Start async workflow run:", resp.ExecuteID)
+	fmt.Println("Start async workflow runs:", resp.ExecuteID)
 
 	executeID := resp.ExecuteID
 	isFinished := false
@@ -55,13 +55,13 @@ func main() {
 		history := historyResp.Histories[0]
 		switch history.ExecuteStatus {
 		case coze.WorkflowExecuteStatusFail:
-			fmt.Println("Workflow run failed, reason:", history.ErrorMessage)
+			fmt.Println("Workflow runs failed, reason:", history.ErrorMessage)
 			isFinished = true
 		case coze.WorkflowExecuteStatusRunning:
-			fmt.Println("Workflow run is running")
+			fmt.Println("Workflow runs is running")
 			time.Sleep(time.Second)
 		default:
-			fmt.Println("Workflow run success:", history.Output)
+			fmt.Println("Workflow runs success:", history.Output)
 			isFinished = true
 		}
 	}

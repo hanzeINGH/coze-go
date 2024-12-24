@@ -23,8 +23,8 @@ go get github.com/coze-dev/coze-go
 
 ### Examples
 
-| Example                       | File                                                   |
-|-------------------------------|--------------------------------------------------------|
+| Example                       | File                                                    |
+|-------------------------------|---------------------------------------------------------|
 | pat auth                      | [main.go](examples/auth/token/main.go)                  |
 | oauth by web code             | [main.go](examples/auth/web_oauth/main.go)              |
 | oauth by jwt flow             | [main.go](examples/auth/jwt_oauth/main.go)              |
@@ -33,16 +33,16 @@ go get github.com/coze-dev/coze-go
 | handle auth exception         | [main.go](examples/auth/error/main.go)                  |
 | bot create, publish and chat  | [main.go](examples/bots/publish/main.go)                |
 | get bot and bot list          | [main.go](examples/bots/retrieve/main.go)               |
-| non-stream chat               | [main.go](examples/chat/chat/main.go)                   |
-| stream chat                   | [main.go](examples/chat/chat_with_image/main.go)        |
-| chat with local plugin        | [main.go](examples/chat/submit_tool_output/main.go)     |
-| chat with image               | [main.go](examples/chat/chat_with_image/main.go)        |
-| non-stream workflow chat      | [main.go](examples/workflows/run/create/main.go)        |
-| stream workflow chat          | [main.go](examples/workflows/run/stream/main.go)        |
-| async workflow run            | [main.go](examples/workflows/run/async_run/main.go)     |
+| non-stream chat               | [main.go](examples/chats/chat/main.go)                  |
+| stream chat                   | [main.go](examples/chats/chat_with_image/main.go)       |
+| chat with local plugin        | [main.go](examples/chats/submit_tool_output/main.go)    |
+| chat with image               | [main.go](examples/chats/chat_with_image/main.go)       |
+| non-stream workflow chat      | [main.go](examples/workflows/runs/create/main.go)       |
+| stream workflow chat          | [main.go](examples/workflows/runs/stream/main.go)       |
+| async workflow run            | [main.go](examples/workflows/runs/async_run/main.go)    |
 | conversation                  | [main.go](examples/conversations/crud/main.go)          |
 | list conversation             | [main.go](examples/conversations/list/main.go)          |
-| workspace                     | [main.go](examples/workspace/list/main.go)              |
+| workspace                     | [main.go](examples/workspaces/list/main.go)             |
 | create update delete message  | [main.go](examples/conversations/messages/crud/main.go) |
 | list message                  | [main.go](examples/conversations/messages/list/main.go) |
 | create update delete document | [main.go](examples/datasets/documents/crud/main.go)     |

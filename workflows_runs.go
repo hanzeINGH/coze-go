@@ -11,7 +11,101 @@ import (
 	"github.com/coze-dev/coze-go/internal"
 )
 
-// WorkflowRunResult represents the result of a workflow run
+type workflowRuns struct {
+	client    *internal.Client
+	Histories *workflowRunHistories
+}
+
+func newWorkflowRun(client *internal.Client) *workflowRuns {
+	return &workflowRuns{
+		client:    client,
+		Histories: newWorkflowRunHistories(client),
+	}
+}
+
+func (r *workflowRuns) Create(ctx context.Context, req *RunWorkflowsReq) (*RunWorkflowsResp, error) {
+	method := http.MethodPost
+	uri := "/v1/workflow/runs"
+	resp := &RunWorkflowsResp{}
+	err := r.client.Request(ctx, method, uri, req, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+type WorkflowEventReader struct {
+	*streamReader[WorkflowEvent]
+}
+
+func (r *workflowRuns) Resume(ctx context.Context, req *ResumeRunWorkflowsReq) (*WorkflowEventReader, error) {
+	method := http.MethodPost
+	uri := "/v1/workflow/stream_resume"
+	resp, err := r.client.RawRequest(ctx, method, uri, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &WorkflowEventReader{
+		streamReader: &streamReader[WorkflowEvent]{
+			response:  resp,
+			reader:    bufio.NewReader(resp.Body),
+			logID:     internal.GetLogID(resp.Header),
+			processor: parseWorkflowEvent,
+		},
+	}, nil
+}
+
+func (r *workflowRuns) Stream(ctx context.Context, req *RunWorkflowsReq) (*WorkflowEventReader, error) {
+	method := http.MethodPost
+	uri := "/v1/workflow/stream_run"
+	resp, err := r.client.RawRequest(ctx, method, uri, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &WorkflowEventReader{
+		streamReader: &streamReader[WorkflowEvent]{
+			response:  resp,
+			reader:    bufio.NewReader(resp.Body),
+			logID:     internal.GetLogID(resp.Header),
+			processor: parseWorkflowEvent,
+		},
+	}, nil
+}
+
+func parseWorkflowEvent(lineBytes []byte, reader *bufio.Reader) (*WorkflowEvent, bool, error) {
+	line := string(lineBytes)
+	if strings.HasPrefix(line, "id:") {
+		id := strings.TrimSpace(line[3:])
+		data, err := reader.ReadString('\n')
+		if err != nil {
+			return nil, false, err
+		}
+		event := strings.TrimSpace(data[6:])
+		data, err = reader.ReadString('\n')
+		if err != nil {
+			return nil, false, err
+		}
+		data = strings.TrimSpace(data[5:])
+
+		eventLine := map[string]string{
+			"id":    id,
+			"event": event,
+			"data":  data,
+		}
+
+		eventData, err := doParseWorkflowEvent(eventLine)
+		if err != nil {
+			return nil, false, err
+		}
+
+		return eventData, eventData.IsDone(), nil
+	}
+	return nil, false, nil
+}
+
+// WorkflowRunResult represents the result of a workflow runs
 type WorkflowRunResult struct {
 	DebugUrl string `json:"debug_url"`
 
@@ -205,13 +299,13 @@ type RunWorkflowsReq struct {
 	// Used to specify some additional fields.
 	Ext map[string]string `json:"ext,omitempty"`
 
-	// Whether to run asynchronously.
+	// Whether to runs asynchronously.
 	IsAsync bool `json:"is_async,omitempty"`
 
 	AppID string `json:"app_id,omitempty"`
 }
 
-// ResumeRunWorkflowsReq represents request for resuming workflow run
+// ResumeRunWorkflowsReq represents request for resuming workflow runs
 type ResumeRunWorkflowsReq struct {
 	// The ID of the workflow, which should have been published.
 	WorkflowID string `json:"workflow_id"`
@@ -224,98 +318,4 @@ type ResumeRunWorkflowsReq struct {
 
 	// Interrupt type
 	InterruptType int `json:"interrupt_type"`
-}
-
-type workflowRuns struct {
-	client    *internal.Client
-	Histories *workflowRunHistories
-}
-
-func newWorkflowRun(client *internal.Client) *workflowRuns {
-	return &workflowRuns{
-		client:    client,
-		Histories: newWorkflowRunHistories(client),
-	}
-}
-
-func (r *workflowRuns) Create(ctx context.Context, req *RunWorkflowsReq) (*RunWorkflowsResp, error) {
-	method := http.MethodPost
-	uri := "/v1/workflow/run"
-	resp := &RunWorkflowsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-type WorkflowEventReader struct {
-	*streamReader[WorkflowEvent]
-}
-
-func (r *workflowRuns) Resume(ctx context.Context, req *ResumeRunWorkflowsReq) (*WorkflowEventReader, error) {
-	method := http.MethodPost
-	uri := "/v1/workflow/stream_resume"
-	resp, err := r.client.RawRequest(ctx, method, uri, req)
-	if err != nil {
-		return nil, err
-	}
-
-	return &WorkflowEventReader{
-		streamReader: &streamReader[WorkflowEvent]{
-			response:  resp,
-			reader:    bufio.NewReader(resp.Body),
-			logID:     internal.GetLogID(resp.Header),
-			processor: parseWorkflowEvent,
-		},
-	}, nil
-}
-
-func (r *workflowRuns) Stream(ctx context.Context, req *RunWorkflowsReq) (*WorkflowEventReader, error) {
-	method := http.MethodPost
-	uri := "/v1/workflow/stream_run"
-	resp, err := r.client.RawRequest(ctx, method, uri, req)
-	if err != nil {
-		return nil, err
-	}
-
-	return &WorkflowEventReader{
-		streamReader: &streamReader[WorkflowEvent]{
-			response:  resp,
-			reader:    bufio.NewReader(resp.Body),
-			logID:     internal.GetLogID(resp.Header),
-			processor: parseWorkflowEvent,
-		},
-	}, nil
-}
-
-func parseWorkflowEvent(lineBytes []byte, reader *bufio.Reader) (*WorkflowEvent, bool, error) {
-	line := string(lineBytes)
-	if strings.HasPrefix(line, "id:") {
-		id := strings.TrimSpace(line[3:])
-		data, err := reader.ReadString('\n')
-		if err != nil {
-			return nil, false, err
-		}
-		event := strings.TrimSpace(data[6:])
-		data, err = reader.ReadString('\n')
-		if err != nil {
-			return nil, false, err
-		}
-		data = strings.TrimSpace(data[5:])
-
-		eventLine := map[string]string{
-			"id":    id,
-			"event": event,
-			"data":  data,
-		}
-
-		eventData, err := doParseWorkflowEvent(eventLine)
-		if err != nil {
-			return nil, false, err
-		}
-
-		return eventData, eventData.IsDone(), nil
-	}
-	return nil, false, nil
 }

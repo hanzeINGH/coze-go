@@ -10,9 +10,9 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/coze-dev/coze-go/internal/log"
-
 	"github.com/coze-dev/coze-go/coze_error"
+	"github.com/coze-dev/coze-go/internal/log"
+	"github.com/tidwall/gjson"
 )
 
 // Doer 是一个执行 HTTP 请求的接口
@@ -84,10 +84,17 @@ func packInstance(instance any, resp *http.Response) error {
 		return err
 	}
 	if baseResp, ok := instance.(BaseResp); ok {
-		baseResp.SetLogID(logID)
-		if baseResp.GetCode() != 0 {
-			return coze_error.NewCozeError(baseResp.GetCode(), baseResp.GetMsg(), logID)
-		}
+		return IsResponseSuccess(baseResp, bodyBytes, logID)
+	}
+	return nil
+}
+
+func IsResponseSuccess(baseResp BaseResp, bodyBytes []byte, logID string) error {
+	baseResp.SetLogID(logID)
+	code := gjson.GetBytes(bodyBytes, "code").Int()
+	if code != 0 {
+		log.Warnf("request unsuccessful: %s, log_id:%s", string(bodyBytes), logID)
+		return coze_error.NewCozeError(int(code), gjson.GetBytes(bodyBytes, "msg").String(), logID)
 	}
 	return nil
 }
@@ -146,6 +153,7 @@ func (c *Client) UploadFile(ctx context.Context, path string, reader io.Reader, 
 			return fmt.Errorf("apply option: %w", err)
 		}
 	}
+	setUserAgent(req)
 
 	resp, err := c.doer.Do(req)
 	if err != nil {
@@ -181,6 +189,8 @@ func (c *Client) RawRequest(ctx context.Context, method, path string, body any, 
 			return nil, fmt.Errorf("apply option: %w", err)
 		}
 	}
+
+	setUserAgent(req)
 
 	resp, err := c.doer.Do(req)
 	if err != nil {

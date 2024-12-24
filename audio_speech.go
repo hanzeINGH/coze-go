@@ -8,20 +8,6 @@ import (
 	"github.com/coze-dev/coze-go/internal"
 )
 
-// CreateAudioSpeechReq 创建语音请求
-type CreateAudioSpeechReq struct {
-	Input          string      `json:"input"`
-	VoiceID        string      `json:"voice_id"`
-	ResponseFormat AudioFormat `json:"response_format"`
-	Speed          float32     `json:"speed"`
-}
-
-// CreateAudioSpeechResp 创建语音响应
-type CreateAudioSpeechResp struct {
-	internal.BaseResponse
-	Data io.ReadCloser
-}
-
 type audioSpeech struct {
 	client *internal.Client
 }
@@ -42,4 +28,18 @@ func (r *audioSpeech) Create(ctx context.Context, req *CreateAudioSpeechReq) (*C
 		BaseResponse: internal.BaseResponse{LogID: logID},
 		Data:         resp.Body,
 	}, nil
+}
+
+// CreateAudioSpeechReq 创建语音请求
+type CreateAudioSpeechReq struct {
+	Input          string      `json:"input"`
+	VoiceID        string      `json:"voice_id"`
+	ResponseFormat AudioFormat `json:"response_format"`
+	Speed          float32     `json:"speed"`
+}
+
+// CreateAudioSpeechResp 创建语音响应
+type CreateAudioSpeechResp struct {
+	internal.BaseResponse
+	Data io.ReadCloser
 }

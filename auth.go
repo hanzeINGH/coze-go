@@ -129,7 +129,7 @@ type ScopeAttributeConstraint struct {
 	ConnectorBotChatAttribute *ScopeAttributeConstraintConnectorBotChatAttribute `json:"connector_bot_chat_attribute"`
 }
 
-// ScopeAttributeConstraintConnectorBotChatAttribute represents the bot chat attributes
+// ScopeAttributeConstraintConnectorBotChatAttribute represents the bot chats attributes
 type ScopeAttributeConstraintConnectorBotChatAttribute struct {
 	BotIDList []string `json:"bot_id_list"`
 }

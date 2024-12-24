@@ -16,23 +16,20 @@ func main() {
 	// Init the Coze client through the access_token.
 	cozeCli := coze.NewCozeAPI(authCli, coze.WithBaseURL(os.Getenv("COZE_API_BASE")))
 
-	file, err := os.Open(os.Getenv("VOICE_FILE_PATH"))
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
-	}
-	defer file.Close()
+	botID := os.Getenv("COZE_BOT_ID")
+	voiceID := os.Getenv("COZE_VOICE_ID")
 
 	ctx := context.Background()
-	resp, err := cozeCli.Audio.Voices.Clone(ctx, &coze.CloneAudioVoicesReq{
-		File:        file,
-		VoiceName:   "your voice name",
-		AudioFormat: coze.AudioFormatM4A.Ptr(),
+	resp, err := cozeCli.Audio.Rooms.Create(ctx, &coze.CreateAudioRoomsReq{
+		BotID:   botID,
+		VoiceID: voiceID,
 	})
 	if err != nil {
-		fmt.Println("Error cloning voice:", err)
+		fmt.Println("Error creating rooms:", err)
 		return
 	}
 
 	fmt.Println(resp)
+	fmt.Println("Room ID:", resp.Data.RoomID)
+	fmt.Println("Log ID:", resp.LogID)
 }

@@ -6,19 +6,10 @@ import (
 	"os"
 
 	"github.com/coze-dev/coze-go"
+	"github.com/coze-dev/coze-go/coze_error"
 )
 
-// How to effectuate OpenAPI authorization through the OAuth authorization code method.
-//
-// Firstly, users need to access https://www.coze.com/open/oauth/apps. For the cn environment,
-// users need to access https://www.coze.cn/open/oauth/apps to create an OAuth App of the type
-// of Web application.
-// The specific creation process can be referred to in the document:
-// https://www.coze.com/docs/developer_guides/oauth_code. For the cn environment, it can be
-// accessed at https://www.coze.cn/docs/developer_guides/oauth_code.
-// After the creation is completed, the client ID, client secret, and redirect link, can be
-// obtained. For the client secret, users need to keep it securely to avoid leakage.
-
+// Using web oauth as example, show how to handle the Auth exception
 func main() {
 	redirectURI := os.Getenv("COZE_WEB_OAUTH_REDIRECT_URI")
 	clientSecret := os.Getenv("COZE_WEB_OAUTH_CLIENT_SECRET")
@@ -60,23 +51,18 @@ func main() {
 	resp, err := oauth.GetAccessToken(ctx, code, redirectURI)
 	if err != nil {
 		fmt.Printf("Failed to get access token: %v\n", err)
+		// The SDK has enumerated existing authentication error codes
+		// You need to handle the exception and guide users to re-authenticate
+		// For different oauth type, the error code may be different,
+		// you should read document to get more information
+		authErr, ok := coze_error.AsCozeAuthError(err)
+		if ok {
+			switch authErr.Code {
+
+			}
+		}
 		return
 	}
 	fmt.Println(resp)
 
-	// When the token expires, you can also refresh and re-obtain the token
-	resp, err = oauth.RefreshToken(ctx, resp.RefreshToken)
-	if err != nil {
-		fmt.Printf("Failed to refresh token: %v\n", err)
-		return
-	}
-
-	fmt.Printf("%+v\n", resp)
-
-	// you can get request log by getLogID method
-	fmt.Println(resp.LogID)
-
-	// use the access token to init Coze client
-	cozeCli := coze.NewCozeAPI(coze.NewTokenAuth(resp.AccessToken))
-	_ = cozeCli
 }

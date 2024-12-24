@@ -10,7 +10,7 @@ import (
 	"github.com/coze-dev/coze-go"
 )
 
-// This examples describes how to use the workflow interface to stream chat.
+// This examples describes how to use the workflow interface to stream chats.
 func main() {
 	// Get an access_token through personal access token or oauth.
 	token := os.Getenv("COZE_API_TOKEN")

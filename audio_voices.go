@@ -11,54 +11,6 @@ import (
 	"github.com/coze-dev/coze-go/pagination"
 )
 
-// Voice 语音模型
-type Voice struct {
-	VoiceID                string `json:"voice_id"`
-	Name                   string `json:"name"`
-	IsSystemVoice          bool   `json:"is_system_voice"`
-	LanguageCode           string `json:"language_code"`
-	LanguageName           string `json:"language_name"`
-	PreviewText            string `json:"preview_text"`
-	PreviewAudio           string `json:"preview_audio"`
-	AvailableTrainingTimes int    `json:"available_training_times"`
-	CreateTime             int    `json:"create_time"`
-	UpdateTime             int    `json:"update_time"`
-}
-
-// CloneAudioVoicesReq 克隆语音请求
-type CloneAudioVoicesReq struct {
-	VoiceName   string
-	File        io.Reader
-	AudioFormat *AudioFormat
-	Language    *LanguageCode
-	VoiceID     *string
-	PreviewText *string
-	Text        *string
-}
-
-// CloneAudioVoicesResp 克隆语音响应
-type CloneAudioVoicesResp struct {
-	internal.BaseResponse
-	Data struct {
-		VoiceID string `json:"voice_id"`
-	} `json:"data"`
-}
-
-// ListAudioVoicesReq 列出语音请求
-type ListAudioVoicesReq struct {
-	FilterSystemVoice bool `json:"filter_system_voice,omitempty"`
-	PageNum           int  `json:"page_num"`
-	PageSize          int  `json:"page_size"`
-}
-
-// ListAudioVoicesResp 列出语音响应
-type ListAudioVoicesResp struct {
-	internal.BaseResponse
-	Data struct {
-		VoiceList []*Voice `json:"voice_list"`
-	} `json:"data"`
-}
-
 type audioVoice struct {
 	client *internal.Client
 }
@@ -123,4 +75,52 @@ func (r *audioVoice) List(ctx context.Context, req *ListAudioVoicesReq) (*pagina
 				LogID:   resp.LogID,
 			}, nil
 		}, req.PageSize, req.PageNum)
+}
+
+// Voice 语音模型
+type Voice struct {
+	VoiceID                string `json:"voice_id"`
+	Name                   string `json:"name"`
+	IsSystemVoice          bool   `json:"is_system_voice"`
+	LanguageCode           string `json:"language_code"`
+	LanguageName           string `json:"language_name"`
+	PreviewText            string `json:"preview_text"`
+	PreviewAudio           string `json:"preview_audio"`
+	AvailableTrainingTimes int    `json:"available_training_times"`
+	CreateTime             int    `json:"create_time"`
+	UpdateTime             int    `json:"update_time"`
+}
+
+// CloneAudioVoicesReq 克隆语音请求
+type CloneAudioVoicesReq struct {
+	VoiceName   string
+	File        io.Reader
+	AudioFormat *AudioFormat
+	Language    *LanguageCode
+	VoiceID     *string
+	PreviewText *string
+	Text        *string
+}
+
+// CloneAudioVoicesResp 克隆语音响应
+type CloneAudioVoicesResp struct {
+	internal.BaseResponse
+	Data struct {
+		VoiceID string `json:"voice_id"`
+	} `json:"data"`
+}
+
+// ListAudioVoicesReq 列出语音请求
+type ListAudioVoicesReq struct {
+	FilterSystemVoice bool `json:"filter_system_voice,omitempty"`
+	PageNum           int  `json:"page_num"`
+	PageSize          int  `json:"page_size"`
+}
+
+// ListAudioVoicesResp 列出语音响应
+type ListAudioVoicesResp struct {
+	internal.BaseResponse
+	Data struct {
+		VoiceList []*Voice `json:"voice_list"`
+	} `json:"data"`
 }

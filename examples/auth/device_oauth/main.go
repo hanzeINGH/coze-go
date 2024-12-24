@@ -56,7 +56,7 @@ func main() {
 
 	// The space permissions for which the Access Token is granted can be specified. As following codes:
 	// GetDeviceAuthResp wCodeResp = oauth.getDeviceCode("workspaceID");
-	// Example with workspace ID:
+	// Example with workspaces ID:
 	// codeResp, err = oauth.GetDeviceCodeWithWorkspace("workspaceID")
 
 	// The returned device_code contains an authorization link. Developers need to guide users
@@ -95,14 +95,9 @@ func main() {
 	fmt.Printf("%+v\n", resp)
 
 	// // use the access token to init Coze client
-	// coze, err := NewCozeAPI(&CozeAPIConfig{
-	//	Auth:    NewTokenAuth(resp.AccessToken),
-	//	BaseURL: cozeAPIBase,
-	// })
-	// if err != nil {
-	//	fmt.Printf("Failed to create Coze client: %v\n", err)
-	//	return
-	// }
+	// use the access token to init Coze client
+	cozeCli := coze.NewCozeAPI(coze.NewTokenAuth(resp.AccessToken))
+	_ = cozeCli
 
 	// When the token expires, you can also refresh and re-obtain the token
 	resp, err = oauth.RefreshToken(ctx, resp.RefreshToken)
