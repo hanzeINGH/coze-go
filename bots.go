@@ -80,7 +80,7 @@ func (r *bots) List(ctx context.Context, req *ListBotsReq) (*pagination.NumberPa
 		}, req.PageSize, req.PageNum)
 }
 
-// BotMode 机器人模式
+// BotMode represents the bot mode
 type BotMode int
 
 const (
@@ -88,7 +88,7 @@ const (
 	BotModeSingleAgentWorkflow BotMode = 0
 )
 
-// Bot 完整的机器人信息
+// Bot represents complete bot information
 type Bot struct {
 	BotID          string             `json:"bot_id"`
 	Name           string             `json:"name"`
@@ -104,7 +104,7 @@ type Bot struct {
 	ModelInfo      *BotModelInfo      `json:"model_info,omitempty"`
 }
 
-// SimpleBot 简化的机器人信息
+// SimpleBot represents simplified bot information
 type SimpleBot struct {
 	BotID       string `json:"bot_id"`
 	BotName     string `json:"bot_name"`
@@ -113,33 +113,33 @@ type SimpleBot struct {
 	PublishTime string `json:"publish_time,omitempty"`
 }
 
-// BotKnowledge 机器人知识库配置
+// BotKnowledge represents bot knowledge base configuration
 type BotKnowledge struct {
 	DatasetIDs     []string `json:"dataset_ids"`
 	AutoCall       bool     `json:"auto_call"`
 	SearchStrategy int      `json:"search_strategy"`
 }
 
-// BotModelInfo 机器人模型信息
+// BotModelInfo represents bot model information
 type BotModelInfo struct {
 	ModelID   string `json:"model_id"`
 	ModelName string `json:"model_name"`
 }
 
-// BotOnboardingInfo 机器人引导信息
+// BotOnboardingInfo represents bot onboarding information
 type BotOnboardingInfo struct {
 	Prologue           string   `json:"prologue,omitempty"`
 	SuggestedQuestions []string `json:"suggested_questions,omitempty"`
 }
 
-// BotPluginAPIInfo 机器人插件API信息
+// BotPluginAPIInfo represents bot plugin API information
 type BotPluginAPIInfo struct {
 	APIID       string `json:"api_id"`
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 }
 
-// BotPluginInfo 机器人插件信息
+// BotPluginInfo represents bot plugin information
 type BotPluginInfo struct {
 	PluginID    string              `json:"plugin_id"`
 	Name        string              `json:"name"`
@@ -148,18 +148,18 @@ type BotPluginInfo struct {
 	APIInfoList []*BotPluginAPIInfo `json:"api_info_list,omitempty"`
 }
 
-// BotPromptInfo 机器人提示信息
+// BotPromptInfo represents bot prompt information
 type BotPromptInfo struct {
 	Prompt string `json:"prompt"`
 }
 
 type CreateBotsReq struct {
-	SpaceID        string             `json:"space_id"`        // 空间 ID
-	Name           string             `json:"name"`            // 名称
-	Description    string             `json:"description"`     // 描述
-	IconFileID     string             `json:"icon_file_id"`    // 图标文件 ID
-	PromptInfo     *BotPromptInfo     `json:"prompt_info"`     // 提示信息
-	OnboardingInfo *BotOnboardingInfo `json:"onboarding_info"` // 上线信息
+	SpaceID        string             `json:"space_id"`        // Space ID
+	Name           string             `json:"name"`            // Name
+	Description    string             `json:"description"`     // Description
+	IconFileID     string             `json:"icon_file_id"`    // Icon file ID
+	PromptInfo     *BotPromptInfo     `json:"prompt_info"`     // Prompt information
+	OnboardingInfo *BotOnboardingInfo `json:"onboarding_info"` // Onboarding information
 }
 
 // CreateBotsResp 创建机器人响应
@@ -170,10 +170,10 @@ type CreateBotsResp struct {
 	} `json:"data"`
 }
 
-// PublishBotsReq 表示发布机器人请求的结构体
+// PublishBotsReq represents the request structure for publishing a bot
 type PublishBotsReq struct {
-	BotID        string   `json:"bot_id"`        // 机器人 ID
-	ConnectorIDs []string `json:"connector_ids"` // 连接器 ID 列表
+	BotID        string   `json:"bot_id"`        // Bot ID
+	ConnectorIDs []string `json:"connector_ids"` // Connector ID list
 }
 
 // PublishBotsResp 发布机器人响应
@@ -185,11 +185,11 @@ type PublishBotsResp struct {
 	} `json:"data"`
 }
 
-// ListBotsReq 表示列出机器人请求的结构体
+// ListBotsReq represents the request structure for listing bots
 type ListBotsReq struct {
-	SpaceID  string `json:"space_id"`  // 空间 ID
-	PageNum  int    `json:"page_num"`  // 页码
-	PageSize int    `json:"page_size"` // 每页大小
+	SpaceID  string `json:"space_id"`  // Space ID
+	PageNum  int    `json:"page_num"`  // Page number
+	PageSize int    `json:"page_size"` // Page size
 }
 
 // ListBotsResp 列出机器人响应
@@ -201,9 +201,9 @@ type ListBotsResp struct {
 	} `json:"data"`
 }
 
-// RetrieveBotsReq 表示检索机器人请求的结构体
+// RetrieveBotsReq represents the request structure for retrieving a bot
 type RetrieveBotsReq struct {
-	BotID string `json:"bot_id"` // 机器人 ID
+	BotID string `json:"bot_id"` // Bot ID
 }
 
 // RetrieveBotsResp 获取机器人响应
@@ -212,15 +212,15 @@ type RetrieveBotsResp struct {
 	Bot *Bot `json:"data"`
 }
 
-// UpdateBotsReq 表示更新机器人请求的结构体
+// UpdateBotsReq represents the request structure for updating a bot
 type UpdateBotsReq struct {
-	BotID          string             `json:"bot_id"`          // 机器人 ID
-	Name           string             `json:"name"`            // 名称
-	Description    string             `json:"description"`     // 描述
-	IconFileID     string             `json:"icon_file_id"`    // 图标文件 ID
-	PromptInfo     *BotPromptInfo     `json:"prompt_info"`     // 提示信息
-	OnboardingInfo *BotOnboardingInfo `json:"onboarding_info"` // 上线信息
-	Knowledge      *BotKnowledge      `json:"knowledge"`       // 知识
+	BotID          string             `json:"bot_id"`          // Bot ID
+	Name           string             `json:"name"`            // Name
+	Description    string             `json:"description"`     // Description
+	IconFileID     string             `json:"icon_file_id"`    // Icon file ID
+	PromptInfo     *BotPromptInfo     `json:"prompt_info"`     // Prompt information
+	OnboardingInfo *BotOnboardingInfo `json:"onboarding_info"` // Onboarding information
+	Knowledge      *BotKnowledge      `json:"knowledge"`       // Knowledge
 }
 
 // UpdateBotsResp 更新机器人响应

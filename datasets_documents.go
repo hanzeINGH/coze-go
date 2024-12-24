@@ -334,7 +334,7 @@ type UpdateDatasetsDocumentsResp struct {
 	internal.BaseResponse
 }
 
-// BuildWebPage 创建网页类型的文档基础信息
+// BuildWebPage creates basic document information for webpage type
 func BuildWebPage(name string, url string) *DocumentBase {
 	return &DocumentBase{
 		Name:       name,
@@ -343,7 +343,7 @@ func BuildWebPage(name string, url string) *DocumentBase {
 	}
 }
 
-// BuildWebPageWithInterval 创建带有自动更新间隔的网页类型文档基础信息
+// BuildWebPageWithInterval creates webpage type document information with auto-update interval
 func BuildWebPageWithInterval(name string, url string, interval int) *DocumentBase {
 	return &DocumentBase{
 		Name:       name,
@@ -352,7 +352,7 @@ func BuildWebPageWithInterval(name string, url string, interval int) *DocumentBa
 	}
 }
 
-// BuildLocalFile 创建本地文件类型的文档基础信息
+// BuildLocalFile creates basic document information for local file type
 func BuildLocalFile(name string, content string, fileType string) *DocumentBase {
 	return &DocumentBase{
 		Name:       name,
@@ -360,7 +360,7 @@ func BuildLocalFile(name string, content string, fileType string) *DocumentBase 
 	}
 }
 
-// BuildWebPageSourceInfo 创建网页类型的文档来源信息
+// BuildWebPageSourceInfo creates document source information for webpage type
 func BuildWebPageSourceInfo(url string) *DocumentSourceInfo {
 	return &DocumentSourceInfo{
 		WebUrl:         url,
@@ -368,7 +368,7 @@ func BuildWebPageSourceInfo(url string) *DocumentSourceInfo {
 	}
 }
 
-// BuildLocalFileSourceInfo 创建本地文件类型的文档来源信息
+// BuildLocalFileSourceInfo creates document source information for local file type
 func BuildLocalFileSourceInfo(content string, fileType string) *DocumentSourceInfo {
 	encodedContent := base64.StdEncoding.EncodeToString([]byte(content))
 	return &DocumentSourceInfo{
@@ -377,14 +377,14 @@ func BuildLocalFileSourceInfo(content string, fileType string) *DocumentSourceIn
 	}
 }
 
-// BuildNoAutoUpdateRule 创建不自动更新的规则
+// BuildNoAutoUpdateRule creates a rule for no automatic updates
 func BuildNoAutoUpdateRule() *DocumentUpdateRule {
 	return &DocumentUpdateRule{
 		UpdateType: DocumentUpdateTypeNoAutoUpdate,
 	}
 }
 
-// BuildAutoUpdateRule 创建自动更新的规则
+// BuildAutoUpdateRule creates a rule for automatic updates with specified interval
 func BuildAutoUpdateRule(interval int) *DocumentUpdateRule {
 	return &DocumentUpdateRule{
 		UpdateType:     DocumentUpdateTypeAutoUpdate,

@@ -28,21 +28,21 @@ type newCozeAPIOpt struct {
 
 type CozeAPIOption func(*newCozeAPIOpt)
 
-// WithBaseURL 添加基准url
+// WithBaseURL adds the base URL for the API
 func WithBaseURL(baseURL string) CozeAPIOption {
 	return func(opt *newCozeAPIOpt) {
 		opt.baseURL = baseURL
 	}
 }
 
-// WithHttpClient 设置自定义的 HTTP 客户端
+// WithHttpClient sets a custom HTTP client
 func WithHttpClient(client *http.Client) CozeAPIOption {
 	return func(opt *newCozeAPIOpt) {
 		opt.client = client
 	}
 }
 
-// WithLogLevel 设置日志级别
+// WithLogLevel sets the logging level
 func WithLogLevel(level log.LogLevel) CozeAPIOption {
 	return func(opt *newCozeAPIOpt) {
 		opt.logLevel = level
@@ -58,7 +58,7 @@ func WithLogger(logger log.Logger) CozeAPIOption {
 func NewCozeAPI(auth Auth, opts ...CozeAPIOption) CozeAPI {
 	opt := &newCozeAPIOpt{
 		baseURL:  CozeComBaseURL,
-		logLevel: log.LogInfo, // 默认日志级别为 Info
+		logLevel: log.LogInfo, // Default log level is Info
 	}
 	for _, option := range opts {
 		option(opt)
@@ -76,7 +76,7 @@ func NewCozeAPI(auth Auth, opts ...CozeAPIOption) CozeAPI {
 	}
 	httpClient := internal.NewClient(opt.client, opt.baseURL)
 
-	// 设置日志级别
+	// Set log level
 	log.SetLevel(opt.logLevel)
 
 	cozeClient := CozeAPI{

@@ -28,7 +28,7 @@ func main() {
 		BotID:  botID,
 		UserID: userID,
 		Messages: []*coze.Message{
-			coze.BuildUserQuestionText("今天深圳天气如何", nil),
+			coze.BuildUserQuestionText("What's the weather like in Shenzhen today?", nil),
 		},
 	}
 

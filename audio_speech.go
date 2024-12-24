@@ -30,7 +30,7 @@ func (r *audioSpeech) Create(ctx context.Context, req *CreateAudioSpeechReq) (*C
 	}, nil
 }
 
-// CreateAudioSpeechReq 创建语音请求
+// CreateAudioSpeechReq represents the request for creating speech
 type CreateAudioSpeechReq struct {
 	Input          string      `json:"input"`
 	VoiceID        string      `json:"voice_id"`
@@ -38,7 +38,7 @@ type CreateAudioSpeechReq struct {
 	Speed          float32     `json:"speed"`
 }
 
-// CreateAudioSpeechResp 创建语音响应
+// CreateAudioSpeechResp represents the response for creating speech
 type CreateAudioSpeechResp struct {
 	internal.BaseResponse
 	Data io.ReadCloser

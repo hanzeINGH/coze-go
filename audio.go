@@ -4,7 +4,7 @@ import (
 	"github.com/coze-dev/coze-go/internal"
 )
 
-// AudioFormat 音频格式类型
+// AudioFormat represents the audio format type
 type AudioFormat string
 
 const (
@@ -24,7 +24,7 @@ func (f AudioFormat) Ptr() *AudioFormat {
 	return &f
 }
 
-// LanguageCode 语言代码
+// LanguageCode represents the language code
 type LanguageCode string
 
 const (

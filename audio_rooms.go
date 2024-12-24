@@ -26,7 +26,7 @@ func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*Cre
 	return resp, nil
 }
 
-// AudioCodec 音频编解码器
+// AudioCodec represents the audio codec
 type AudioCodec string
 
 const (
@@ -36,17 +36,17 @@ const (
 	AudioCodecG722  AudioCodec = "G722"
 )
 
-// RoomAudioConfig 房间音频配置
+// RoomAudioConfig represents the room audio configuration
 type RoomAudioConfig struct {
 	Codec AudioCodec `json:"codec"`
 }
 
-// RoomConfig 房间配置
+// RoomConfig represents the room configuration
 type RoomConfig struct {
 	AudioConfig *RoomAudioConfig `json:"audio_config"`
 }
 
-// CreateAudioRoomsReq 创建房间请求
+// CreateAudioRoomsReq represents the request for creating an audio room
 type CreateAudioRoomsReq struct {
 	BotID          string      `json:"bot_id"`
 	ConversationID string      `json:"conversation_id,omitempty"`
@@ -54,7 +54,7 @@ type CreateAudioRoomsReq struct {
 	Config         *RoomConfig `json:"config,omitempty"`
 }
 
-// CreateAudioRoomsResp 创建房间响应
+// CreateAudioRoomsResp represents the response for creating an audio room
 type CreateAudioRoomsResp struct {
 	internal.BaseResponse
 	Data struct {

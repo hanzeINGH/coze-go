@@ -6,35 +6,35 @@ import (
 	"os"
 )
 
-// LogLevel 定义日志级别
+// LogLevel defines the logging level
 type LogLevel int
 
 const (
-	// LogOff 关闭日志
+	// LogOff disables all logging
 	LogOff LogLevel = iota
-	// LogError 只记录错误
+	// LogError logs only errors
 	LogError
-	// LogWarn 记录警告和错误
+	// LogWarn logs warnings and errors
 	LogWarn
-	// LogInfo 记录信息、警告和错误
+	// LogInfo logs information, warnings and errors
 	LogInfo
-	// LogDebug 记录所有内容
+	// LogDebug logs everything
 	LogDebug
 )
 
-// Logger 定义了日志接口
+// Logger defines the logging interface
 type Logger interface {
-	// Debugf 打印调试日志
+	// Debugf prints debug logs
 	Debugf(format string, v ...interface{})
-	// Infof 打印信息日志
+	// Infof prints information logs
 	Infof(format string, v ...interface{})
-	// Warnf 打印警告日志
+	// Warnf prints warning logs
 	Warnf(format string, v ...interface{})
-	// Errorf 打印错误日志
+	// Errorf prints error logs
 	Errorf(format string, v ...interface{})
 }
 
-// defaultLogger 是默认的日志实现
+// defaultLogger is the default implementation of Logger
 type defaultLogger struct {
 	level  LogLevel
 	logger *log.Logger
@@ -42,7 +42,7 @@ type defaultLogger struct {
 
 var std Logger = NewDefaultLogger(LogInfo)
 
-// NewDefaultLogger 创建一个新的默认日志实例
+// NewDefaultLogger creates a new default logger instance
 func NewDefaultLogger(level LogLevel) Logger {
 	return &defaultLogger{
 		level:  level,
@@ -74,7 +74,7 @@ func (l *defaultLogger) Errorf(format string, v ...interface{}) {
 	}
 }
 
-// 全局函数
+// Global functions
 func Debugf(format string, v ...interface{}) {
 	std.Debugf(format, v...)
 }

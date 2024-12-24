@@ -49,10 +49,10 @@ func (p *basePager[T]) HasMore() bool {
 	return internal.Value(p.currentPage).HasMore
 }
 
-// PageFetcher 接口
+// PageFetcher interface
 type PageFetcher[T any] func(request *PageRequest) (*PageResponse[T], error)
 
-// NumberPaged 实现
+// NumberPaged implementation
 type NumberPaged[T any] struct {
 	basePager[T]
 }
@@ -100,7 +100,7 @@ func (p *NumberPaged[T]) Next() bool {
 	return false
 }
 
-// TokenPaged 实现
+// TokenPaged implementation
 type TokenPaged[T any] struct {
 	basePager[T]
 	pageToken *string

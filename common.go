@@ -37,7 +37,7 @@ type Message struct {
 	UpdatedAt int64  `json:"updated_at"`
 }
 
-// BuildUserQuestionText 构建用户提问文本消息
+// BuildUserQuestionText builds a text message for user question
 func BuildUserQuestionText(content string, metaData map[string]string) *Message {
 	return &Message{
 		Role:        MessageRoleUser,
@@ -48,7 +48,7 @@ func BuildUserQuestionText(content string, metaData map[string]string) *Message 
 	}
 }
 
-// BuildUserQuestionObjects 构建用户提问对象消息
+// BuildUserQuestionObjects builds an object message for user question
 func BuildUserQuestionObjects(objects []MessageObjectString, metaData map[string]string) *Message {
 	return &Message{
 		Role:        MessageRoleUser,
@@ -59,7 +59,7 @@ func BuildUserQuestionObjects(objects []MessageObjectString, metaData map[string
 	}
 }
 
-// BuildAssistantAnswer 构建助手回答消息
+// BuildAssistantAnswer builds an answer message from assistant
 func BuildAssistantAnswer(content string, metaData map[string]string) *Message {
 	return &Message{
 		Role:        MessageRoleAssistant,

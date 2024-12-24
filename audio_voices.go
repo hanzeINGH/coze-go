@@ -30,7 +30,7 @@ func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*Clon
 		"audio_format": req.AudioFormat.String(),
 	}
 
-	// 添加其他字段
+	// Add other fields
 	if req.Language != nil {
 		fields["language"] = req.Language.String()
 	}
@@ -77,7 +77,7 @@ func (r *audioVoice) List(ctx context.Context, req *ListAudioVoicesReq) (*pagina
 		}, req.PageSize, req.PageNum)
 }
 
-// Voice 语音模型
+// Voice represents the voice model
 type Voice struct {
 	VoiceID                string `json:"voice_id"`
 	Name                   string `json:"name"`
@@ -91,7 +91,7 @@ type Voice struct {
 	UpdateTime             int    `json:"update_time"`
 }
 
-// CloneAudioVoicesReq 克隆语音请求
+// CloneAudioVoicesReq represents the request for cloning a voice
 type CloneAudioVoicesReq struct {
 	VoiceName   string
 	File        io.Reader
@@ -102,7 +102,7 @@ type CloneAudioVoicesReq struct {
 	Text        *string
 }
 
-// CloneAudioVoicesResp 克隆语音响应
+// CloneAudioVoicesResp represents the response for cloning a voice
 type CloneAudioVoicesResp struct {
 	internal.BaseResponse
 	Data struct {
@@ -110,14 +110,14 @@ type CloneAudioVoicesResp struct {
 	} `json:"data"`
 }
 
-// ListAudioVoicesReq 列出语音请求
+// ListAudioVoicesReq represents the request for listing voices
 type ListAudioVoicesReq struct {
 	FilterSystemVoice bool `json:"filter_system_voice,omitempty"`
 	PageNum           int  `json:"page_num"`
 	PageSize          int  `json:"page_size"`
 }
 
-// ListAudioVoicesResp 列出语音响应
+// ListAudioVoicesResp represents the response for listing voices
 type ListAudioVoicesResp struct {
 	internal.BaseResponse
 	Data struct {

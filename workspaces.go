@@ -44,7 +44,7 @@ func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*paginatio
 		}, req.PageSize, req.PageNum)
 }
 
-// ListWorkspaceReq 列表请求参数
+// ListWorkspaceReq represents the request parameters for listing workspaces
 type ListWorkspaceReq struct {
 	PageNum  int `json:"page_num"`
 	PageSize int `json:"page_size"`
@@ -57,7 +57,7 @@ func NewListWorkspaceReq() *ListWorkspaceReq {
 	}
 }
 
-// ListWorkspaceResp 列表响应
+// ListWorkspaceResp represents the response for listing workspaces
 type ListWorkspaceResp struct {
 	internal.BaseResponse
 	Data struct {
@@ -66,7 +66,7 @@ type ListWorkspaceResp struct {
 	}
 }
 
-// Workspace 工作空间信息
+// Workspace represents workspace information
 type Workspace struct {
 	ID            string            `json:"id"`
 	Name          string            `json:"name"`
@@ -75,7 +75,7 @@ type Workspace struct {
 	WorkspaceType WorkspaceType     `json:"workspace_type"`
 }
 
-// WorkspaceRoleType 工作空间角色类型
+// WorkspaceRoleType represents the workspace role type
 type WorkspaceRoleType string
 
 const (
@@ -107,7 +107,7 @@ func (t *WorkspaceRoleType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// WorkspaceType 工作空间类型
+// WorkspaceType represents the workspace type
 type WorkspaceType string
 
 const (

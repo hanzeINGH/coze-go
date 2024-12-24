@@ -129,12 +129,12 @@ type ScopeAttributeConstraint struct {
 	ConnectorBotChatAttribute *ScopeAttributeConstraintConnectorBotChatAttribute `json:"connector_bot_chat_attribute"`
 }
 
-// ScopeAttributeConstraintConnectorBotChatAttribute represents the bot chats attributes
+// ScopeAttributeConstraintConnectorBotChatAttribute represents the bot chat attributes
 type ScopeAttributeConstraintConnectorBotChatAttribute struct {
 	BotIDList []string `json:"bot_id_list"`
 }
 
-// CodeChallengeMethod 代码挑战方法
+// CodeChallengeMethod represents the code challenge method
 type CodeChallengeMethod string
 
 const (
@@ -150,7 +150,7 @@ func (m CodeChallengeMethod) Ptr() *CodeChallengeMethod {
 	return &m
 }
 
-// OAuthClient OAuth客户端基础结构
+// OAuthClient represents the base OAuth client structure
 type OAuthClient struct {
 	clientID     string
 	clientSecret string
@@ -172,7 +172,7 @@ type oauthOpt struct {
 
 type OAuthClientOption func(*oauthOpt)
 
-// WithAuthBaseURL 添加基准url
+// WithAuthBaseURL adds base URL
 func WithAuthBaseURL(baseURL string) OAuthClientOption {
 	return func(opt *oauthOpt) {
 		opt.baseURL = baseURL
@@ -185,7 +185,7 @@ func WithAuthHttpClient(client *http.Client) OAuthClientOption {
 	}
 }
 
-// newOAuthClient 创建新的OAuth客户端
+// newOAuthClient creates a new OAuth client
 func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*OAuthClient, error) {
 	initSettings := &oauthOpt{
 		baseURL: CozeComBaseURL,
@@ -221,7 +221,7 @@ func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*
 	}, nil
 }
 
-// getOAuthURL 生成OAuth URL
+// getOAuthURL generates OAuth URL
 func (c *OAuthClient) getOAuthURL(redirectURI, state string, opts ...urlOption) string {
 	params := url.Values{}
 	params.Set("response_type", "code")
@@ -243,7 +243,7 @@ func (c *OAuthClient) getOAuthURL(redirectURI, state string, opts ...urlOption) 
 	return uri + "?" + params.Encode()
 }
 
-// getWorkspaceOAuthURL 生成带workspace的OAuth URL
+// getWorkspaceOAuthURL generates OAuth URL with workspace
 func (c *OAuthClient) getWorkspaceOAuthURL(redirectURI, state, workspaceID string, opts ...urlOption) string {
 	params := url.Values{}
 	params.Set("response_type", "code")
@@ -275,7 +275,7 @@ type getAccessTokenParams struct {
 }
 
 func (c *OAuthClient) getAccessToken(ctx context.Context, params getAccessTokenParams) (*OAuthToken, error) {
-	// 如果提供了 Request，直接使用它
+	// If Request is provided, use it directly
 	result := &OAuthToken{}
 	var req *GetAccessTokenReq
 	if params.Request != nil {
@@ -300,7 +300,7 @@ func (c *OAuthClient) getAccessToken(ctx context.Context, params getAccessTokenP
 	return result, nil
 }
 
-// refreshAccessToken 是一个便捷方法，内部调用 getAccessToken
+// refreshAccessToken is a convenience method that internally calls getAccessToken
 func (c *OAuthClient) refreshAccessToken(ctx context.Context, refreshToken string) (*OAuthToken, error) {
 	return c.getAccessToken(ctx, getAccessTokenParams{
 		Type:         GrantTypeRefreshToken,
@@ -308,7 +308,7 @@ func (c *OAuthClient) refreshAccessToken(ctx context.Context, refreshToken strin
 	})
 }
 
-// refreshAccessToken 是一个便捷方法，内部调用 getAccessToken
+// refreshAccessToken is a convenience method that internally calls getAccessToken
 func (c *OAuthClient) refreshAccessTokenWithClientSecret(ctx context.Context, refreshToken string) (*OAuthToken, error) {
 	return c.getAccessToken(ctx, getAccessTokenParams{
 		Secret:       c.clientSecret,
@@ -317,12 +317,12 @@ func (c *OAuthClient) refreshAccessTokenWithClientSecret(ctx context.Context, re
 	})
 }
 
-// PKCEOAuthClient PKCE OAuth客户端
+// PKCEOAuthClient PKCE OAuth client
 type PKCEOAuthClient struct {
 	*OAuthClient
 }
 
-// NewPKCEOAuthClient 创建新的PKCE OAuth客户端
+// NewPKCEOAuthClient creates a new PKCE OAuth client
 func NewPKCEOAuthClient(clientID string, opts ...OAuthClientOption) (*PKCEOAuthClient, error) {
 	client, err := newOAuthClient(clientID, "", opts...)
 	if err != nil {
@@ -340,7 +340,7 @@ type GetPKCEAuthURLReq struct {
 	WorkspaceID *string
 }
 
-// GenOAuthURL 生成OAuth URL
+// GenOAuthURL generates OAuth URL
 func (c *PKCEOAuthClient) GenOAuthURL(req *GetPKCEAuthURLReq) (*GetPKCEAuthURLResp, error) {
 	if req == nil {
 		return nil, errors.New("request is required")
@@ -376,7 +376,7 @@ func (c *PKCEOAuthClient) GenOAuthURL(req *GetPKCEAuthURLReq) (*GetPKCEAuthURLRe
 	}, nil
 }
 
-// getCode 获取验证码
+// getCode gets the verification code
 func (c *PKCEOAuthClient) getCode(codeVerifier string, method CodeChallengeMethod) (string, error) {
 	if method == CodeChallengeMethodPlain {
 		return codeVerifier, nil
@@ -397,12 +397,12 @@ func (c *PKCEOAuthClient) GetAccessToken(ctx context.Context, code, redirectURI,
 	})
 }
 
-// RefreshToken 刷新令牌
+// RefreshToken refreshes the access token
 func (c *PKCEOAuthClient) RefreshToken(ctx context.Context, refreshToken string) (*OAuthToken, error) {
 	return c.refreshAccessToken(ctx, refreshToken)
 }
 
-// genS256CodeChallenge 生成S256验证码挑战
+// genS256CodeChallenge generates S256 code challenge
 func genS256CodeChallenge(codeVerifier string) (string, error) {
 	hash := sha256.New()
 	hash.Write([]byte(codeVerifier))
@@ -410,29 +410,29 @@ func genS256CodeChallenge(codeVerifier string) (string, error) {
 	return strings.ReplaceAll(b64, "=", ""), nil
 }
 
-// urlOption URL选项函数类型
+// urlOption represents URL option function type
 type urlOption func(*url.Values)
 
-// withCodeChallenge 添加code_challenge参数
+// withCodeChallenge adds code_challenge parameter
 func withCodeChallenge(challenge string) urlOption {
 	return func(v *url.Values) {
 		v.Set("code_challenge", challenge)
 	}
 }
 
-// withCodeChallengeMethod 添加code_challenge_method参数
+// withCodeChallengeMethod adds code_challenge_method parameter
 func withCodeChallengeMethod(method string) urlOption {
 	return func(v *url.Values) {
 		v.Set("code_challenge_method", method)
 	}
 }
 
-// DeviceOAuthClient 设备OAuth客户端
+// DeviceOAuthClient represents the device OAuth client
 type DeviceOAuthClient struct {
 	*OAuthClient
 }
 
-// NewDeviceOAuthClient 创建新的设备OAuth客户端
+// NewDeviceOAuthClient creates a new device OAuth client
 func NewDeviceOAuthClient(clientID string, opts ...OAuthClientOption) (*DeviceOAuthClient, error) {
 	client, err := newOAuthClient(clientID, "", opts...)
 	if err != nil {
@@ -443,12 +443,12 @@ func NewDeviceOAuthClient(clientID string, opts ...OAuthClientOption) (*DeviceOA
 	}, err
 }
 
-// GetDeviceCode 获取设备码
+// GetDeviceCode gets the device code
 func (c *DeviceOAuthClient) GetDeviceCode(ctx context.Context) (*GetDeviceAuthResp, error) {
 	return c.doGetDeviceCode(ctx, nil)
 }
 
-// GetDeviceCodeWithWorkspace 获取带workspace的设备码
+// GetDeviceCodeWithWorkspace gets the device code with workspace
 func (c *DeviceOAuthClient) GetDeviceCodeWithWorkspace(ctx context.Context, workspaceID string) (*GetDeviceAuthResp, error) {
 	return c.doGetDeviceCode(ctx, &workspaceID)
 }
@@ -519,12 +519,12 @@ func (c *DeviceOAuthClient) doGetAccessToken(ctx context.Context, req *GetAccess
 	return result, nil
 }
 
-// RefreshToken 刷新令牌
+// RefreshToken refreshes the access token
 func (c *DeviceOAuthClient) RefreshToken(ctx context.Context, refreshToken string) (*OAuthToken, error) {
 	return c.refreshAccessToken(ctx, refreshToken)
 }
 
-// JWTOAuthClient JWT OAuth客户端
+// JWTOAuthClient represents the JWT OAuth client
 type JWTOAuthClient struct {
 	*OAuthClient
 	ttl        int
@@ -539,7 +539,7 @@ type NewJWTOAuthClientParam struct {
 	TTL           *int
 }
 
-// NewJWTOAuthClient 创建新的JWT OAuth客户端
+// NewJWTOAuthClient creates a new JWT OAuth client
 func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) (*JWTOAuthClient, error) {
 	privateKey, err := parsePrivateKey(param.PrivateKeyPEM)
 	if err != nil {
@@ -551,7 +551,7 @@ func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) 
 	}
 	ttl := param.TTL
 	if ttl == nil {
-		ttl = internal.Ptr(900) // 默认15分钟
+		ttl = internal.Ptr(900) // Default 15 minutes
 	}
 	jwtClient := &JWTOAuthClient{
 		OAuthClient: client,
@@ -563,14 +563,14 @@ func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) 
 	return jwtClient, nil
 }
 
-// JWTGetAccessTokenOptions JWT OAuth获取token的选项
+// JWTGetAccessTokenOptions represents options for getting JWT OAuth token
 type JWTGetAccessTokenOptions struct {
-	TTL         int     `json:"ttl,omitempty"`          // token有效期（秒）
-	Scope       *Scope  `json:"scope,omitempty"`        // 权限范围
-	SessionName *string `json:"session_name,omitempty"` // 会话名称
+	TTL         int     `json:"ttl,omitempty"`          // Token validity period (in seconds)
+	Scope       *Scope  `json:"scope,omitempty"`        // Permission scope
+	SessionName *string `json:"session_name,omitempty"` // Session name
 }
 
-// GetAccessToken 获取访问令牌，使用选项模式
+// GetAccessToken gets the access token, using options pattern
 func (c *JWTOAuthClient) GetAccessToken(ctx context.Context, opts *JWTGetAccessTokenOptions) (*OAuthToken, error) {
 	if opts == nil {
 		opts = &JWTGetAccessTokenOptions{}
@@ -605,7 +605,7 @@ func (c *JWTOAuthClient) generateJWT(ttl int, sessionName *string) (string, erro
 		return "", err
 	}
 
-	// 构建 claims
+	// Build claims
 	claims := jwt.MapClaims{
 		"iss": c.clientID,
 		"aud": c.hostName,
@@ -614,20 +614,20 @@ func (c *JWTOAuthClient) generateJWT(ttl int, sessionName *string) (string, erro
 		"jti": jti,
 	}
 
-	// 如果有 session_name,添加到 claims 中
+	// If session_name is provided, add it to claims
 	if sessionName != nil {
 		claims["session_name"] = *sessionName
 	}
 
-	// 创建 token
+	// Create token
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 
-	// 设置 header
+	// Set header
 	token.Header["kid"] = c.publicKey
 	token.Header["typ"] = "JWT"
 	token.Header["alg"] = "RS256"
 
-	// 签名并获取完整的令牌字符串
+	// Sign and get full token string
 	tokenString, err := token.SignedString(c.privateKey)
 	if err != nil {
 		return "", err
@@ -636,12 +636,12 @@ func (c *JWTOAuthClient) generateJWT(ttl int, sessionName *string) (string, erro
 	return tokenString, nil
 }
 
-// WebOAuthClient Web OAuth客户端
+// WebOAuthClient Web OAuth client
 type WebOAuthClient struct {
 	*OAuthClient
 }
 
-// NewWebOAuthClient 创建新的Web OAuth客户端
+// NewWebOAuthClient creates a new Web OAuth client
 func NewWebOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*WebOAuthClient, error) {
 	client, err := newOAuthClient(clientID, clientSecret, opts...)
 	if err != nil {
@@ -652,7 +652,7 @@ func NewWebOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption)
 	}, err
 }
 
-// GetAccessToken 获取访问令牌
+// GetAccessToken gets the access token
 func (c *WebOAuthClient) GetAccessToken(ctx context.Context, code, redirectURI string) (*OAuthToken, error) {
 	req := &GetAccessTokenReq{
 		ClientID:    c.clientID,
@@ -666,37 +666,37 @@ func (c *WebOAuthClient) GetAccessToken(ctx context.Context, code, redirectURI s
 	})
 }
 
-// RefreshToken 刷新令牌
+// RefreshToken refreshes the access token
 func (c *WebOAuthClient) GetOAuthURL(redirectURI, state string) string {
 	return c.getOAuthURL(redirectURI, state)
 }
 
-// GetAccessToken 获取访问令牌
+// GetAccessToken gets the access token
 func (c *WebOAuthClient) GetOAuthURLWithWorkspace(redirectURI, state, workspaceID string) string {
 	return c.getWorkspaceOAuthURL(redirectURI, state, workspaceID)
 }
 
-// RefreshToken 刷新令牌
+// RefreshToken refreshes the access token
 func (c *WebOAuthClient) RefreshToken(ctx context.Context, refreshToken string) (*OAuthToken, error) {
 	return c.refreshAccessTokenWithClientSecret(ctx, refreshToken)
 }
 
 // 工具函数
 func parsePrivateKey(privateKeyPEM string) (*rsa.PrivateKey, error) {
-	// 移除PEM头尾和空白字符
+	// Remove PEM header and footer and whitespace
 	privateKeyPEM = strings.ReplaceAll(privateKeyPEM, "-----BEGIN PRIVATE KEY-----", "")
 	privateKeyPEM = strings.ReplaceAll(privateKeyPEM, "-----END PRIVATE KEY-----", "")
 	privateKeyPEM = strings.ReplaceAll(privateKeyPEM, "\n", "")
 	privateKeyPEM = strings.ReplaceAll(privateKeyPEM, "\r", "")
 	privateKeyPEM = strings.ReplaceAll(privateKeyPEM, " ", "")
 
-	// 解码Base64
+	// Decode Base64
 	block, err := base64.StdEncoding.DecodeString(privateKeyPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode private key: %w", err)
 	}
 
-	// 解析PKCS8私钥
+	// Parse PKCS8 private key
 	key, err := x509.ParsePKCS8PrivateKey(block)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse private key: %w", err)

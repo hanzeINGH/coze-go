@@ -27,7 +27,7 @@ func (e *CozeError) Error() string {
 		e.LogID)
 }
 
-// AsCozeError 判断错误是否为 CozeError 类型
+// AsCozeError checks if the error is of type CozeError
 func AsCozeError(err error) (*CozeError, bool) {
 	var cozeErr *CozeError
 	if errors.As(err, &cozeErr) {

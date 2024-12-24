@@ -18,7 +18,7 @@ func main() {
 
 	// saveFilePath := os.Getenv("SAVE_FILE_PATH")
 	voiceID := os.Getenv("COZE_VOICE_ID")
-	content := "快来试一试吧"
+	content := "Come and try it out"
 
 	ctx := context.Background()
 	resp, err := cozeCli.Audio.Speech.Create(ctx, &coze.CreateAudioSpeechReq{
