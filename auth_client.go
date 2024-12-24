@@ -11,8 +11,10 @@ type Auth interface {
 	Token(ctx context.Context) (string, error)
 }
 
-var _ Auth = &tokenAuthImpl{}
-var _ Auth = &jwtOAuthImpl{}
+var (
+	_ Auth = &tokenAuthImpl{}
+	_ Auth = &jwtOAuthImpl{}
+)
 
 // tokenAuthImpl implements the Auth interface with fixed access token.
 type tokenAuthImpl struct {

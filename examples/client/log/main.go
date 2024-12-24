@@ -15,8 +15,8 @@ func main() {
 	authCli := coze.NewTokenAuth(token)
 
 	// Init the Coze client through the access_token.
-	cozeCli := coze.NewCozeAPI(authCli, coze.WithBaseURL(os.Getenv("COZE_API_BASE"))) //coze.WithLogger() The developer can set the logger to print the log.
-	//coze.WithLogLevel(log.LogDebug) The developer can set the log level.
+	cozeCli := coze.NewCozeAPI(authCli, coze.WithBaseURL(os.Getenv("COZE_API_BASE"))) // coze.WithLogger() The developer can set the logger to print the log.
+	// coze.WithLogLevel(log.LogDebug) The developer can set the log level.
 
 	ctx := context.Background()
 	botID := os.Getenv("COZE_BOT_ID")

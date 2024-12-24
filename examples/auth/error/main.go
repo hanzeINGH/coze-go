@@ -58,11 +58,9 @@ func main() {
 		authErr, ok := coze_error.AsCozeAuthError(err)
 		if ok {
 			switch authErr.Code {
-
 			}
 		}
 		return
 	}
 	fmt.Println(resp)
-
 }
