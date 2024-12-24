@@ -6,16 +6,13 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-
-	"github.com/coze-dev/coze-go/internal"
-	"github.com/coze-dev/coze-go/pagination"
 )
 
 type audioVoice struct {
-	client *internal.Client
+	client *httpClient
 }
 
-func newVoice(client *internal.Client) *audioVoice {
+func newVoice(client *httpClient) *audioVoice {
 	return &audioVoice{client: client}
 }
 
@@ -26,8 +23,10 @@ func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*Clon
 	}
 
 	fields := map[string]string{
-		"voice_name":   req.VoiceName,
-		"audio_format": req.AudioFormat.String(),
+		"voice_name": req.VoiceName,
+	}
+	if req.AudioFormat != nil {
+		fields["audio_format"] = req.AudioFormat.String()
 	}
 
 	// Add other fields
@@ -43,33 +42,34 @@ func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*Clon
 	if req.Text != nil {
 		fields["text"] = *req.Text
 	}
-	resp := &CloneAudioVoicesResp{}
+	resp := &cloneAudioVoicesResp{}
 	err := r.client.UploadFile(ctx, path, req.File, req.VoiceName, fields, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Data.SetLogID(resp.LogID)
+	return resp.Data, nil
 }
 
-func (r *audioVoice) List(ctx context.Context, req *ListAudioVoicesReq) (*pagination.NumberPaged[Voice], error) {
+func (r *audioVoice) List(ctx context.Context, req *ListAudioVoicesReq) (*NumberPaged[Voice], error) {
 	if req.PageSize == 0 {
 		req.PageSize = 20
 	}
 	if req.PageNum == 0 {
 		req.PageNum = 1
 	}
-	return pagination.NewNumberPaged[Voice](
-		func(request *pagination.PageRequest) (*pagination.PageResponse[Voice], error) {
+	return NewNumberPaged[Voice](
+		func(request *PageRequest) (*PageResponse[Voice], error) {
 			uri := "/v1/audio/voices"
 			resp := &ListAudioVoicesResp{}
 			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
-				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
-				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)),
-				internal.WithQuery("filter_system_voice", strconv.FormatBool(req.FilterSystemVoice)))
+				withHTTPQuery("page_num", strconv.Itoa(request.PageNum)),
+				withHTTPQuery("page_size", strconv.Itoa(request.PageSize)),
+				withHTTPQuery("filter_system_voice", strconv.FormatBool(req.FilterSystemVoice)))
 			if err != nil {
 				return nil, err
 			}
-			return &pagination.PageResponse[Voice]{
+			return &PageResponse[Voice]{
 				HasMore: len(resp.Data.VoiceList) >= request.PageSize,
 				Data:    resp.Data.VoiceList,
 				LogID:   resp.LogID,
@@ -102,12 +102,16 @@ type CloneAudioVoicesReq struct {
 	Text        *string
 }
 
+// cloneAudioVoicesResp represents the response for cloning a voice
+type cloneAudioVoicesResp struct {
+	baseResponse
+	Data *CloneAudioVoicesResp `json:"data"`
+}
+
 // CloneAudioVoicesResp represents the response for cloning a voice
 type CloneAudioVoicesResp struct {
-	internal.BaseResponse
-	Data struct {
-		VoiceID string `json:"voice_id"`
-	} `json:"data"`
+	baseModel
+	VoiceID string `json:"voice_id"`
 }
 
 // ListAudioVoicesReq represents the request for listing voices
@@ -119,7 +123,7 @@ type ListAudioVoicesReq struct {
 
 // ListAudioVoicesResp represents the response for listing voices
 type ListAudioVoicesResp struct {
-	internal.BaseResponse
+	baseResponse
 	Data struct {
 		VoiceList []*Voice `json:"voice_list"`
 	} `json:"data"`

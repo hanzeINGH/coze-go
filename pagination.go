@@ -1,8 +1,4 @@
-package pagination
-
-import (
-	"github.com/coze-dev/coze-go/internal"
-)
+package coze
 
 type PageRequest struct {
 	PageToken string `json:"page_token,omitempty"`
@@ -34,7 +30,7 @@ func (p *basePager[T]) Err() error {
 }
 
 func (p *basePager[T]) Items() []*T {
-	return internal.Value(p.currentPage).Data
+	return ptrValue(p.currentPage).Data
 }
 
 func (p *basePager[T]) Current() *T {
@@ -42,11 +38,11 @@ func (p *basePager[T]) Current() *T {
 }
 
 func (p *basePager[T]) Total() int {
-	return internal.Value(p.currentPage).Total
+	return ptrValue(p.currentPage).Total
 }
 
 func (p *basePager[T]) HasMore() bool {
-	return internal.Value(p.currentPage).HasMore
+	return ptrValue(p.currentPage).HasMore
 }
 
 // PageFetcher interface
@@ -63,7 +59,10 @@ func NewNumberPaged[T any](fetcher PageFetcher[T], pageSize, pageNum int) (*Numb
 	}
 	paginator := &NumberPaged[T]{basePager: basePager[T]{pageFetcher: fetcher, pageSize: pageSize, currentPageNum: pageNum}}
 	err := paginator.fetchNextPage()
-	return paginator, err
+	if err != nil {
+		return nil, err
+	}
+	return paginator, nil
 }
 
 func (p *NumberPaged[T]) fetchNextPage() error {
@@ -79,7 +78,7 @@ func (p *NumberPaged[T]) fetchNextPage() error {
 }
 
 func (p *NumberPaged[T]) Next() bool {
-	if p.currentIndex < len(internal.Value(p.currentPage).Data) {
+	if p.currentIndex < len(ptrValue(p.currentPage).Data) {
 		p.cur = p.currentPage.Data[p.currentIndex]
 		p.currentIndex++
 		return true
@@ -109,11 +108,14 @@ type TokenPaged[T any] struct {
 func NewTokenPaged[T any](fetcher PageFetcher[T], pageSize int, nextID *string) (*TokenPaged[T], error) {
 	paginator := &TokenPaged[T]{basePager: basePager[T]{pageFetcher: fetcher, pageSize: pageSize}, pageToken: nextID}
 	err := paginator.fetchNextPage()
-	return paginator, err
+	if err != nil {
+		return nil, err
+	}
+	return paginator, nil
 }
 
 func (p *TokenPaged[T]) fetchNextPage() error {
-	request := &PageRequest{PageToken: internal.Value(p.pageToken), PageSize: p.pageSize}
+	request := &PageRequest{PageToken: ptrValue(p.pageToken), PageSize: p.pageSize}
 	var err error
 	p.currentPage, err = p.pageFetcher(request)
 	if err != nil {
@@ -125,7 +127,7 @@ func (p *TokenPaged[T]) fetchNextPage() error {
 }
 
 func (p *TokenPaged[T]) Next() bool {
-	if p.currentIndex < len(internal.Value(p.currentPage).Data) {
+	if p.currentIndex < len(ptrValue(p.currentPage).Data) {
 		p.cur = p.currentPage.Data[p.currentIndex]
 		p.currentIndex++
 		return true

@@ -4,15 +4,13 @@ import (
 	"context"
 	"io"
 	"net/http"
-
-	"github.com/coze-dev/coze-go/internal"
 )
 
 type audioSpeech struct {
-	client *internal.Client
+	client *httpClient
 }
 
-func newSpeech(client *internal.Client) *audioSpeech {
+func newSpeech(client *httpClient) *audioSpeech {
 	return &audioSpeech{client: client}
 }
 
@@ -22,10 +20,10 @@ func (r *audioSpeech) Create(ctx context.Context, req *CreateAudioSpeechReq) (*C
 	if err != nil {
 		return nil, err
 	}
-	logID := internal.GetLogID(resp.Header)
+	logID := getLogID(resp.Header)
 
 	return &CreateAudioSpeechResp{
-		BaseResponse: internal.BaseResponse{LogID: logID},
+		baseResponse: baseResponse{LogID: logID},
 		Data:         resp.Body,
 	}, nil
 }
@@ -40,6 +38,6 @@ type CreateAudioSpeechReq struct {
 
 // CreateAudioSpeechResp represents the response for creating speech
 type CreateAudioSpeechResp struct {
-	internal.BaseResponse
+	baseResponse
 	Data io.ReadCloser
 }

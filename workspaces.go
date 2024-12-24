@@ -5,37 +5,34 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-
-	"github.com/coze-dev/coze-go/internal"
-	"github.com/coze-dev/coze-go/pagination"
 )
 
 type workspace struct {
-	client *internal.Client
+	client *httpClient
 }
 
-func newWorkspace(client *internal.Client) *workspace {
+func newWorkspace(client *httpClient) *workspace {
 	return &workspace{client: client}
 }
 
-func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*pagination.NumberPaged[Workspace], error) {
+func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*NumberPaged[Workspace], error) {
 	if req.PageSize == 0 {
 		req.PageSize = 20
 	}
 	if req.PageNum == 0 {
 		req.PageNum = 1
 	}
-	return pagination.NewNumberPaged[Workspace](
-		func(request *pagination.PageRequest) (*pagination.PageResponse[Workspace], error) {
+	return NewNumberPaged[Workspace](
+		func(request *PageRequest) (*PageResponse[Workspace], error) {
 			uri := "/v1/workspaces"
-			resp := &ListWorkspaceResp{}
+			resp := &listWorkspaceResp{}
 			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
-				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
-				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
+				withHTTPQuery("page_num", strconv.Itoa(request.PageNum)),
+				withHTTPQuery("page_size", strconv.Itoa(request.PageSize)))
 			if err != nil {
 				return nil, err
 			}
-			return &pagination.PageResponse[Workspace]{
+			return &PageResponse[Workspace]{
 				Total:   resp.Data.TotalCount,
 				HasMore: len(resp.Data.Workspaces) >= request.PageSize,
 				Data:    resp.Data.Workspaces,
@@ -57,13 +54,17 @@ func NewListWorkspaceReq() *ListWorkspaceReq {
 	}
 }
 
+// listWorkspaceResp represents the response for listing workspaces
+type listWorkspaceResp struct {
+	baseResponse
+	Data *ListWorkspaceResp
+}
+
 // ListWorkspaceResp represents the response for listing workspaces
 type ListWorkspaceResp struct {
-	internal.BaseResponse
-	Data struct {
-		TotalCount int          `json:"total_count"`
-		Workspaces []*Workspace `json:"workspaces"`
-	}
+	baseModel
+	TotalCount int          `json:"total_count"`
+	Workspaces []*Workspace `json:"workspaces"`
 }
 
 // Workspace represents workspace information
@@ -84,8 +85,8 @@ const (
 	WorkspaceRoleTypeMember WorkspaceRoleType = "member"
 )
 
-func (t *WorkspaceRoleType) String() string {
-	return string(*t)
+func (t WorkspaceRoleType) String() string {
+	return string(t)
 }
 
 func (t *WorkspaceRoleType) UnmarshalJSON(data []byte) error {
@@ -115,8 +116,8 @@ const (
 	WorkspaceTypeTeam     WorkspaceType = "team"
 )
 
-func (t *WorkspaceType) String() string {
-	return string(*t)
+func (t WorkspaceType) String() string {
+	return string(t)
 }
 
 func (t *WorkspaceType) UnmarshalJSON(data []byte) error {

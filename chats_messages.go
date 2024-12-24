@@ -3,8 +3,6 @@ package coze
 import (
 	"context"
 	"net/http"
-
-	"github.com/coze-dev/coze-go/internal"
 )
 
 // ListChatsMessagesReq represents the request to list messages
@@ -19,29 +17,40 @@ type ListChatsMessagesReq struct {
 }
 
 // ListChatsMessagesResp represents the response to list messages
+type listChatsMessagesResp struct {
+	baseResponse
+	*ListChatsMessagesResp
+}
+
 type ListChatsMessagesResp struct {
-	internal.BaseResponse
+	baseModel
 	Messages []*Message `json:"data"`
 }
 
 type chatMessages struct {
-	client *internal.Client
+	client *httpClient
 }
 
-func newChatMessages(client *internal.Client) *chatMessages {
+func newChatMessages(client *httpClient) *chatMessages {
 	return &chatMessages{client: client}
 }
 
 func (r *chatMessages) List(ctx context.Context, req *ListChatsMessagesReq) (*ListChatsMessagesResp, error) {
 	method := http.MethodGet
-	uri := "/v3/chats/message/list"
-	resp := &ListChatsMessagesResp{}
+	uri := "/v3/chat/message/list"
+	resp := &listChatsMessagesResp{}
 	err := r.client.Request(ctx, method, uri, nil, resp,
-		internal.WithQuery("conversation_id", req.ConversationID),
-		internal.WithQuery("chat_id", req.ChatID),
+		withHTTPQuery("conversation_id", req.ConversationID),
+		withHTTPQuery("chat_id", req.ChatID),
 	)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	result := &ListChatsMessagesResp{
+		baseModel: baseModel{
+			LogID: resp.LogID,
+		},
+		Messages: resp.Messages,
+	}
+	return result, nil
 }

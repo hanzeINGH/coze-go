@@ -3,27 +3,26 @@ package coze
 import (
 	"context"
 	"net/http"
-
-	"github.com/coze-dev/coze-go/internal"
 )
 
 type audioRooms struct {
-	client *internal.Client
+	client *httpClient
 }
 
-func newRooms(client *internal.Client) *audioRooms {
+func newRooms(client *httpClient) *audioRooms {
 	return &audioRooms{client: client}
 }
 
 func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*CreateAudioRoomsResp, error) {
 	method := http.MethodPost
 	uri := "/v1/audio/audioRooms"
-	resp := &CreateAudioRoomsResp{}
+	resp := &createAudioRoomsResp{}
 	err := r.client.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Data.SetLogID(resp.LogID)
+	return resp.Data, nil
 }
 
 // AudioCodec represents the audio codec
@@ -54,13 +53,17 @@ type CreateAudioRoomsReq struct {
 	Config         *RoomConfig `json:"config,omitempty"`
 }
 
+// createAudioRoomsResp represents the response for creating an audio room
+type createAudioRoomsResp struct {
+	baseResponse
+	Data *CreateAudioRoomsResp `json:"data"`
+}
+
 // CreateAudioRoomsResp represents the response for creating an audio room
 type CreateAudioRoomsResp struct {
-	internal.BaseResponse
-	Data struct {
-		RoomID string `json:"room_id"`
-		AppID  string `json:"app_id"`
-		Token  string `json:"token"`
-		UID    string `json:"uid"`
-	} `json:"data"`
+	baseModel
+	RoomID string `json:"room_id"`
+	AppID  string `json:"app_id"`
+	Token  string `json:"token"`
+	UID    string `json:"uid"`
 }

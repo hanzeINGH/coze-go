@@ -3,8 +3,7 @@ package coze
 import (
 	"net/http"
 
-	"github.com/coze-dev/coze-go/internal"
-	"github.com/coze-dev/coze-go/internal/log"
+	"github.com/coze-dev/coze-go/log"
 )
 
 type CozeAPI struct {
@@ -35,7 +34,7 @@ func WithBaseURL(baseURL string) CozeAPIOption {
 	}
 }
 
-// WithHttpClient sets a custom HTTP client
+// WithHttpClient sets a custom HTTP httpClient
 func WithHttpClient(client *http.Client) CozeAPIOption {
 	return func(opt *newCozeAPIOpt) {
 		opt.client = client
@@ -74,20 +73,20 @@ func NewCozeAPI(auth Auth, opts ...CozeAPIOption) CozeAPI {
 		auth: auth,
 		next: saveTransport,
 	}
-	httpClient := internal.NewClient(opt.client, opt.baseURL)
+	client := newHTTPClient(opt.client, opt.baseURL)
 
 	// Set log level
 	log.SetLevel(opt.logLevel)
 
 	cozeClient := CozeAPI{
-		Audio:         newAudio(httpClient),
-		Bots:          newBots(httpClient),
-		Chats:         newChats(httpClient),
-		Conversations: newConversations(httpClient),
-		Workflows:     newWorkflows(httpClient),
-		Workspaces:    newWorkspace(httpClient),
-		Datasets:      newDatasets(httpClient),
-		Files:         newFiles(httpClient),
+		Audio:         newAudio(client),
+		Bots:          newBots(client),
+		Chats:         newChats(client),
+		Conversations: newConversations(client),
+		Workflows:     newWorkflows(client),
+		Workspaces:    newWorkspace(client),
+		Datasets:      newDatasets(client),
+		Files:         newFiles(client),
 
 		baseURL: opt.baseURL,
 	}

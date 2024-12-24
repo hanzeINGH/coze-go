@@ -1,6 +1,6 @@
-package internal
+package coze
 
-func Value[T any](s *T) T {
+func ptrValue[T any](s *T) T {
 	if s != nil {
 		return *s
 	}
@@ -8,6 +8,6 @@ func Value[T any](s *T) T {
 	return empty
 }
 
-func Ptr[T any](s T) *T {
+func ptr[T any](s T) *T {
 	return &s
 }

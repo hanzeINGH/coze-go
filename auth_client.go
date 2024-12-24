@@ -3,8 +3,6 @@ package coze
 import (
 	"context"
 	"time"
-
-	"github.com/coze-dev/coze-go/internal"
 )
 
 type Auth interface {
@@ -67,7 +65,7 @@ func (j *jwtOAuthImpl) needRefresh() bool {
 
 func (j *jwtOAuthImpl) Token(ctx context.Context) (string, error) {
 	if !j.needRefresh() {
-		return internal.Value(j.accessToken), nil
+		return ptrValue(j.accessToken), nil
 	}
 	resp, err := j.client.GetAccessToken(ctx, &JWTGetAccessTokenOptions{
 		TTL:         j.TTL,
@@ -77,7 +75,7 @@ func (j *jwtOAuthImpl) Token(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	j.accessToken = internal.Ptr(resp.AccessToken)
+	j.accessToken = ptr(resp.AccessToken)
 	j.expireIn = resp.ExpiresIn
 	return resp.AccessToken, nil
 }

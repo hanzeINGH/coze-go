@@ -1,9 +1,5 @@
 package coze
 
-import (
-	"github.com/coze-dev/coze-go/internal"
-)
-
 // Message represents a message in conversation
 type Message struct {
 	// The entity that sent this message.
@@ -49,11 +45,11 @@ func BuildUserQuestionText(content string, metaData map[string]string) *Message 
 }
 
 // BuildUserQuestionObjects builds an object message for user question
-func BuildUserQuestionObjects(objects []MessageObjectString, metaData map[string]string) *Message {
+func BuildUserQuestionObjects(objects []*MessageObjectString, metaData map[string]string) *Message {
 	return &Message{
 		Role:        MessageRoleUser,
 		Type:        MessageTypeQuestion,
-		Content:     internal.MustToJson(objects),
+		Content:     mustToJson(objects),
 		ContentType: MessageContentTypeObjectString,
 		MetaData:    metaData,
 	}
@@ -80,6 +76,10 @@ const (
 	// MessageRoleAssistant Indicates that the content of the message is sent by the bot.
 	MessageRoleAssistant MessageRole = "assistant"
 )
+
+func (m *MessageRole) String() string {
+	return string(*m)
+}
 
 // MessageType represents the type of message
 type MessageType string
@@ -157,50 +157,50 @@ const (
 )
 
 // NewTextMessageObject Helper functions for creating MessageObjectString
-func NewTextMessageObject(text string) MessageObjectString {
-	return MessageObjectString{
+func NewTextMessageObject(text string) *MessageObjectString {
+	return &MessageObjectString{
 		Type: MessageObjectStringTypeText,
 		Text: text,
 	}
 }
 
-func NewImageMessageObjectByURL(fileURL string) MessageObjectString {
-	return MessageObjectString{
+func NewImageMessageObjectByURL(fileURL string) *MessageObjectString {
+	return &MessageObjectString{
 		Type:    MessageObjectStringTypeImage,
 		FileURL: fileURL,
 	}
 }
 
-func NewImageMessageObjectByID(fileID string) MessageObjectString {
-	return MessageObjectString{
+func NewImageMessageObjectByID(fileID string) *MessageObjectString {
+	return &MessageObjectString{
 		Type:   MessageObjectStringTypeImage,
 		FileID: fileID,
 	}
 }
 
-func NewFileMessageObjectByID(fileID string) MessageObjectString {
-	return MessageObjectString{
+func NewFileMessageObjectByID(fileID string) *MessageObjectString {
+	return &MessageObjectString{
 		Type:   MessageObjectStringTypeFile,
 		FileID: fileID,
 	}
 }
 
-func NewFileMessageObjectByURL(fileURL string) MessageObjectString {
-	return MessageObjectString{
+func NewFileMessageObjectByURL(fileURL string) *MessageObjectString {
+	return &MessageObjectString{
 		Type:    MessageObjectStringTypeFile,
 		FileURL: fileURL,
 	}
 }
 
-func NewAudioMessageObjectByID(fileID string) MessageObjectString {
-	return MessageObjectString{
+func NewAudioMessageObjectByID(fileID string) *MessageObjectString {
+	return &MessageObjectString{
 		Type:   MessageObjectStringTypeAudio,
 		FileID: fileID,
 	}
 }
 
-func NewAudioMessageObjectByURL(fileURL string) MessageObjectString {
-	return MessageObjectString{
+func NewAudioMessageObjectByURL(fileURL string) *MessageObjectString {
+	return &MessageObjectString{
 		Type:    MessageObjectStringTypeAudio,
 		FileURL: fileURL,
 	}

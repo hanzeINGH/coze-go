@@ -1,12 +1,12 @@
-package coze_error
+package coze
 
 import (
 	"errors"
 	"fmt"
 )
 
-// AuthErrorFormat represents the error response from Coze API
-type AuthErrorFormat struct {
+// authErrorFormat represents the error response from Coze API
+type authErrorFormat struct {
 	ErrorMessage string `json:"error_message"`
 	ErrorCode    string `json:"error_code"`
 	Error        string `json:"error"`
@@ -48,7 +48,7 @@ type CozeAuthError struct {
 	parent       error
 }
 
-func NewCozeAuthExceptionWithoutParent(error *AuthErrorFormat, statusCode int, logID string) *CozeAuthError {
+func NewCozeAuthExceptionWithoutParent(error *authErrorFormat, statusCode int, logID string) *CozeAuthError {
 	return &CozeAuthError{
 		HttpCode:     statusCode,
 		ErrorMessage: error.ErrorMessage,
@@ -60,7 +60,7 @@ func NewCozeAuthExceptionWithoutParent(error *AuthErrorFormat, statusCode int, l
 
 // Error implements the error interface
 func (e *CozeAuthError) Error() string {
-	return fmt.Sprintf("HttpCode: %d, Code: %s, ErrorMessage: %s, Param: %s, LogID: %s",
+	return fmt.Sprintf("HttpCode: %d, Code: %s, Message: %s, Param: %s, LogID: %s",
 		e.HttpCode,
 		e.Code,
 		e.ErrorMessage,

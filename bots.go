@@ -4,74 +4,76 @@ import (
 	"context"
 	"net/http"
 	"strconv"
-
-	"github.com/coze-dev/coze-go/internal"
-	"github.com/coze-dev/coze-go/pagination"
 )
 
 func (r *bots) Create(ctx context.Context, req *CreateBotsReq) (*CreateBotsResp, error) {
 	method := http.MethodPost
 	uri := "/v1/bot/create"
-	resp := &CreateBotsResp{}
+	resp := &createBotsResp{}
 	err := r.client.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Data.LogID = resp.LogID
+	return resp.Data, nil
 }
 
 func (r *bots) Update(ctx context.Context, req *UpdateBotsReq) (*UpdateBotsResp, error) {
 	method := http.MethodPost
 	uri := "/v1/bot/update"
-	resp := &UpdateBotsResp{}
+	resp := &updateBotsResp{}
 	err := r.client.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	result := &UpdateBotsResp{}
+	result.LogID = resp.LogID
+	return result, nil
 }
 
 func (r *bots) Publish(ctx context.Context, req *PublishBotsReq) (*PublishBotsResp, error) {
 	method := http.MethodPost
 	uri := "/v1/bot/publish"
-	resp := &PublishBotsResp{}
+	resp := &publishBotsResp{}
 	err := r.client.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Data.LogID = resp.LogID
+	return resp.Data, nil
 }
 
 func (r *bots) Retrieve(ctx context.Context, req *RetrieveBotsReq) (*RetrieveBotsResp, error) {
 	method := http.MethodGet
 	uri := "/v1/bot/get_online_info"
-	resp := &RetrieveBotsResp{}
-	err := r.client.Request(ctx, method, uri, nil, resp, internal.WithQuery("bot_id", req.BotID))
+	resp := &retrieveBotsResp{}
+	err := r.client.Request(ctx, method, uri, nil, resp, withHTTPQuery("bot_id", req.BotID))
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Bot.LogID = resp.LogID
+	return resp.Bot, nil
 }
 
-func (r *bots) List(ctx context.Context, req *ListBotsReq) (*pagination.NumberPaged[SimpleBot], error) {
+func (r *bots) List(ctx context.Context, req *ListBotsReq) (*NumberPaged[SimpleBot], error) {
 	if req.PageSize == 0 {
 		req.PageSize = 20
 	}
 	if req.PageNum == 0 {
 		req.PageNum = 1
 	}
-	return pagination.NewNumberPaged[SimpleBot](
-		func(request *pagination.PageRequest) (*pagination.PageResponse[SimpleBot], error) {
+	return NewNumberPaged[SimpleBot](
+		func(request *PageRequest) (*PageResponse[SimpleBot], error) {
 			uri := "/v1/space/published_bots_list"
-			resp := &ListBotsResp{}
+			resp := &listBotsResp{}
 			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
-				internal.WithQuery("space_id", req.SpaceID),
-				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
-				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
+				withHTTPQuery("space_id", req.SpaceID),
+				withHTTPQuery("page_index", strconv.Itoa(request.PageNum)),
+				withHTTPQuery("page_size", strconv.Itoa(request.PageSize)))
 			if err != nil {
 				return nil, err
 			}
-			return &pagination.PageResponse[SimpleBot]{
+			return &PageResponse[SimpleBot]{
 				Total:   resp.Data.Total,
 				HasMore: len(resp.Data.Bots) >= request.PageSize,
 				Data:    resp.Data.Bots,
@@ -163,11 +165,14 @@ type CreateBotsReq struct {
 }
 
 // CreateBotsResp 创建机器人响应
+type createBotsResp struct {
+	baseResponse
+	Data *CreateBotsResp `json:"data"`
+}
+
 type CreateBotsResp struct {
-	internal.BaseResponse
-	Data struct {
-		BotID string `json:"bot_id"`
-	} `json:"data"`
+	baseModel
+	BotID string `json:"bot_id"`
 }
 
 // PublishBotsReq represents the request structure for publishing a bot
@@ -177,12 +182,15 @@ type PublishBotsReq struct {
 }
 
 // PublishBotsResp 发布机器人响应
+type publishBotsResp struct {
+	baseResponse
+	Data *PublishBotsResp `json:"data"`
+}
+
 type PublishBotsResp struct {
-	internal.BaseResponse
-	Data struct {
-		BotID      string `json:"bot_id"`
-		BotVersion string `json:"version"`
-	} `json:"data"`
+	baseModel
+	BotID      string `json:"bot_id"`
+	BotVersion string `json:"version"`
 }
 
 // ListBotsReq represents the request structure for listing bots
@@ -192,9 +200,9 @@ type ListBotsReq struct {
 	PageSize int    `json:"page_size"` // Page size
 }
 
-// ListBotsResp 列出机器人响应
-type ListBotsResp struct {
-	internal.BaseResponse
+// listBotsResp response structure for listing bots
+type listBotsResp struct {
+	baseResponse
 	Data struct {
 		Bots  []*SimpleBot `json:"space_bots"`
 		Total int          `json:"total"`
@@ -206,10 +214,15 @@ type RetrieveBotsReq struct {
 	BotID string `json:"bot_id"` // Bot ID
 }
 
-// RetrieveBotsResp 获取机器人响应
+// RetrieveBotsResp response structure for retrieving a bot
+type retrieveBotsResp struct {
+	baseResponse
+	Bot *RetrieveBotsResp `json:"data"`
+}
+
 type RetrieveBotsResp struct {
-	internal.BaseResponse
-	Bot *Bot `json:"data"`
+	Bot
+	baseModel
 }
 
 // UpdateBotsReq represents the request structure for updating a bot
@@ -224,14 +237,18 @@ type UpdateBotsReq struct {
 }
 
 // UpdateBotsResp 更新机器人响应
+type updateBotsResp struct {
+	baseResponse
+}
+
 type UpdateBotsResp struct {
-	internal.BaseResponse
+	baseModel
 }
 
 type bots struct {
-	client *internal.Client
+	client *httpClient
 }
 
-func newBots(client *internal.Client) *bots {
+func newBots(client *httpClient) *bots {
 	return &bots{client: client}
 }

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/coze-dev/coze-go"
-	"github.com/coze-dev/coze-go/internal"
 )
 
 //
@@ -59,7 +58,7 @@ func main() {
 	// And when the chats status is not completed, poll the status of the chats once every second.
 	// After the chats is completed, retrieve all messages in the chats.
 	//
-	timeout := time.After(10) // time.Second
+	timeout := time.After(2) // time.Second
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
 
@@ -102,7 +101,8 @@ func main() {
 	fmt.Println(chat2)
 
 	// the developer can also set the timeout.
-	chat3, err := cozeCli.Chats.CreateAndPoll(ctx, req, internal.Ptr(10))
+	pollTimeout := 10
+	chat3, err := cozeCli.Chats.CreateAndPoll(ctx, req, &pollTimeout)
 	if err != nil {
 		fmt.Println("Error in CreateAndPollWithTimeout:", err)
 		return

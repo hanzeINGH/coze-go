@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/coze-dev/coze-go"
-	"github.com/coze-dev/coze-go/coze_error"
 )
 
 // This examples demonstrates how to handle different types of errors from the Coze API.
@@ -25,9 +24,9 @@ func main() {
 		BotID: "invalid_bot_id",
 	})
 	if err != nil {
-		if cozeErr, ok := coze_error.AsCozeError(err); ok {
+		if cozeErr, ok := coze.AsCozeError(err); ok {
 			// Handle Coze API error
-			fmt.Printf("Coze API error: %s (code: %s)\n", cozeErr.ErrorMessage, cozeErr.ErrorCode)
+			fmt.Printf("Coze API error: %s (code: %s)\n", cozeErr.Message, cozeErr.Code)
 			return
 		}
 		// Handle other errors
@@ -45,7 +44,7 @@ func main() {
 		PageSize: 10,
 	})
 	if err != nil {
-		if cozeErr, ok := coze_error.AsCozeAuthError(err); ok {
+		if cozeErr, ok := coze.AsCozeAuthError(err); ok {
 			// Handle auth error
 			if cozeErr.Code == "unauthorized" {
 				fmt.Println("Authentication failed. Please check your token.")

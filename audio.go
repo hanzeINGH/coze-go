@@ -1,9 +1,5 @@
 package coze
 
-import (
-	"github.com/coze-dev/coze-go/internal"
-)
-
 // AudioFormat represents the audio format type
 type AudioFormat string
 
@@ -46,7 +42,7 @@ type audio struct {
 	Voices *audioVoice
 }
 
-func newAudio(client *internal.Client) *audio {
+func newAudio(client *httpClient) *audio {
 	return &audio{
 		Rooms:  newRooms(client),
 		Speech: newSpeech(client),

@@ -1,4 +1,4 @@
-package internal
+package coze
 
 import (
 	"encoding/json"
@@ -22,7 +22,7 @@ type userAgentInfo struct {
 func setUserAgent(req *http.Request) {
 	req.Header.Set("User-Agent", getUserAgent())
 
-	// 添加 X-Coze-Client-User-Agent 头
+	// 添加 X-Coze-httpClient-User-Agent 头
 	clientUA, err := getCozeClientUserAgent()
 	if err == nil {
 		req.Header.Set("X-Coze-Client-User-Agent", clientUA)

@@ -18,7 +18,7 @@ func main() {
 
 	ctx := context.Background()
 	// you can use iterator to automatically retrieve next page
-	workspaces, err := cozeCli.Workspaces.List(ctx, &coze.ListWorkspaceReq{})
+	workspaces, err := cozeCli.Workspaces.List(ctx, &coze.ListWorkspaceReq{PageSize: 2})
 	if err != nil {
 		fmt.Println("Error fetching workspaces:", err)
 		return

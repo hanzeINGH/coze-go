@@ -53,7 +53,7 @@ func main() {
 		fmt.Println("Error creating bot:", err)
 		return
 	}
-	botID := createResp.Data.BotID
+	botID := createResp.BotID
 	fmt.Println(createResp)
 
 	//

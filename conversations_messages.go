@@ -3,40 +3,38 @@ package coze
 import (
 	"context"
 	"net/http"
-
-	"github.com/coze-dev/coze-go/internal"
-	"github.com/coze-dev/coze-go/pagination"
 )
 
 type conversationsMessages struct {
-	client *internal.Client
+	client *httpClient
 }
 
-func newConversationMessage(client *internal.Client) *conversationsMessages {
+func newConversationMessage(client *httpClient) *conversationsMessages {
 	return &conversationsMessages{client: client}
 }
 
 func (r *conversationsMessages) Create(ctx context.Context, req *CreateMessageReq) (*CreateMessageResp, error) {
 	method := http.MethodPost
 	uri := "/v1/conversation/message/create"
-	resp := &CreateMessageResp{}
+	resp := &createMessageResp{}
 
 	err := r.client.Request(ctx, method, uri, req, resp,
-		internal.WithQuery("conversation_id", req.ConversationID))
+		withHTTPQuery("conversation_id", req.ConversationID))
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Message.SetLogID(resp.LogID)
+	return resp.Message, nil
 }
 
-func (r *conversationsMessages) List(ctx context.Context, req *ListConversationsMessagesReq) (*pagination.TokenPaged[Message], error) {
+func (r *conversationsMessages) List(ctx context.Context, req *ListConversationsMessagesReq) (*TokenPaged[Message], error) {
 	if req.Limit == 0 {
 		req.Limit = 20
 	}
-	return pagination.NewTokenPaged[Message](
-		func(request *pagination.PageRequest) (*pagination.PageResponse[Message], error) {
+	return NewTokenPaged[Message](
+		func(request *PageRequest) (*PageResponse[Message], error) {
 			uri := "/v1/conversation/message/list"
-			resp := &ListConversationsMessagesResp{}
+			resp := &listConversationsMessagesResp{}
 			doReq := &ListConversationsMessagesReq{
 				Order:    req.Order,
 				ChatID:   req.ChatID,
@@ -45,14 +43,14 @@ func (r *conversationsMessages) List(ctx context.Context, req *ListConversations
 				Limit:    request.PageSize,
 			}
 			if request.PageToken != "" {
-				doReq.AfterID = internal.Ptr(request.PageToken)
+				doReq.AfterID = ptr(request.PageToken)
 			}
 			err := r.client.Request(ctx, http.MethodPost, uri, doReq, resp,
-				internal.WithQuery("conversation_id", req.ConversationID))
+				withHTTPQuery("conversation_id", req.ConversationID))
 			if err != nil {
 				return nil, err
 			}
-			return &pagination.PageResponse[Message]{
+			return &PageResponse[Message]{
 				HasMore: resp.HasMore,
 				Data:    resp.Messages,
 				LastID:  resp.FirstID,
@@ -65,47 +63,50 @@ func (r *conversationsMessages) List(ctx context.Context, req *ListConversations
 func (r *conversationsMessages) Retrieve(ctx context.Context, req *RetrieveConversationsMessagesReq) (*RetrieveConversationsMessagesResp, error) {
 	method := http.MethodGet
 	uri := "/v1/conversation/message/retrieve"
-	resp := &RetrieveConversationsMessagesResp{}
+	resp := &retrieveConversationsMessagesResp{}
 	err := r.client.Request(ctx, method, uri, nil, resp,
-		internal.WithQuery("conversation_id", req.ConversationID),
-		internal.WithQuery("message_id", req.MessageID),
+		withHTTPQuery("conversation_id", req.ConversationID),
+		withHTTPQuery("message_id", req.MessageID),
 	)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Message.SetLogID(resp.LogID)
+	return resp.Message, nil
 }
 
 func (r *conversationsMessages) Update(ctx context.Context, req *UpdateConversationMessagesReq) (*UpdateConversationMessagesResp, error) {
 	method := http.MethodPost
 	uri := "/v1/conversation/message/modify"
-	resp := &UpdateConversationMessagesResp{}
+	resp := &updateConversationMessagesResp{}
 	conversationID := req.ConversationID
 	messageID := req.MessageID
 	req.ConversationID = ""
 	req.MessageID = ""
 	err := r.client.Request(ctx, method, uri, req, resp,
-		internal.WithQuery("conversation_id", conversationID),
-		internal.WithQuery("message_id", messageID),
+		withHTTPQuery("conversation_id", conversationID),
+		withHTTPQuery("message_id", messageID),
 	)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Message.SetLogID(resp.LogID)
+	return resp.Message, nil
 }
 
 func (r *conversationsMessages) Delete(ctx context.Context, req *DeleteConversationsMessagesReq) (*DeleteConversationsMessagesResp, error) {
 	method := http.MethodPost
 	uri := "/v1/conversation/message/delete"
-	resp := &DeleteConversationsMessagesResp{}
+	resp := &deleteConversationsMessagesResp{}
 	err := r.client.Request(ctx, method, uri, nil, resp,
-		internal.WithQuery("conversation_id", req.ConversationID),
-		internal.WithQuery("message_id", req.MessageID),
+		withHTTPQuery("conversation_id", req.ConversationID),
+		withHTTPQuery("message_id", req.MessageID),
 	)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Message.SetLogID(resp.LogID)
+	return resp.Message, nil
 }
 
 // CreateMessageReq represents request for creating message
@@ -128,9 +129,9 @@ type CreateMessageReq struct {
 	MetaData map[string]string `json:"meta_data,omitempty"`
 }
 
-func (c *CreateMessageReq) SetObjectContext(objs []MessageObjectString) {
+func (c *CreateMessageReq) SetObjectContext(objs []*MessageObjectString) {
 	c.ContentType = MessageContentTypeObjectString
-	c.Content = internal.MustToJson(objs)
+	c.Content = mustToJson(objs)
 }
 
 // ListConversationsMessagesReq represents request for listing messages
@@ -189,35 +190,64 @@ type DeleteConversationsMessagesReq struct {
 	MessageID string `json:"message_id"`
 }
 
+// createMessageResp represents response for creating message
+type createMessageResp struct {
+	baseResponse
+	Message *CreateMessageResp `json:"data"`
+}
+
 // CreateMessageResp represents response for creating message
 type CreateMessageResp struct {
-	internal.BaseResponse
-	Message *Message `json:"data"`
+	baseModel
+	Message
 }
 
 // ListConversationsMessagesResp represents response for listing messages
+type listConversationsMessagesResp struct {
+	baseResponse
+	*ListConversationsMessagesResp
+}
+
 type ListConversationsMessagesResp struct {
-	internal.BaseResponse
+	baseModel
 	HasMore  bool       `json:"has_more"`
 	FirstID  string     `json:"first_id"`
 	LastID   string     `json:"last_id"`
 	Messages []*Message `json:"data"`
 }
 
-// RetrieveConversationsMessagesResp represents response for retrieving message
+// retrieveConversationsMessagesResp represents response for retrieving message
+type retrieveConversationsMessagesResp struct {
+	baseResponse
+	Message *RetrieveConversationsMessagesResp `json:"data"`
+}
+
+// RetrieveConversationsMessagesResp represents response for creating message
 type RetrieveConversationsMessagesResp struct {
-	internal.BaseResponse
-	Message *Message `json:"data"`
+	baseModel
+	Message
 }
 
-// UpdateConversationMessagesResp represents response for updating message
+// updateConversationMessagesResp represents response for updating message
+type updateConversationMessagesResp struct {
+	baseResponse
+	Message *UpdateConversationMessagesResp `json:"message"`
+}
+
+// UpdateConversationMessagesResp represents response for creating message
 type UpdateConversationMessagesResp struct {
-	internal.BaseResponse
-	Message *Message `json:"message"`
+	baseModel
+	Message
 }
 
-// DeleteConversationsMessagesResp represents response for deleting message
+// deleteConversationsMessagesResp represents response for deleting message
+type deleteConversationsMessagesResp struct {
+	baseResponse
+	Message *DeleteConversationsMessagesResp `json:"data"`
+}
+
+// DeleteConversationsMessagesResp represents response for creating message
 type DeleteConversationsMessagesResp struct {
-	internal.BaseResponse
-	Message *Message `json:"data"`
+	baseModel
+	Message
 }

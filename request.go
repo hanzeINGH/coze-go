@@ -1,4 +1,4 @@
-package internal
+package coze
 
 import (
 	"bytes"
@@ -10,9 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/coze-dev/coze-go/coze_error"
-	"github.com/coze-dev/coze-go/internal/log"
-	"github.com/tidwall/gjson"
+	"github.com/coze-dev/coze-go/log"
 )
 
 // Doer 是一个执行 HTTP 请求的接口
@@ -20,18 +18,18 @@ type Doer interface {
 	Do(*http.Request) (*http.Response, error)
 }
 
-// Client HTTP 客户端封装
-type Client struct {
+// httpClient HTTP 客户端封装
+type httpClient struct {
 	doer    Doer
 	baseURL string
 }
 
-// NewClient 创建新的 HTTP 客户端
-func NewClient(doer Doer, baseURL string) *Client {
+// newHTTPClient 创建新的 HTTP 客户端
+func newHTTPClient(doer Doer, baseURL string) *httpClient {
 	if doer == nil {
 		doer = &http.Client{}
 	}
-	return &Client{
+	return &httpClient{
 		doer:    doer,
 		baseURL: baseURL,
 	}
@@ -40,16 +38,16 @@ func NewClient(doer Doer, baseURL string) *Client {
 // RequestOption 请求选项函数类型
 type RequestOption func(*http.Request) error
 
-// WithHeader 添加请求头
-func WithHeader(key, value string) RequestOption {
+// withHTTPHeader 添加请求头
+func withHTTPHeader(key, value string) RequestOption {
 	return func(req *http.Request) error {
 		req.Header.Set(key, value)
 		return nil
 	}
 }
 
-// WithQuery 添加查询参数
-func WithQuery(key, value string) RequestOption {
+// withHTTPQuery 添加查询参数
+func withHTTPQuery(key, value string) RequestOption {
 	return func(req *http.Request) error {
 		q := req.URL.Query()
 		q.Add(key, value)
@@ -59,10 +57,10 @@ func WithQuery(key, value string) RequestOption {
 }
 
 // Request 发送请求
-func (c *Client) Request(ctx context.Context, method, path string, body any, instance any, opts ...RequestOption) error {
+func (c *httpClient) Request(ctx context.Context, method, path string, body any, instance any, opts ...RequestOption) error {
 	resp, err := c.RawRequest(ctx, method, path, body, opts...)
 	if err != nil {
-		return fmt.Errorf("do request: %w", err)
+		return err
 	}
 
 	return packInstance(instance, resp)
@@ -77,46 +75,45 @@ func packInstance(instance any, resp *http.Response) error {
 	if err != nil {
 		return fmt.Errorf("read response body: %w", err)
 	}
-	logID := GetLogID(resp.Header)
+	logID := getLogID(resp.Header)
 	err = json.Unmarshal(bodyBytes, instance)
 	if err != nil {
 		log.Errorf(fmt.Sprintf("unmarshal response body: %s", string(bodyBytes)))
 		return err
 	}
-	if baseResp, ok := instance.(BaseResp); ok {
-		return IsResponseSuccess(baseResp, bodyBytes, logID)
+	if baseResp, ok := instance.(baseRespInterface); ok {
+		return isResponseSuccess(baseResp, bodyBytes, logID)
 	}
 	return nil
 }
 
-func IsResponseSuccess(baseResp BaseResp, bodyBytes []byte, logID string) error {
+func isResponseSuccess(baseResp baseRespInterface, bodyBytes []byte, logID string) error {
 	baseResp.SetLogID(logID)
-	code := gjson.GetBytes(bodyBytes, "code").Int()
-	if code != 0 {
+	if baseResp.GetCode() != 0 {
 		log.Warnf("request unsuccessful: %s, log_id:%s", string(bodyBytes), logID)
-		return coze_error.NewCozeError(int(code), gjson.GetBytes(bodyBytes, "msg").String(), logID)
+		return NewCozeError(baseResp.GetCode(), baseResp.GetMsg(), logID)
 	}
 	return nil
 }
 
 func checkHttpResp(resp *http.Response) error {
-	logID := GetLogID(resp.Header)
+	logID := getLogID(resp.Header)
 	// 鉴权的情况，需要解析
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, err := io.ReadAll(resp.Body)
-		errorInfo := coze_error.AuthErrorFormat{}
+		errorInfo := authErrorFormat{}
 		err = json.Unmarshal(bodyBytes, &errorInfo)
 		if err != nil {
 			log.Errorf(fmt.Sprintf("unmarshal response body: %s", string(bodyBytes)))
 			return errors.New(string(bodyBytes) + "log_id:%s" + logID)
 		}
-		return coze_error.NewCozeAuthExceptionWithoutParent(&errorInfo, resp.StatusCode, logID)
+		return NewCozeAuthExceptionWithoutParent(&errorInfo, resp.StatusCode, logID)
 	}
 	return nil
 }
 
 // UploadFile 上传文件
-func (c *Client) UploadFile(ctx context.Context, path string, reader io.Reader, fileName string, fields map[string]string, instance any, opts ...RequestOption) error {
+func (c *httpClient) UploadFile(ctx context.Context, path string, reader io.Reader, fileName string, fields map[string]string, instance any, opts ...RequestOption) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -163,7 +160,7 @@ func (c *Client) UploadFile(ctx context.Context, path string, reader io.Reader, 
 	return packInstance(instance, resp)
 }
 
-func (c *Client) RawRequest(ctx context.Context, method, path string, body any, opts ...RequestOption) (*http.Response, error) {
+func (c *httpClient) RawRequest(ctx context.Context, method, path string, body any, opts ...RequestOption) (*http.Response, error) {
 	urlInfo := fmt.Sprintf("%s%s", c.baseURL, path)
 
 	var bodyReader io.Reader
@@ -203,11 +200,11 @@ func (c *Client) RawRequest(ctx context.Context, method, path string, body any, 
 	return resp, err
 }
 
-type MockDoer struct {
+type mockDoer struct {
 	Response *http.Response
 	Error    error
 }
 
-func (m *MockDoer) Do(*http.Request) (*http.Response, error) {
+func (m *mockDoer) Do(*http.Request) (*http.Response, error) {
 	return m.Response, m.Error
 }

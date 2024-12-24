@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/coze-dev/coze-go"
-	"github.com/coze-dev/coze-go/coze_error"
 )
 
 // Using web oauth as example, show how to handle the Auth exception
@@ -55,7 +54,7 @@ func main() {
 		// You need to handle the exception and guide users to re-authenticate
 		// For different oauth type, the error code may be different,
 		// you should read document to get more information
-		authErr, ok := coze_error.AsCozeAuthError(err)
+		authErr, ok := coze.AsCozeAuthError(err)
 		if ok {
 			switch authErr.Code {
 			}

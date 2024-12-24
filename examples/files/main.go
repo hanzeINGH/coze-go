@@ -18,7 +18,7 @@ func main() {
 	cozeCli := coze.NewCozeAPI(authCli, coze.WithBaseURL(os.Getenv("COZE_API_BASE")))
 
 	ctx := context.Background()
-	filePath := os.Getenv("FILE_PATH")
+	filePath := os.Getenv("IMAGE_FILE_PATH")
 	file, err := os.Open(filePath)
 	if err != nil {
 		fmt.Println("Error opening file:", err)

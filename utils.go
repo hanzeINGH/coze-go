@@ -1,4 +1,4 @@
-package internal
+package coze
 
 import (
 	"crypto/rand"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func GenerateRandomString(length int) (string, error) {
+func generateRandomString(length int) (string, error) {
 	bytes := make([]byte, length/2)
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
@@ -30,7 +30,7 @@ func hexChar(b byte) byte {
 	return 'a' + (b - 10)
 }
 
-func MustToJson(obj any) string {
+func mustToJson(obj any) string {
 	jsonArray, err := json.Marshal(obj)
 	if err != nil {
 		return "{}"
@@ -42,6 +42,6 @@ const (
 	logIDHeader = "x-tt-logid"
 )
 
-func GetLogID(header http.Header) string {
+func getLogID(header http.Header) string {
 	return header.Get(logIDHeader)
 }

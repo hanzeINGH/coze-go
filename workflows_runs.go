@@ -7,16 +7,14 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/coze-dev/coze-go/internal"
 )
 
 type workflowRuns struct {
-	client    *internal.Client
+	client    *httpClient
 	Histories *workflowRunHistories
 }
 
-func newWorkflowRun(client *internal.Client) *workflowRuns {
+func newWorkflowRun(client *httpClient) *workflowRuns {
 	return &workflowRuns{
 		client:    client,
 		Histories: newWorkflowRunHistories(client),
@@ -25,13 +23,14 @@ func newWorkflowRun(client *internal.Client) *workflowRuns {
 
 func (r *workflowRuns) Create(ctx context.Context, req *RunWorkflowsReq) (*RunWorkflowsResp, error) {
 	method := http.MethodPost
-	uri := "/v1/workflow/runs"
-	resp := &RunWorkflowsResp{}
+	uri := "/v1/workflow/run"
+	resp := &runWorkflowsResp{}
 	err := r.client.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.RunWorkflowsResp.SetLogID(resp.LogID)
+	return resp.RunWorkflowsResp, nil
 }
 
 type WorkflowEventReader struct {
@@ -50,7 +49,7 @@ func (r *workflowRuns) Resume(ctx context.Context, req *ResumeRunWorkflowsReq) (
 		streamReader: &streamReader[WorkflowEvent]{
 			response:  resp,
 			reader:    bufio.NewReader(resp.Body),
-			logID:     internal.GetLogID(resp.Header),
+			logID:     getLogID(resp.Header),
 			processor: parseWorkflowEvent,
 		},
 	}, nil
@@ -68,7 +67,7 @@ func (r *workflowRuns) Stream(ctx context.Context, req *RunWorkflowsReq) (*Workf
 		streamReader: &streamReader[WorkflowEvent]{
 			response:  resp,
 			reader:    bufio.NewReader(resp.Body),
-			logID:     internal.GetLogID(resp.Header),
+			logID:     getLogID(resp.Header),
 			processor: parseWorkflowEvent,
 		},
 	}, nil

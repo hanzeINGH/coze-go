@@ -20,7 +20,7 @@ func main() {
 
 	ctx := context.Background()
 	// you can use iterator to automatically retrieve next page
-	documents, err := cozeCli.Datasets.Documents.List(ctx, &coze.ListDatasetsDocumentsReq{Size: 1, DatasetID: datasetID})
+	documents, err := cozeCli.Datasets.Documents.List(ctx, &coze.ListDatasetsDocumentsReq{Size: 2, DatasetID: datasetID})
 	if err != nil {
 		fmt.Println("Error fetching documents:", err)
 		return

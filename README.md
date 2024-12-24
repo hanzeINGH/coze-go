@@ -227,7 +227,7 @@ The SDK uses Go's standard error handling patterns. All API calls return an erro
 ```go
 resp, err := cozeCli.Chats.Chat(ctx, req)
 if err != nil {
-    if cozeErr, ok := coze_error.AsCozeError(err); ok {
+    if cozeErr, ok := coze.AsCozeError(err); ok {
     // Handle Coze API error
     fmt.Printf("Coze API error: %s (code: %s)\n", cozeErr.ErrorMessage, cozeErr.ErrorCode)
     return

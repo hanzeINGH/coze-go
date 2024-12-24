@@ -60,7 +60,7 @@ func main() {
 	// oauthURL, err := oauth.GenOAuthURL(&coze.GetPKCEAuthURLReq{
 	//			RedirectURI: redirectURI, State: "state",
 	//			Method: coze.CodeChallengeMethodS256.Ptr(),
-	//			WorkspaceID: utils.Ptr("workspace_id"),
+	//			WorkspaceID: utils.ptr("workspace_id"),
 	//		})
 	// if err != nil {
 	// 	fmt.Printf("Failed to generate OAuth URL with workspaces: %v\n", err)

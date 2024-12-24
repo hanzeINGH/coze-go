@@ -4,66 +4,68 @@ import (
 	"context"
 	"encoding/base64"
 	"net/http"
-
-	"github.com/coze-dev/coze-go/internal"
-	"github.com/coze-dev/coze-go/pagination"
 )
 
 type datasetsDocuments struct {
-	client          *internal.Client
-	commonHeaderOpt []internal.RequestOption
+	client          *httpClient
+	commonHeaderOpt []RequestOption
 }
 
-func newDocuments(client *internal.Client) *datasetsDocuments {
-	return &datasetsDocuments{client: client, commonHeaderOpt: []internal.RequestOption{
-		internal.WithHeader("Agw-Js-Conv", "true"),
+func newDocuments(client *httpClient) *datasetsDocuments {
+	return &datasetsDocuments{client: client, commonHeaderOpt: []RequestOption{
+		withHTTPHeader("Agw-Js-Conv", "true"),
 	}}
 }
 
 func (r *datasetsDocuments) Create(ctx context.Context, req *CreateDatasetsDocumentsReq) (*CreateDatasetsDocumentsResp, error) {
 	method := http.MethodPost
 	uri := "/open_api/knowledge/document/create"
-	resp := &CreateDatasetsDocumentsResp{}
+	resp := &createDatasetsDocumentsResp{}
 	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.CreateDatasetsDocumentsResp.SetLogID(resp.LogID)
+	return resp.CreateDatasetsDocumentsResp, nil
 }
 
 func (r *datasetsDocuments) Update(ctx context.Context, req *UpdateDatasetsDocumentsReq) (*UpdateDatasetsDocumentsResp, error) {
 	method := http.MethodPost
 	uri := "/open_api/knowledge/document/update"
-	resp := &UpdateDatasetsDocumentsResp{}
+	resp := &updateDatasetsDocumentsResp{}
 	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	result := &UpdateDatasetsDocumentsResp{}
+	result.SetLogID(resp.LogID)
+	return result, nil
 }
 
 func (r *datasetsDocuments) Delete(ctx context.Context, req *DeleteDatasetsDocumentsReq) (*DeleteDatasetsDocumentsResp, error) {
 	method := http.MethodPost
 	uri := "/open_api/knowledge/document/delete"
-	resp := &DeleteDatasetsDocumentsResp{}
+	resp := &deleteDatasetsDocumentsResp{}
 	err := r.client.Request(ctx, method, uri, req, resp, r.commonHeaderOpt...)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	result := &DeleteDatasetsDocumentsResp{}
+	result.SetLogID(resp.LogID)
+	return result, nil
 }
 
-func (r *datasetsDocuments) List(ctx context.Context, req *ListDatasetsDocumentsReq) (*pagination.NumberPaged[Document], error) {
+func (r *datasetsDocuments) List(ctx context.Context, req *ListDatasetsDocumentsReq) (*NumberPaged[Document], error) {
 	if req.Page == 0 {
 		req.Page = 20
 	}
 	if req.Size == 0 {
 		req.Size = 1
 	}
-	return pagination.NewNumberPaged[Document](
-		func(request *pagination.PageRequest) (*pagination.PageResponse[Document], error) {
+	return NewNumberPaged[Document](
+		func(request *PageRequest) (*PageResponse[Document], error) {
 			uri := "/open_api/knowledge/document/list"
-			resp := &ListDatasetsDocumentsResp{}
+			resp := &listDatasetsDocumentsResp{}
 			doReq := &ListDatasetsDocumentsReq{
 				DatasetID: req.DatasetID,
 				Size:      request.PageSize,
@@ -73,7 +75,7 @@ func (r *datasetsDocuments) List(ctx context.Context, req *ListDatasetsDocuments
 			if err != nil {
 				return nil, err
 			}
-			return &pagination.PageResponse[Document]{
+			return &PageResponse[Document]{
 				Total:   int(resp.Total),
 				HasMore: request.PageSize <= len(resp.DocumentInfos),
 				Data:    resp.DocumentInfos,
@@ -311,27 +313,49 @@ type UpdateDatasetsDocumentsReq struct {
 	UpdateRule *DocumentUpdateRule `json:"update_rule,omitempty"`
 }
 
+// createDatasetsDocumentsResp represents response for creating document
+type createDatasetsDocumentsResp struct {
+	baseResponse
+	*CreateDatasetsDocumentsResp
+}
+
 // CreateDatasetsDocumentsResp represents response for creating document
 type CreateDatasetsDocumentsResp struct {
-	internal.BaseResponse
+	baseModel
 	DocumentInfos []*Document `json:"document_infos"`
+}
+
+// listDatasetsDocumentsResp represents response for listing datasetsDocuments
+type listDatasetsDocumentsResp struct {
+	baseResponse
+	*ListDatasetsDocumentsResp
 }
 
 // ListDatasetsDocumentsResp represents response for listing datasetsDocuments
 type ListDatasetsDocumentsResp struct {
-	internal.BaseResponse
+	baseModel
 	Total         int64       `json:"total"`
 	DocumentInfos []*Document `json:"document_infos"`
 }
 
+// deleteDatasetsDocumentsResp represents response for deleting datasetsDocuments
+type deleteDatasetsDocumentsResp struct {
+	baseResponse
+}
+
 // DeleteDatasetsDocumentsResp represents response for deleting datasetsDocuments
 type DeleteDatasetsDocumentsResp struct {
-	internal.BaseResponse
+	baseModel
+}
+
+// updateDatasetsDocumentsResp represents response for updating document
+type updateDatasetsDocumentsResp struct {
+	baseResponse
 }
 
 // UpdateDatasetsDocumentsResp represents response for updating document
 type UpdateDatasetsDocumentsResp struct {
-	internal.BaseResponse
+	baseModel
 }
 
 // BuildWebPage creates basic document information for webpage type

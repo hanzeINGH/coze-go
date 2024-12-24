@@ -26,7 +26,6 @@ func main() {
 	createReq := &coze.CreateDatasetsDocumentsReq{
 		DatasetID: datasetID,
 		DocumentBases: []*coze.DocumentBase{
-			coze.BuildWebPage("web doc examples", "https://bytedance.com"),
 			coze.BuildLocalFile("file doc examples", "your file content", "txt"),
 		},
 	}

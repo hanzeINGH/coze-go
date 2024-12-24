@@ -4,38 +4,38 @@ import (
 	"context"
 	"io"
 	"net/http"
-
-	"github.com/coze-dev/coze-go/internal"
 )
 
 type files struct {
-	client *internal.Client
+	client *httpClient
 }
 
-func newFiles(client *internal.Client) *files {
+func newFiles(client *httpClient) *files {
 	return &files{client: client}
 }
 
 func (r *files) Upload(ctx context.Context, req fileInterface) (*UploadFilesResp, error) {
 	path := "/v1/files/upload"
-	resp := &UploadFilesResp{}
+	resp := &uploadFilesResp{}
 	err := r.client.UploadFile(ctx, path, req, req.Name(), nil, resp)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp, nil
+	resp.FileInfo.SetLogID(resp.LogID)
+	return resp.FileInfo, nil
 }
 
 func (r *files) Retrieve(ctx context.Context, req *RetrieveFilesReq) (*RetrieveFilesResp, error) {
 	method := http.MethodPost
 	uri := "/v1/files/retrieve"
-	resp := &RetrieveFilesResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
+	resp := &retrieveFilesResp{}
+	err := r.client.Request(ctx, method, uri, nil, resp, withHTTPQuery("file_id", req.FileID))
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.FileInfo.SetLogID(resp.LogID)
+	return resp.FileInfo, nil
 }
 
 // FileInfo represents information about a file
@@ -79,14 +79,26 @@ type RetrieveFilesReq struct {
 	FileID string `json:"file_id"`
 }
 
+// uploadFilesResp represents response for uploading file
+type uploadFilesResp struct {
+	baseResponse
+	FileInfo *UploadFilesResp `json:"data"`
+}
+
 // UploadFilesResp represents response for uploading file
 type UploadFilesResp struct {
-	internal.BaseResponse
-	FileInfo *FileInfo `json:"data"`
+	baseModel
+	FileInfo
+}
+
+// retrieveFilesResp represents response for retrieving file
+type retrieveFilesResp struct {
+	baseResponse
+	FileInfo *RetrieveFilesResp `json:"data"`
 }
 
 // RetrieveFilesResp represents response for retrieving file
 type RetrieveFilesResp struct {
-	internal.BaseResponse
-	FileInfo *FileInfo `json:"data"`
+	baseModel
+	FileInfo
 }

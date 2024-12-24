@@ -1,4 +1,4 @@
-package coze_error
+package coze
 
 import (
 	"errors"
@@ -6,24 +6,24 @@ import (
 )
 
 type CozeError struct {
-	ErrorCode    int
-	ErrorMessage string
-	LogID        string
+	Code    int
+	Message string
+	LogID   string
 }
 
 func NewCozeError(code int, msg, logID string) *CozeError {
 	return &CozeError{
-		ErrorCode:    code,
-		ErrorMessage: msg,
-		LogID:        logID,
+		Code:    code,
+		Message: msg,
+		LogID:   logID,
 	}
 }
 
 // Error implements the error interface
 func (e *CozeError) Error() string {
-	return fmt.Sprintf("Code: %d, ErrorMessage: %s, LogID: %s",
-		e.ErrorCode,
-		e.ErrorMessage,
+	return fmt.Sprintf("Code: %d, Message: %s, LogID: %s",
+		e.Code,
+		e.Message,
 		e.LogID)
 }
 

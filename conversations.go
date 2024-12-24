@@ -5,42 +5,39 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"github.com/coze-dev/coze-go/internal"
-	"github.com/coze-dev/coze-go/pagination"
 )
 
 type conversations struct {
-	client   *internal.Client
+	client   *httpClient
 	Messages *conversationsMessages
 }
 
-func newConversations(client *internal.Client) *conversations {
+func newConversations(client *httpClient) *conversations {
 	return &conversations{
 		client:   client,
 		Messages: newConversationMessage(client),
 	}
 }
 
-func (r *conversations) List(ctx context.Context, req *ListConversationsReq) (*pagination.NumberPaged[Conversation], error) {
+func (r *conversations) List(ctx context.Context, req *ListConversationsReq) (*NumberPaged[Conversation], error) {
 	if req.PageSize == 0 {
 		req.PageSize = 20
 	}
 	if req.PageNum == 0 {
 		req.PageNum = 1
 	}
-	return pagination.NewNumberPaged[Conversation](
-		func(request *pagination.PageRequest) (*pagination.PageResponse[Conversation], error) {
+	return NewNumberPaged[Conversation](
+		func(request *PageRequest) (*PageResponse[Conversation], error) {
 			uri := "/v1/conversations"
-			resp := &ListConversationsResp{}
+			resp := &listConversationsResp{}
 			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
-				internal.WithQuery("bot_id", req.BotID),
-				internal.WithQuery("page_num", strconv.Itoa(request.PageNum)),
-				internal.WithQuery("page_size", strconv.Itoa(request.PageSize)))
+				withHTTPQuery("bot_id", req.BotID),
+				withHTTPQuery("page_num", strconv.Itoa(request.PageNum)),
+				withHTTPQuery("page_size", strconv.Itoa(request.PageSize)))
 			if err != nil {
 				return nil, err
 			}
-			return &pagination.PageResponse[Conversation]{
+			return &PageResponse[Conversation]{
 				HasMore: resp.Data.HasMore,
 				Data:    resp.Data.Conversations,
 				LogID:   resp.LogID,
@@ -50,32 +47,35 @@ func (r *conversations) List(ctx context.Context, req *ListConversationsReq) (*p
 
 func (r *conversations) Create(ctx context.Context, req *CreateConversationsReq) (*CreateConversationsResp, error) {
 	uri := "/v1/conversation/create"
-	resp := &CreateConversationsResp{}
+	resp := &createConversationsResp{}
 	err := r.client.Request(ctx, http.MethodPost, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Conversation.SetLogID(resp.LogID)
+	return resp.Conversation, nil
 }
 
 func (r *conversations) Retrieve(ctx context.Context, req *RetrieveConversationsReq) (*RetrieveConversationsResp, error) {
 	uri := "/v1/conversation/retrieve"
-	resp := &RetrieveConversationsResp{}
-	err := r.client.Request(ctx, http.MethodGet, uri, nil, resp, internal.WithQuery("conversation_id", req.ConversationID))
+	resp := &retrieveConversationsResp{}
+	err := r.client.Request(ctx, http.MethodGet, uri, nil, resp, withHTTPQuery("conversation_id", req.ConversationID))
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Conversation.SetLogID(resp.LogID)
+	return resp.Conversation, nil
 }
 
 func (r *conversations) Clear(ctx context.Context, req *ClearConversationsReq) (*ClearConversationsResp, error) {
 	uri := fmt.Sprintf("/v1/conversations/%s/clear", req.ConversationID)
-	resp := &ClearConversationsResp{}
+	resp := &clearConversationsResp{}
 	err := r.client.Request(ctx, http.MethodPost, uri, nil, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Data.SetLogID(resp.LogID)
+	return resp.Data, nil
 }
 
 // Conversation represents conversation information
@@ -133,30 +133,47 @@ type ClearConversationsReq struct {
 }
 
 // CreateConversationsResp represents response for creating conversation
+type createConversationsResp struct {
+	baseResponse
+	Conversation *CreateConversationsResp `json:"data"`
+}
+
 type CreateConversationsResp struct {
-	internal.BaseResponse
-	Conversation *Conversation `json:"data"`
+	baseModel
+	Conversation
+}
+
+// listConversationsResp represents response for listing conversations
+type listConversationsResp struct {
+	baseResponse
+	Data *ListConversationsResp `json:"data"`
 }
 
 // ListConversationsResp represents response for listing conversations
 type ListConversationsResp struct {
-	internal.BaseResponse
-	Data struct {
-		HasMore       bool            `json:"has_more"`
-		Conversations []*Conversation `json:"conversations"`
-	} `json:"data"`
+	baseModel
+	HasMore       bool            `json:"has_more"`
+	Conversations []*Conversation `json:"conversations"`
 }
 
 // RetrieveConversationsResp represents response for retrieving conversation
+type retrieveConversationsResp struct {
+	baseResponse
+	Conversation *RetrieveConversationsResp `json:"data"`
+}
+
 type RetrieveConversationsResp struct {
-	internal.BaseResponse
-	Conversation *Conversation `json:"data"`
+	baseModel
+	Conversation
 }
 
 // ClearConversationsResp represents response for clearing conversation
+type clearConversationsResp struct {
+	baseResponse
+	Data *ClearConversationsResp `json:"data"`
+}
+
 type ClearConversationsResp struct {
-	internal.BaseResponse
-	Data struct {
-		ConversationID string `json:"conversation_id"`
-	} `json:"data"`
+	baseModel
+	ConversationID string `json:"conversation_id"`
 }

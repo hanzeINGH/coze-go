@@ -17,12 +17,12 @@ func main() {
 
 	// 1. Initialize with default configuration
 	cozeCli1 := coze.NewCozeAPI(authCli)
-	fmt.Println("Client 1:", cozeCli1)
+	fmt.Println("client 1:", cozeCli1)
 
 	// 2. Initialize with custom base URL
 	cozeAPIBase := os.Getenv("COZE_API_BASE")
 	cozeCli2 := coze.NewCozeAPI(authCli, coze.WithBaseURL(cozeAPIBase))
-	fmt.Println("Client 2:", cozeCli2)
+	fmt.Println("client 2:", cozeCli2)
 
 	// 3. Initialize with custom HTTP client
 	customClient := &http.Client{
@@ -37,5 +37,5 @@ func main() {
 		coze.WithBaseURL(cozeAPIBase),
 		coze.WithHttpClient(customClient),
 	)
-	fmt.Println("Client 3:", cozeCli3)
+	fmt.Println("client 3:", cozeCli3)
 }

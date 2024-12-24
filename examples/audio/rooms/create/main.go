@@ -30,6 +30,6 @@ func main() {
 	}
 
 	fmt.Println(resp)
-	fmt.Println("Room ID:", resp.Data.RoomID)
+	fmt.Println("Room ID:", resp.RoomID)
 	fmt.Println("Log ID:", resp.LogID)
 }

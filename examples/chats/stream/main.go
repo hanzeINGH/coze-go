@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/coze-dev/coze-go/internal/log"
+	"github.com/coze-dev/coze-go/log"
 
 	"github.com/coze-dev/coze-go"
 )

@@ -9,16 +9,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coze-dev/coze-go/internal"
-	"github.com/coze-dev/coze-go/internal/log"
+	"github.com/coze-dev/coze-go/log"
 )
 
 type chats struct {
-	client   *internal.Client
+	client   *httpClient
 	Messages *chatMessages
 }
 
-func newChats(client *internal.Client) *chats {
+func newChats(client *httpClient) *chats {
 	return &chats{
 		client:   client,
 		Messages: newChatMessages(client),
@@ -27,20 +26,21 @@ func newChats(client *internal.Client) *chats {
 
 func (r *chats) Create(ctx context.Context, req *CreateChatsReq) (*CreateChatsResp, error) {
 	method := http.MethodPost
-	uri := "/v3/chats"
-	resp := &CreateChatsResp{}
-	req.Stream = internal.Ptr(false)
-	req.AutoSaveHistory = internal.Ptr(true)
-	err := r.client.Request(ctx, method, uri, req, resp, internal.WithQuery("conversation_id", req.ConversationID))
+	uri := "/v3/chat"
+	resp := &createChatsResp{}
+	req.Stream = ptr(false)
+	req.AutoSaveHistory = ptr(true)
+	err := r.client.Request(ctx, method, uri, req, resp, withHTTPQuery("conversation_id", req.ConversationID))
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Chat.SetLogID(resp.LogID)
+	return resp.Chat, nil
 }
 
 func (r *chats) CreateAndPoll(ctx context.Context, req *CreateChatsReq, timeout *int) (*ChatPoll, error) {
-	req.Stream = internal.Ptr(false)
-	req.AutoSaveHistory = internal.Ptr(true)
+	req.Stream = ptr(false)
+	req.AutoSaveHistory = ptr(true)
 
 	chatResp, err := r.Create(ctx, req)
 	if err != nil {
@@ -85,16 +85,16 @@ func (r *chats) CreateAndPoll(ctx context.Context, req *CreateChatsReq, timeout 
 		return nil, err
 	}
 	return &ChatPoll{
-		Chat:     chat,
+		Chat:     &chat,
 		Messages: messages.Messages,
 	}, nil
 }
 
 func (r *chats) Stream(ctx context.Context, req *CreateChatsReq) (*ChatEventReader, error) {
 	method := http.MethodPost
-	uri := "/v3/chats"
-	req.Stream = internal.Ptr(true)
-	resp, err := r.client.RawRequest(ctx, method, uri, req, internal.WithQuery("conversation_id", req.ConversationID))
+	uri := "/v3/chat"
+	req.Stream = ptr(true)
+	resp, err := r.client.RawRequest(ctx, method, uri, req, withHTTPQuery("conversation_id", req.ConversationID))
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (r *chats) Stream(ctx context.Context, req *CreateChatsReq) (*ChatEventRead
 		streamReader: &streamReader[ChatEvent]{
 			response:  resp,
 			reader:    bufio.NewReader(resp.Body),
-			logID:     internal.GetLogID(resp.Header),
+			logID:     getLogID(resp.Header),
 			processor: parseChatEvent,
 		},
 	}, nil
@@ -140,51 +140,54 @@ func parseChatEvent(lineBytes []byte, reader *bufio.Reader) (*ChatEvent, bool, e
 
 func (r *chats) Cancel(ctx context.Context, req *CancelChatsReq) (*CancelChatsResp, error) {
 	method := http.MethodPost
-	uri := "/v3/chats/cancel"
-	resp := &CancelChatsResp{}
+	uri := "/v3/chat/cancel"
+	resp := &cancelChatsResp{}
 	err := r.client.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Chat.SetLogID(resp.LogID)
+	return resp.Chat, nil
 }
 
 func (r *chats) Retrieve(ctx context.Context, req *RetrieveChatsReq) (*RetrieveChatsResp, error) {
 	method := http.MethodGet
-	uri := "/v3/chats/retrieve"
-	resp := &RetrieveChatsResp{}
+	uri := "/v3/chat/retrieve"
+	resp := &retrieveChatsResp{}
 	err := r.client.Request(ctx, method, uri, nil, resp,
-		internal.WithQuery("conversation_id", req.ConversationID),
-		internal.WithQuery("chat_id", req.ChatID),
+		withHTTPQuery("conversation_id", req.ConversationID),
+		withHTTPQuery("chat_id", req.ChatID),
 	)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Chat.SetLogID(resp.LogID)
+	return resp.Chat, nil
 }
 
 func (r *chats) SubmitToolOutputs(ctx context.Context, req *SubmitToolOutputsChatReq) (*SubmitToolOutputsChatResp, error) {
 	method := http.MethodPost
-	uri := "/v3/chats/submit_tool_outputs"
-	resp := &SubmitToolOutputsChatResp{}
-	req.Stream = internal.Ptr(false)
+	uri := "/v3/chat/submit_tool_outputs"
+	resp := &submitToolOutputsChatResp{}
+	req.Stream = ptr(false)
 	err := r.client.Request(ctx, method, uri, req, resp,
-		internal.WithQuery("conversation_id", req.ConversationID),
-		internal.WithQuery("chat_id", req.ChatID),
+		withHTTPQuery("conversation_id", req.ConversationID),
+		withHTTPQuery("chat_id", req.ChatID),
 	)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.Chat.SetLogID(resp.LogID)
+	return resp.Chat, nil
 }
 
 func (r *chats) StreamSubmitToolOutputs(ctx context.Context, req *SubmitToolOutputsChatReq) (*ChatEventReader, error) {
 	method := http.MethodPost
-	req.Stream = internal.Ptr(true)
-	uri := "/v3/chats/submit_tool_outputs"
+	req.Stream = ptr(true)
+	uri := "/v3/chat/submit_tool_outputs"
 	resp, err := r.client.RawRequest(ctx, method, uri, req,
-		internal.WithQuery("conversation_id", req.ConversationID),
-		internal.WithQuery("chat_id", req.ChatID),
+		withHTTPQuery("conversation_id", req.ConversationID),
+		withHTTPQuery("chat_id", req.ChatID),
 	)
 	if err != nil {
 		return nil, err
@@ -194,7 +197,7 @@ func (r *chats) StreamSubmitToolOutputs(ctx context.Context, req *SubmitToolOutp
 		streamReader: &streamReader[ChatEvent]{
 			response:  resp,
 			reader:    bufio.NewReader(resp.Body),
-			logID:     internal.GetLogID(resp.Header),
+			logID:     getLogID(resp.Header),
 			processor: parseChatEvent,
 		},
 	}, nil
@@ -399,27 +402,47 @@ type SubmitToolOutputsChatReq struct {
 }
 
 // CreateChatsResp represents the response to create a chats
+type createChatsResp struct {
+	baseResponse
+	Chat *CreateChatsResp `json:"data"`
+}
+
 type CreateChatsResp struct {
-	internal.BaseResponse
-	Chat *Chat `json:"data"`
+	Chat
+	baseModel
 }
 
 // CancelChatsResp represents the response to cancel a chats
+type cancelChatsResp struct {
+	baseResponse
+	Chat *CancelChatsResp `json:"data"`
+}
+
 type CancelChatsResp struct {
-	internal.BaseResponse
-	Chat *Chat `json:"data"`
+	baseModel
+	Chat
 }
 
 // RetrieveChatsResp represents the response to retrieve a chats
+type retrieveChatsResp struct {
+	baseResponse
+	Chat *RetrieveChatsResp `json:"data"`
+}
+
 type RetrieveChatsResp struct {
-	internal.BaseResponse
-	Chat *Chat `json:"data"`
+	baseModel
+	Chat
 }
 
 // SubmitToolOutputsChatResp represents the response to submit tool outputs
+type submitToolOutputsChatResp struct {
+	baseResponse
+	Chat *SubmitToolOutputsChatResp `json:"data"`
+}
+
 type SubmitToolOutputsChatResp struct {
-	internal.BaseResponse
-	Chat *Chat `json:"data"`
+	baseModel
+	Chat
 }
 
 // ChatEvent represents a chats event in the streaming response

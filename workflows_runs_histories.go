@@ -4,27 +4,26 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/coze-dev/coze-go/internal"
 )
 
 type workflowRunHistories struct {
-	client *internal.Client
+	client *httpClient
 }
 
-func newWorkflowRunHistories(client *internal.Client) *workflowRunHistories {
+func newWorkflowRunHistories(client *httpClient) *workflowRunHistories {
 	return &workflowRunHistories{client: client}
 }
 
 func (r *workflowRunHistories) Retrieve(ctx context.Context, req *RetrieveWorkflowsRunHistoriesReq) (*RetrieveWorkflowRunHistoriesResp, error) {
 	method := http.MethodGet
 	uri := fmt.Sprintf("/v1/workflows/%s/run_histories/%s", req.WorkflowID, req.ExecuteID)
-	resp := &RetrieveWorkflowRunHistoriesResp{}
+	resp := &retrieveWorkflowRunHistoriesResp{}
 	err := r.client.Request(ctx, method, uri, nil, resp)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	resp.RetrieveWorkflowRunHistoriesResp.SetLogID(resp.LogID)
+	return resp.RetrieveWorkflowRunHistoriesResp, nil
 }
 
 // WorkflowRunMode represents how the workflow runs
@@ -64,9 +63,15 @@ type RetrieveWorkflowsRunHistoriesReq struct {
 	WorkflowID string `json:"workflow_id"`
 }
 
+// runWorkflowsResp represents response for running workflow
+type runWorkflowsResp struct {
+	baseResponse
+	*RunWorkflowsResp
+}
+
 // RunWorkflowsResp represents response for running workflow
 type RunWorkflowsResp struct {
-	internal.BaseResponse
+	baseModel
 	// Execution ID of asynchronous execution.
 	ExecuteID string `json:"execute_id,omitempty"`
 
@@ -78,9 +83,15 @@ type RunWorkflowsResp struct {
 	Cost     string `json:"cost,omitempty"`
 }
 
+// retrieveWorkflowRunHistoriesResp represents response for retrieving workflow runs history
+type retrieveWorkflowRunHistoriesResp struct {
+	baseResponse
+	*RetrieveWorkflowRunHistoriesResp
+}
+
 // RetrieveWorkflowRunHistoriesResp represents response for retrieving workflow runs history
 type RetrieveWorkflowRunHistoriesResp struct {
-	internal.BaseResponse
+	baseModel
 	Histories []*WorkflowRunHistory `json:"data"`
 }
 

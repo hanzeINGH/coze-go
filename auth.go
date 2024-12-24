@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -14,10 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coze-dev/coze-go/internal/log"
+	"github.com/coze-dev/coze-go/log"
 
-	"github.com/coze-dev/coze-go/coze_error"
-	"github.com/coze-dev/coze-go/internal"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -29,7 +26,7 @@ type DeviceAuthReq struct {
 
 // GetDeviceAuthResp represents the device authorization response
 type GetDeviceAuthResp struct {
-	internal.BaseResponse
+	baseResponse
 	DeviceCode      string `json:"device_code"`
 	UserCode        string `json:"user_code"`
 	VerificationURI string `json:"verification_uri"`
@@ -54,7 +51,7 @@ type GetAccessTokenReq struct {
 
 // GetPKCEAuthURLResp represents the PKCE authorization URL response
 type GetPKCEAuthURLResp struct {
-	internal.BaseResponse
+	baseResponse
 	CodeVerifier     string `json:"code_verifier"`
 	AuthorizationURL string `json:"authorization_url"`
 }
@@ -75,7 +72,7 @@ func (g GrantType) String() string {
 
 // OAuthToken represents the OAuth token response
 type OAuthToken struct {
-	internal.BaseResponse
+	baseResponse
 	AccessToken  string `json:"access_token"`
 	ExpiresIn    int64  `json:"expires_in"`
 	RefreshToken string `json:"refresh_token,omitempty"`
@@ -85,17 +82,6 @@ type OAuthToken struct {
 type Scope struct {
 	AccountPermission   *ScopeAccountPermission   `json:"account_permission"`
 	AttributeConstraint *ScopeAttributeConstraint `json:"attribute_constraint,omitempty"`
-}
-
-func (s *Scope) ToMap() (map[string]any, error) {
-	data, err := json.Marshal(s)
-	if err != nil {
-		return nil, err
-	}
-
-	var result map[string]any
-	err = json.Unmarshal(data, &result)
-	return result, err
 }
 
 func BuildBotChat(botIDList []string, permissionList []string) *Scope {
@@ -150,12 +136,12 @@ func (m CodeChallengeMethod) Ptr() *CodeChallengeMethod {
 	return &m
 }
 
-// OAuthClient represents the base OAuth client structure
+// OAuthClient represents the base OAuth httpClient structure
 type OAuthClient struct {
 	clientID     string
 	clientSecret string
 	baseURL      string
-	httpClient   *internal.Client
+	httpClient   *httpClient
 	hostName     string
 }
 
@@ -185,7 +171,7 @@ func WithAuthHttpClient(client *http.Client) OAuthClientOption {
 	}
 }
 
-// newOAuthClient creates a new OAuth client
+// newOAuthClient creates a new OAuth httpClient
 func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*OAuthClient, error) {
 	initSettings := &oauthOpt{
 		baseURL: CozeComBaseURL,
@@ -217,7 +203,7 @@ func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*
 		clientSecret: clientSecret,
 		baseURL:      initSettings.baseURL,
 		hostName:     hostName,
-		httpClient:   internal.NewClient(httpClient, initSettings.baseURL),
+		httpClient:   newHTTPClient(httpClient, initSettings.baseURL),
 	}, nil
 }
 
@@ -290,9 +276,9 @@ func (c *OAuthClient) getAccessToken(ctx context.Context, params getAccessTokenP
 		}
 	}
 
-	opt := make([]internal.RequestOption, 0)
+	opt := make([]RequestOption, 0)
 	if params.Secret != "" {
-		opt = append(opt, internal.WithHeader(authorizeHeader, fmt.Sprintf("Bearer %s", params.Secret)))
+		opt = append(opt, withHTTPHeader(authorizeHeader, fmt.Sprintf("Bearer %s", params.Secret)))
 	}
 	if err := c.httpClient.Request(ctx, http.MethodPost, getTokenPath, req, result, opt...); err != nil {
 		return nil, err
@@ -317,12 +303,12 @@ func (c *OAuthClient) refreshAccessTokenWithClientSecret(ctx context.Context, re
 	})
 }
 
-// PKCEOAuthClient PKCE OAuth client
+// PKCEOAuthClient PKCE OAuth httpClient
 type PKCEOAuthClient struct {
 	*OAuthClient
 }
 
-// NewPKCEOAuthClient creates a new PKCE OAuth client
+// NewPKCEOAuthClient creates a new PKCE OAuth httpClient
 func NewPKCEOAuthClient(clientID string, opts ...OAuthClientOption) (*PKCEOAuthClient, error) {
 	client, err := newOAuthClient(clientID, "", opts...)
 	if err != nil {
@@ -352,11 +338,11 @@ func (c *PKCEOAuthClient) GenOAuthURL(req *GetPKCEAuthURLReq) (*GetPKCEAuthURLRe
 	if req.Method != nil {
 		method = *req.Method
 	}
-	codeVerifier, err := internal.GenerateRandomString(16)
+	codeVerifier, err := generateRandomString(16)
 	if err != nil {
 		return nil, err
 	}
-	code, err := c.getCode(codeVerifier, internal.Value(req.Method))
+	code, err := c.getCode(codeVerifier, ptrValue(req.Method))
 	if err != nil {
 		return nil, err
 	}
@@ -365,10 +351,11 @@ func (c *PKCEOAuthClient) GenOAuthURL(req *GetPKCEAuthURLReq) (*GetPKCEAuthURLRe
 		authorizationURL = c.getWorkspaceOAuthURL(req.RedirectURI, req.State, *req.WorkspaceID,
 			withCodeChallenge(code),
 			withCodeChallengeMethod(string(method)))
+	} else {
+		authorizationURL = c.getOAuthURL(req.RedirectURI, req.State,
+			withCodeChallenge(code),
+			withCodeChallengeMethod(string(method)))
 	}
-	authorizationURL = c.getOAuthURL(req.RedirectURI, req.State,
-		withCodeChallenge(code),
-		withCodeChallengeMethod(string(method)))
 
 	return &GetPKCEAuthURLResp{
 		CodeVerifier:     codeVerifier,
@@ -427,12 +414,12 @@ func withCodeChallengeMethod(method string) urlOption {
 	}
 }
 
-// DeviceOAuthClient represents the device OAuth client
+// DeviceOAuthClient represents the device OAuth httpClient
 type DeviceOAuthClient struct {
 	*OAuthClient
 }
 
-// NewDeviceOAuthClient creates a new device OAuth client
+// NewDeviceOAuthClient creates a new device OAuth httpClient
 func NewDeviceOAuthClient(clientID string, opts ...OAuthClientOption) (*DeviceOAuthClient, error) {
 	client, err := newOAuthClient(clientID, "", opts...)
 	if err != nil {
@@ -491,14 +478,14 @@ func (c *DeviceOAuthClient) GetAccessToken(ctx context.Context, deviceCode strin
 		if resp, err = c.doGetAccessToken(ctx, req); err == nil {
 			return resp, nil
 		}
-		authErr, ok := coze_error.AsCozeAuthError(err)
+		authErr, ok := AsCozeAuthError(err)
 		if !ok {
 			return nil, err
 		}
 		switch authErr.Code {
-		case coze_error.AuthorizationPending:
+		case AuthorizationPending:
 			log.Infof("pending, sleep:%ds\n", interval)
-		case coze_error.SlowDown:
+		case SlowDown:
 			if interval < 30 {
 				interval += 5
 			}
@@ -524,7 +511,7 @@ func (c *DeviceOAuthClient) RefreshToken(ctx context.Context, refreshToken strin
 	return c.refreshAccessToken(ctx, refreshToken)
 }
 
-// JWTOAuthClient represents the JWT OAuth client
+// JWTOAuthClient represents the JWT OAuth httpClient
 type JWTOAuthClient struct {
 	*OAuthClient
 	ttl        int
@@ -539,7 +526,7 @@ type NewJWTOAuthClientParam struct {
 	TTL           *int
 }
 
-// NewJWTOAuthClient creates a new JWT OAuth client
+// NewJWTOAuthClient creates a new JWT OAuth httpClient
 func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) (*JWTOAuthClient, error) {
 	privateKey, err := parsePrivateKey(param.PrivateKeyPEM)
 	if err != nil {
@@ -551,7 +538,7 @@ func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) 
 	}
 	ttl := param.TTL
 	if ttl == nil {
-		ttl = internal.Ptr(900) // Default 15 minutes
+		ttl = ptr(900) // Default 15 minutes
 	}
 	jwtClient := &JWTOAuthClient{
 		OAuthClient: client,
@@ -600,7 +587,7 @@ func (c *JWTOAuthClient) GetAccessToken(ctx context.Context, opts *JWTGetAccessT
 
 func (c *JWTOAuthClient) generateJWT(ttl int, sessionName *string) (string, error) {
 	now := time.Now()
-	jti, err := internal.GenerateRandomString(16)
+	jti, err := generateRandomString(16)
 	if err != nil {
 		return "", err
 	}
@@ -636,12 +623,12 @@ func (c *JWTOAuthClient) generateJWT(ttl int, sessionName *string) (string, erro
 	return tokenString, nil
 }
 
-// WebOAuthClient Web OAuth client
+// WebOAuthClient Web OAuth httpClient
 type WebOAuthClient struct {
 	*OAuthClient
 }
 
-// NewWebOAuthClient creates a new Web OAuth client
+// NewWebOAuthClient creates a new Web OAuth httpClient
 func NewWebOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*WebOAuthClient, error) {
 	client, err := newOAuthClient(clientID, clientSecret, opts...)
 	if err != nil {

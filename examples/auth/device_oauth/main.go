@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/coze-dev/coze-go"
-	"github.com/coze-dev/coze-go/coze_error"
 )
 
 // This examples is about how to use the device oauth process to acquire user authorization.
@@ -72,17 +71,17 @@ func main() {
 	// if the developers set poll as true, the sdk will automatically handle pending and slow down exception
 	resp, err := oauth.GetAccessToken(ctx, codeResp.DeviceCode, true)
 	if err != nil {
-		authErr, ok := coze_error.AsCozeAuthError(err)
+		authErr, ok := coze.AsCozeAuthError(err)
 		if !ok {
 			fmt.Printf("Failed to get access token: %v\n", err)
 			return
 		}
 		switch authErr.Code {
-		case coze_error.AccessDenied:
+		case coze.AccessDenied:
 			// The user rejected the authorization.
 			// Developers need to guide the user to open the authorization link again.
 			fmt.Println("access denied")
-		case coze_error.ExpiredToken:
+		case coze.ExpiredToken:
 			// The token has expired. Developers need to guide the user to open
 			// the authorization link again.
 			fmt.Println("expired token")

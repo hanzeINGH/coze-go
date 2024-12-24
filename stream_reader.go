@@ -6,18 +6,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/coze-dev/coze-go/internal/log"
-
-	"github.com/coze-dev/coze-go/internal"
+	"github.com/coze-dev/coze-go/log"
 )
 
 type streamable interface {
 	ChatEvent | WorkflowEvent
 }
-
-// type eventProcessor[T streamable] interface {
-//	ProcessLine(line []byte, reader *bufio.Reader, logID string) (T, bool, error)
-// }
 
 type eventProcessor[T streamable] func(line []byte, reader *bufio.Reader) (*T, bool, error)
 
@@ -74,7 +68,7 @@ func (s *streamReader[T]) checkRespErr() error {
 			log.Warnf("Error reading response body: ", err)
 			return err
 		}
-		return internal.IsResponseSuccess(&internal.BaseResponse{}, respStr, s.logID)
+		return isResponseSuccess(&baseResponse{}, respStr, s.logID)
 	}
 	return nil
 }
