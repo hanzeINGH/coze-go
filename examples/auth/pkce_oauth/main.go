@@ -53,7 +53,8 @@ func main() {
 		fmt.Printf("Failed to generate OAuth URL: %v\n", err)
 		return
 	}
-	fmt.Printf("%+v\n", oauthURL)
+	fmt.Println(oauthURL.AuthorizationURL)
+	fmt.Println(oauthURL.CodeVerifier)
 
 	//
 	// The space permissions for which the Access Token is granted can be specified. As following codes:

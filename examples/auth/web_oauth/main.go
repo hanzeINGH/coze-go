@@ -74,7 +74,7 @@ func main() {
 	fmt.Printf("%+v\n", resp)
 
 	// you can get request log by getLogID method
-	fmt.Println(resp.HTTPResponse().LogID())
+	fmt.Println(resp.LogID())
 
 	// use the access token to init Coze client
 	cozeCli := coze.NewCozeAPI(coze.NewTokenAuth(resp.AccessToken))
