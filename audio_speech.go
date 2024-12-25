@@ -39,6 +39,7 @@ type CreateAudioSpeechReq struct {
 // CreateAudioSpeechResp represents the response for creating speech
 type CreateAudioSpeechResp struct {
 	baseResponse
+	// TODO 没有 json tag？
 	Data io.ReadCloser
 }
 
@@ -48,11 +49,8 @@ func (c *CreateAudioSpeechResp) WriteToFile(path string) error {
 		return err
 	}
 	defer file.Close()
+	defer c.Data.Close()
 
 	_, err = io.Copy(file, c.Data)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

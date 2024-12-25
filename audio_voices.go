@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*CloneAudioVoicesResp, error) {
+func (r *audioVoices) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*CloneAudioVoicesResp, error) {
 	path := "/v1/audio/voices/clone"
 	if req.File == nil {
 		return nil, fmt.Errorf("file is required")
@@ -33,15 +33,14 @@ func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*Clon
 		fields["text"] = *req.Text
 	}
 	resp := &cloneAudioVoicesResp{}
-	err := r.core.UploadFile(ctx, path, req.File, req.VoiceName, fields, resp)
-	if err != nil {
+	if err := r.core.UploadFile(ctx, path, req.File, req.VoiceName, fields, resp); err != nil {
 		return nil, err
 	}
 	resp.Data.setHTTPResponse(resp.HTTPResponse)
 	return resp.Data, nil
 }
 
-func (r *audioVoice) List(ctx context.Context, req *ListAudioVoicesReq) (*NumberPaged[Voice], error) {
+func (r *audioVoices) List(ctx context.Context, req *ListAudioVoicesReq) (*NumberPaged[Voice], error) {
 	if req.PageSize == 0 {
 		req.PageSize = 20
 	}
@@ -67,12 +66,12 @@ func (r *audioVoice) List(ctx context.Context, req *ListAudioVoicesReq) (*Number
 		}, req.PageSize, req.PageNum)
 }
 
-type audioVoice struct {
+type audioVoices struct {
 	core *core
 }
 
-func newVoice(core *core) *audioVoice {
-	return &audioVoice{core: core}
+func newVoice(core *core) *audioVoices {
+	return &audioVoices{core: core}
 }
 
 // Voice represents the voice model

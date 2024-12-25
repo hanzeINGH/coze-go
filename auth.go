@@ -63,8 +63,8 @@ const (
 	GrantTypeRefreshToken      GrantType = "refresh_token"
 )
 
-func (g GrantType) String() string {
-	return string(g)
+func (r GrantType) String() string {
+	return string(r)
 }
 
 type getOAuthTokenResp struct {
@@ -142,10 +142,11 @@ func (m CodeChallengeMethod) Ptr() *CodeChallengeMethod {
 
 // OAuthClient represents the base OAuth core structure
 type OAuthClient struct {
+	core *core
+
 	clientID     string
 	clientSecret string
 	baseURL      string
-	httpClient   *core
 	hostName     string
 }
 
@@ -155,29 +156,29 @@ const (
 	getWorkspaceDeviceCodePath = "/api/permission/oauth2/workspace_id/%s/device/code"
 )
 
-type oauthOpt struct {
+type oauthOption struct {
 	baseURL    string
-	httpClient *http.Client
+	httpClient HTTPClient
 }
 
-type OAuthClientOption func(*oauthOpt)
+type OAuthClientOption func(*oauthOption)
 
 // WithAuthBaseURL adds base URL
 func WithAuthBaseURL(baseURL string) OAuthClientOption {
-	return func(opt *oauthOpt) {
+	return func(opt *oauthOption) {
 		opt.baseURL = baseURL
 	}
 }
 
-func WithAuthHttpClient(client *http.Client) OAuthClientOption {
-	return func(opt *oauthOpt) {
+func WithAuthHttpClient(client HTTPClient) OAuthClientOption {
+	return func(opt *oauthOption) {
 		opt.httpClient = client
 	}
 }
 
 // newOAuthClient creates a new OAuth core
 func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*OAuthClient, error) {
-	initSettings := &oauthOpt{
+	initSettings := &oauthOption{
 		baseURL: ComBaseURL,
 	}
 
@@ -195,7 +196,7 @@ func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*
 	} else {
 		return nil, errors.New("base URL is required")
 	}
-	var httpClient *http.Client
+	var httpClient HTTPClient
 	if initSettings.httpClient != nil {
 		httpClient = initSettings.httpClient
 	} else {
@@ -207,7 +208,7 @@ func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*
 		clientSecret: clientSecret,
 		baseURL:      initSettings.baseURL,
 		hostName:     hostName,
-		httpClient:   newCore(httpClient, initSettings.baseURL),
+		core:         newCore(httpClient, initSettings.baseURL),
 	}, nil
 }
 
@@ -284,7 +285,7 @@ func (c *OAuthClient) getAccessToken(ctx context.Context, params getAccessTokenP
 	if params.Secret != "" {
 		opt = append(opt, withHTTPHeader(authorizeHeader, fmt.Sprintf("Bearer %s", params.Secret)))
 	}
-	if err := c.httpClient.Request(ctx, http.MethodPost, getTokenPath, req, result, opt...); err != nil {
+	if err := c.core.Request(ctx, http.MethodPost, getTokenPath, req, result, opt...); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -455,7 +456,7 @@ func (c *DeviceOAuthClient) doGetDeviceCode(ctx context.Context, workspaceID *st
 		ClientID: c.clientID,
 	}
 	result := &GetDeviceAuthResp{}
-	err := c.httpClient.Request(ctx, http.MethodPost, urlPath, req, result)
+	err := c.core.Request(ctx, http.MethodPost, urlPath, req, result)
 	if err != nil {
 		return nil, err
 	}
@@ -504,7 +505,7 @@ func (c *DeviceOAuthClient) GetAccessToken(ctx context.Context, deviceCode strin
 
 func (c *DeviceOAuthClient) doGetAccessToken(ctx context.Context, req *GetAccessTokenReq) (*OAuthToken, error) {
 	resp := &getOAuthTokenResp{}
-	if err := c.httpClient.Request(ctx, http.MethodPost, getTokenPath, req, resp); err != nil {
+	if err := c.core.Request(ctx, http.MethodPost, getTokenPath, req, resp); err != nil {
 		return nil, err
 	}
 	res := &OAuthToken{
@@ -662,7 +663,7 @@ func (c *WebOAuthClient) GetAccessToken(ctx context.Context, code, redirectURI s
 	})
 }
 
-// RefreshToken refreshes the access token
+// GetOAuthURL Get OAuth URL
 func (c *WebOAuthClient) GetOAuthURL(redirectURI, state string) string {
 	return c.getOAuthURL(redirectURI, state)
 }

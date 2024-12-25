@@ -27,28 +27,28 @@ type baseResponse struct {
 	HTTPResponse *httpResponse `json:"http_response"`
 }
 
-func (b *baseResponse) SetHTTPResponse(httpResponse *httpResponse) {
-	b.HTTPResponse = httpResponse
+func (r *baseResponse) SetHTTPResponse(httpResponse *httpResponse) {
+	r.HTTPResponse = httpResponse
 }
 
-func (b *baseResponse) SetCode(code int) {
-	b.Code = code
+func (r *baseResponse) SetCode(code int) {
+	r.Code = code
 }
 
-func (b *baseResponse) SetMsg(msg string) {
-	b.Msg = msg
+func (r *baseResponse) SetMsg(msg string) {
+	r.Msg = msg
 }
 
-func (b *baseResponse) GetCode() int {
-	return b.Code
+func (r *baseResponse) GetCode() int {
+	return r.Code
 }
 
-func (b *baseResponse) GetMsg() string {
-	return b.Msg
+func (r *baseResponse) GetMsg() string {
+	return r.Msg
 }
 
-func (b *baseResponse) LogID() string {
-	return b.HTTPResponse.LogID()
+func (r *baseResponse) LogID() string {
+	return r.HTTPResponse.LogID()
 }
 
 type baseRespInterface interface {
@@ -63,16 +63,16 @@ type baseModel struct {
 	httpResponse *httpResponse
 }
 
-func (b *baseModel) setHTTPResponse(httpResponse *httpResponse) {
-	b.httpResponse = httpResponse
+func (r *baseModel) setHTTPResponse(httpResponse *httpResponse) {
+	r.httpResponse = httpResponse
 }
 
-func (b *baseModel) Response() HTTPResponse {
-	return b.httpResponse
+func (r *baseModel) Response() HTTPResponse {
+	return r.httpResponse
 }
 
-func (b *baseModel) LogID() string {
-	return b.httpResponse.LogID()
+func (r *baseModel) LogID() string {
+	return r.httpResponse.LogID()
 }
 
 func newHTTPResponse(resp *http.Response) *httpResponse {

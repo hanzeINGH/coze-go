@@ -7,10 +7,9 @@ import (
 
 func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*CreateAudioRoomsResp, error) {
 	method := http.MethodPost
-	uri := "//v1/audio/rooms"
+	uri := "/v1/audio/rooms"
 	resp := &createAudioRoomsResp{}
-	err := r.core.Request(ctx, method, uri, req, resp)
-	if err != nil {
+	if err := r.core.Request(ctx, method, uri, req, resp); err != nil {
 		return nil, err
 	}
 	resp.Data.setHTTPResponse(resp.HTTPResponse)
@@ -35,9 +34,13 @@ const (
 	AudioCodecG722  AudioCodec = "G722"
 )
 
-// RoomAudioConfig represents the room audio configuration
-type RoomAudioConfig struct {
-	Codec AudioCodec `json:"codec"`
+// CreateAudioRoomsReq represents the request for creating an audio room
+type CreateAudioRoomsReq struct {
+	BotID          string      `json:"bot_id"`
+	ConversationID string      `json:"conversation_id,omitempty"`
+	VoiceID        string      `json:"voice_id,omitempty"`
+	UID            string      `json:"uid,omitempty"`
+	Config         *RoomConfig `json:"config,omitempty"`
 }
 
 // RoomConfig represents the room configuration
@@ -45,12 +48,9 @@ type RoomConfig struct {
 	AudioConfig *RoomAudioConfig `json:"audio_config"`
 }
 
-// CreateAudioRoomsReq represents the request for creating an audio room
-type CreateAudioRoomsReq struct {
-	BotID          string      `json:"bot_id"`
-	ConversationID string      `json:"conversation_id,omitempty"`
-	VoiceID        string      `json:"voice_id,omitempty"`
-	Config         *RoomConfig `json:"config,omitempty"`
+// RoomAudioConfig represents the room audio configuration
+type RoomAudioConfig struct {
+	Codec AudioCodec `json:"codec"`
 }
 
 // createAudioRoomsResp represents the response for creating an audio room

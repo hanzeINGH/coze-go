@@ -112,7 +112,6 @@ const (
 type MessageContentType string
 
 const (
-	MessageContentTypeUnknown MessageContentType = "unknown"
 	// MessageContentTypeText Text.
 	MessageContentTypeText MessageContentType = "text"
 
@@ -124,7 +123,7 @@ const (
 	// input parameter.
 	MessageContentTypeCard MessageContentType = "card"
 
-	// MessageContentTypeAudio If there is a audioVoice message in the input message,
+	// MessageContentTypeAudio If there is a audioVoices message in the input message,
 	// the conversation.audio.delta event will be returned in the streaming response event.
 	MessageContentTypeAudio MessageContentType = "audio"
 )
@@ -149,11 +148,10 @@ type MessageObjectString struct {
 type MessageObjectStringType string
 
 const (
-	MessageObjectStringTypeUnknown MessageObjectStringType = "unknown"
-	MessageObjectStringTypeText    MessageObjectStringType = "text"
-	MessageObjectStringTypeFile    MessageObjectStringType = "file"
-	MessageObjectStringTypeImage   MessageObjectStringType = "image"
-	MessageObjectStringTypeAudio   MessageObjectStringType = "audio"
+	MessageObjectStringTypeText  MessageObjectStringType = "text"
+	MessageObjectStringTypeFile  MessageObjectStringType = "file"
+	MessageObjectStringTypeImage MessageObjectStringType = "image"
+	MessageObjectStringTypeAudio MessageObjectStringType = "audio"
 )
 
 // NewTextMessageObject Helper functions for creating MessageObjectString

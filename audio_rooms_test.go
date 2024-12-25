@@ -16,7 +16,7 @@ func TestAudioRooms(t *testing.T) {
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Verify request method and path
 				assert.Equal(t, http.MethodPost, req.Method)
-				assert.Equal(t, "//v1/audio/rooms", req.URL.Path)
+				assert.Equal(t, "/v1/audio/rooms", req.URL.Path)
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &createAudioRoomsResp{

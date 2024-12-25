@@ -46,8 +46,8 @@ func NewJWTAuth(client *JWTOAuthClient, opt *JWTGetAccessTokenOptions) Auth {
 }
 
 // Token returns the access token.
-func (a *tokenAuthImpl) Token(ctx context.Context) (string, error) {
-	return a.accessToken, nil
+func (r *tokenAuthImpl) Token(ctx context.Context) (string, error) {
+	return r.accessToken, nil
 }
 
 type jwtOAuthImpl struct {
@@ -59,23 +59,23 @@ type jwtOAuthImpl struct {
 	expireIn    int64
 }
 
-func (j *jwtOAuthImpl) needRefresh() bool {
-	return j.accessToken == nil || time.Now().Unix() > j.expireIn
+func (r *jwtOAuthImpl) needRefresh() bool {
+	return r.accessToken == nil || time.Now().Unix() > r.expireIn
 }
 
-func (j *jwtOAuthImpl) Token(ctx context.Context) (string, error) {
-	if !j.needRefresh() {
-		return ptrValue(j.accessToken), nil
+func (r *jwtOAuthImpl) Token(ctx context.Context) (string, error) {
+	if !r.needRefresh() {
+		return ptrValue(r.accessToken), nil
 	}
-	resp, err := j.client.GetAccessToken(ctx, &JWTGetAccessTokenOptions{
-		TTL:         j.TTL,
-		SessionName: j.SessionName,
-		Scope:       j.Scope,
+	resp, err := r.client.GetAccessToken(ctx, &JWTGetAccessTokenOptions{
+		TTL:         r.TTL,
+		SessionName: r.SessionName,
+		Scope:       r.Scope,
 	})
 	if err != nil {
 		return "", err
 	}
-	j.accessToken = ptr(resp.AccessToken)
-	j.expireIn = resp.ExpiresIn
+	r.accessToken = ptr(resp.AccessToken)
+	r.expireIn = resp.ExpiresIn
 	return resp.AccessToken, nil
 }
