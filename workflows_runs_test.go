@@ -32,7 +32,7 @@ func TestWorkflowRuns(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		workflowRuns := newWorkflowRun(core)
 
 		resp, err := workflowRuns.Create(context.Background(), &RunWorkflowsReq{
@@ -78,7 +78,7 @@ data:
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		workflowRuns := newWorkflowRun(core)
 
 		reader, err := workflowRuns.Stream(context.Background(), &RunWorkflowsReq{
@@ -139,7 +139,7 @@ data:
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		workflowRuns := newWorkflowRun(core)
 
 		reader, err := workflowRuns.Resume(context.Background(), &ResumeRunWorkflowsReq{
@@ -181,7 +181,7 @@ data:{"error_code":400,"error_message":"Bad Request"}
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		workflowRuns := newWorkflowRun(core)
 
 		reader, err := workflowRuns.Stream(context.Background(), &RunWorkflowsReq{
@@ -209,7 +209,7 @@ data:{"interrupt_data":{"event_id":"event1","type":1},"node_title":"Question"}
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		workflowRuns := newWorkflowRun(core)
 
 		reader, err := workflowRuns.Stream(context.Background(), &RunWorkflowsReq{

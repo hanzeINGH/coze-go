@@ -25,7 +25,7 @@ func TestNewCozeAPI(t *testing.T) {
 		auth := &mockAuth{token: "test_token"}
 		api := NewCozeAPI(auth)
 
-		assert.Equal(t, CozeComBaseURL, api.baseURL)
+		assert.Equal(t, ComBaseURL, api.baseURL)
 		assert.NotNil(t, api.Audio)
 		assert.NotNil(t, api.Bots)
 		assert.NotNil(t, api.Chats)
@@ -109,7 +109,7 @@ func TestAuthTransport(t *testing.T) {
 			},
 		}
 
-		req, _ := http.NewRequest(http.MethodGet, "https://api.coze.com", nil)
+		req, _ := http.NewRequest(http.MethodGet, ComBaseURL, nil)
 		resp, err := transport.RoundTrip(req)
 
 		require.NoError(t, err)
@@ -127,7 +127,7 @@ func TestAuthTransport(t *testing.T) {
 			next: http.DefaultTransport,
 		}
 
-		req, _ := http.NewRequest(http.MethodGet, "https://api.coze.com", nil)
+		req, _ := http.NewRequest(http.MethodGet, ComBaseURL, nil)
 		resp, err := transport.RoundTrip(req)
 
 		require.Error(t, err)

@@ -19,7 +19,7 @@ func main() {
 	// please use base_url to configure the api endpoint to access
 	cozeAPIBase := os.Getenv("COZE_API_BASE")
 	if cozeAPIBase == "" {
-		cozeAPIBase = coze.CozeComBaseURL
+		cozeAPIBase = coze.ComBaseURL
 	}
 
 	// The sdk offers the WebOAuthClient class to establish an authorization for Web OAuth.

@@ -47,7 +47,7 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		documents := newDocuments(core)
 
 		resp, err := documents.Create(context.Background(), &CreateDatasetsDocumentsReq{
@@ -87,7 +87,7 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		documents := newDocuments(core)
 
 		resp, err := documents.Update(context.Background(), &UpdateDatasetsDocumentsReq{
@@ -116,7 +116,7 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		documents := newDocuments(core)
 
 		resp, err := documents.Delete(context.Background(), &DeleteDatasetsDocumentsReq{
@@ -168,7 +168,7 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		documents := newDocuments(core)
 
 		paged, err := documents.List(context.Background(), &ListDatasetsDocumentsReq{
@@ -211,7 +211,7 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		documents := newDocuments(core)
 
 		paged, err := documents.List(context.Background(), &ListDatasetsDocumentsReq{

@@ -29,7 +29,7 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		voices := newVoice(core)
 
 		// Create mock audio file
@@ -64,7 +64,7 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		voices := newVoice(core)
 
 		resp, err := voices.Clone(context.Background(), &CloneAudioVoicesReq{
@@ -78,7 +78,7 @@ func TestAudioVoices(t *testing.T) {
 
 	// Test Clone method with nil file
 	t.Run("Clone voice with nil file", func(t *testing.T) {
-		core := newCore(&http.Client{}, "https://api.coze.com")
+		core := newCore(&http.Client{}, ComBaseURL)
 		voices := newVoice(core)
 
 		resp, err := voices.Clone(context.Background(), &CloneAudioVoicesReq{
@@ -141,7 +141,7 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		voices := newVoice(core)
 
 		paged, err := voices.List(context.Background(), &ListAudioVoicesReq{
@@ -200,7 +200,7 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		voices := newVoice(core)
 
 		paged, err := voices.List(context.Background(), &ListAudioVoicesReq{})
@@ -219,7 +219,7 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		voices := newVoice(core)
 
 		paged, err := voices.List(context.Background(), &ListAudioVoicesReq{

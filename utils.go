@@ -3,7 +3,6 @@ package coze
 import (
 	"crypto/rand"
 	"encoding/json"
-	"net/http"
 )
 
 func ptrValue[T any](s *T) T {
@@ -48,12 +47,4 @@ func mustToJson(obj any) string {
 		return "{}"
 	}
 	return string(jsonArray)
-}
-
-const (
-	logIDHeader = "x-tt-logid"
-)
-
-func getLogID(header http.Header) string {
-	return header.Get(logIDHeader)
 }

@@ -31,14 +31,14 @@ func TestAudioSpeech(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		speech := newSpeech(core)
 
 		resp, err := speech.Create(context.Background(), &CreateAudioSpeechReq{
 			Input:          "Hello, world!",
 			VoiceID:        "voice1",
-			ResponseFormat: AudioFormatMP3,
-			Speed:          1.0,
+			ResponseFormat: AudioFormatMP3.Ptr(),
+			Speed:          ptr[float32](1.0),
 		})
 
 		require.NoError(t, err)
@@ -60,14 +60,14 @@ func TestAudioSpeech(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		speech := newSpeech(core)
 
 		resp, err := speech.Create(context.Background(), &CreateAudioSpeechReq{
 			Input:          "Hello, world!",
 			VoiceID:        "invalid_voice",
-			ResponseFormat: AudioFormatMP3,
-			Speed:          1.0,
+			ResponseFormat: AudioFormatMP3.Ptr(),
+			Speed:          ptr[float32](1.0),
 		})
 
 		require.Error(t, err)
@@ -83,14 +83,14 @@ func TestAudioSpeech(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		speech := newSpeech(core)
 
 		resp, err := speech.Create(context.Background(), &CreateAudioSpeechReq{
 			Input:          "Hello, world!",
 			VoiceID:        "voice1",
-			ResponseFormat: AudioFormatMP3,
-			Speed:          -1.0, // Invalid speed
+			ResponseFormat: AudioFormatMP3.Ptr(),
+			Speed:          ptr[float32](-1.0), // Invalid speed
 		})
 
 		require.Error(t, err)

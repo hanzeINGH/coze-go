@@ -178,7 +178,7 @@ func WithAuthHttpClient(client *http.Client) OAuthClientOption {
 // newOAuthClient creates a new OAuth core
 func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*OAuthClient, error) {
 	initSettings := &oauthOpt{
-		baseURL: CozeComBaseURL,
+		baseURL: ComBaseURL,
 	}
 
 	for _, opt := range opts {

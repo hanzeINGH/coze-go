@@ -51,7 +51,7 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		conversations := newConversations(core)
 
 		paged, err := conversations.List(context.Background(), &ListConversationsReq{
@@ -103,7 +103,7 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		conversations := newConversations(core)
 
 		resp, err := conversations.Create(context.Background(), &CreateConversationsReq{
@@ -155,7 +155,7 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		conversations := newConversations(core)
 
 		resp, err := conversations.Retrieve(context.Background(), &RetrieveConversationsReq{
@@ -188,7 +188,7 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		conversations := newConversations(core)
 
 		resp, err := conversations.Clear(context.Background(), &ClearConversationsReq{
@@ -219,7 +219,7 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		conversations := newConversations(core)
 
 		paged, err := conversations.List(context.Background(), &ListConversationsReq{

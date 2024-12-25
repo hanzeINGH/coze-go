@@ -45,7 +45,7 @@ func TestChats(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		chats := newChats(core)
 
 		resp, err := chats.Create(context.Background(), &CreateChatsReq{
@@ -130,7 +130,7 @@ func TestChats(t *testing.T) {
 		}
 
 		t.Run("CreateAndPoll success", func(t *testing.T) {
-			core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+			core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 			chats := newChats(core)
 
 			timeout := 5
@@ -147,7 +147,7 @@ func TestChats(t *testing.T) {
 			assert.Equal(t, "Hello!", resp.Messages[0].Content)
 		})
 		t.Run("CreateAndPoll success with cancel chat", func(t *testing.T) {
-			core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+			core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 			chats := newChats(core)
 
 			timeout := 0
@@ -189,7 +189,7 @@ data:
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		chats := newChats(core)
 
 		reader, err := chats.Stream(context.Background(), &CreateChatsReq{
@@ -240,7 +240,7 @@ data:
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		chats := newChats(core)
 
 		resp, err := chats.Cancel(context.Background(), &CancelChatsReq{
@@ -279,7 +279,7 @@ data:
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		chats := newChats(core)
 
 		resp, err := chats.Retrieve(context.Background(), &RetrieveChatsReq{
@@ -316,7 +316,7 @@ data:
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		chats := newChats(core)
 
 		resp, err := chats.SubmitToolOutputs(context.Background(), &SubmitToolOutputsChatReq{
@@ -360,7 +360,7 @@ data:
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		chats := newChats(core)
 
 		reader, err := chats.StreamSubmitToolOutputs(context.Background(), &SubmitToolOutputsChatReq{

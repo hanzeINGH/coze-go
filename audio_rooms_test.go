@@ -31,7 +31,7 @@ func TestAudioRooms(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		rooms := newRooms(core)
 
 		// Test with all optional fields
@@ -71,7 +71,7 @@ func TestAudioRooms(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		rooms := newRooms(core)
 
 		// Test with only required fields
@@ -93,7 +93,7 @@ func TestAudioRooms(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		rooms := newRooms(core)
 
 		resp, err := rooms.Create(context.Background(), &CreateAudioRoomsReq{

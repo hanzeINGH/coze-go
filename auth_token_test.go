@@ -56,7 +56,7 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 			ClientID:      "test_client_id",
 			PublicKey:     "test_public_key",
 			PrivateKeyPEM: testPrivateKey,
-		}, WithAuthBaseURL("https://api.coze.com"))
+		}, WithAuthBaseURL(ComBaseURL))
 		require.NoError(t, err)
 
 		auth := NewJWTAuth(client, nil)
@@ -72,7 +72,7 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 			ClientID:      "test_client_id",
 			PublicKey:     "test_public_key",
 			PrivateKeyPEM: testPrivateKey,
-		}, WithAuthBaseURL("https://api.coze.com"))
+		}, WithAuthBaseURL(ComBaseURL))
 		require.NoError(t, err)
 
 		sessionName := "test_session"
@@ -104,7 +104,7 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 			ClientID:      "test_client_id",
 			PublicKey:     "test_public_key",
 			PrivateKeyPEM: testPrivateKey,
-		}, WithAuthBaseURL("https://api.coze.com"),
+		}, WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
@@ -137,7 +137,7 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 			ClientID:      "test_client_id",
 			PublicKey:     "test_public_key",
 			PrivateKeyPEM: testPrivateKey,
-		}, WithAuthBaseURL("https://api.coze.com"),
+		}, WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
@@ -172,7 +172,7 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 			ClientID:      "test_client_id",
 			PublicKey:     "test_public_key",
 			PrivateKeyPEM: testPrivateKey,
-		}, WithAuthBaseURL("https://api.coze.com"),
+		}, WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 

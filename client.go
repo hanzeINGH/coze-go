@@ -54,7 +54,7 @@ func WithLogger(logger Logger) CozeAPIOption {
 
 func NewCozeAPI(auth Auth, opts ...CozeAPIOption) CozeAPI {
 	opt := &newCozeAPIOpt{
-		baseURL:  CozeComBaseURL,
+		baseURL:  ComBaseURL,
 		logLevel: LogLevelInfo, // Default log level is Info
 	}
 	for _, option := range opts {

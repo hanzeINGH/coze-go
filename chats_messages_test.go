@@ -44,7 +44,7 @@ func TestChatMessages(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		messages := newChatMessages(core)
 
 		resp, err := messages.List(context.Background(), &ListChatsMessagesReq{
@@ -77,7 +77,7 @@ func TestChatMessages(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		messages := newChatMessages(core)
 
 		resp, err := messages.List(context.Background(), &ListChatsMessagesReq{
@@ -101,7 +101,7 @@ func TestChatMessages(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		messages := newChatMessages(core)
 
 		resp, err := messages.List(context.Background(), &ListChatsMessagesReq{
@@ -125,7 +125,7 @@ func TestChatMessages(t *testing.T) {
 			},
 		}
 
-		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
 		messages := newChatMessages(core)
 
 		resp, err := messages.List(context.Background(), &ListChatsMessagesReq{})

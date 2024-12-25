@@ -32,7 +32,7 @@ func main() {
 
 	cozeAPIBase := os.Getenv("COZE_API_BASE")
 	if cozeAPIBase == "" {
-		cozeAPIBase = coze.CozeComBaseURL
+		cozeAPIBase = coze.ComBaseURL
 	}
 	ctx := context.Background()
 

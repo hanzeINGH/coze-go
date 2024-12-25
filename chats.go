@@ -207,17 +207,17 @@ func (r *chats) StreamSubmitToolOutputs(ctx context.Context, req *SubmitToolOutp
 type ChatStatus string
 
 const (
-	// The session has been created.
+	// ChatStatusCreated The session has been created.
 	ChatStatusCreated ChatStatus = "created"
-	// The Bot is processing.
+	// ChatStatusInProgress The Bot is processing.
 	ChatStatusInProgress ChatStatus = "in_progress"
-	// The Bot has finished processing, and the session has ended.
+	// ChatStatusCompleted The Bot has finished processing, and the session has ended.
 	ChatStatusCompleted ChatStatus = "completed"
-	// The session has failed.
+	// ChatStatusFailed The session has failed.
 	ChatStatusFailed ChatStatus = "failed"
-	// The session is interrupted and requires further processing.
+	// ChatStatusRequiresAction The session is interrupted and requires further processing.
 	ChatStatusRequiresAction ChatStatus = "requires_action"
-	// The session is user cancelled chats.
+	// ChatStatusCancelled The session is user cancelled chats.
 	ChatStatusCancelled ChatStatus = "canceled"
 )
 
@@ -225,25 +225,25 @@ const (
 type ChatEventType string
 
 const (
-	// Event for creating a conversation, indicating the start of the conversation.
+	// ChatEventConversationChatCreated Event for creating a conversation, indicating the start of the conversation.
 	ChatEventConversationChatCreated ChatEventType = "conversation.chats.created"
-	// The server is processing the conversation.
+	// ChatEventConversationChatInProgress The server is processing the conversation.
 	ChatEventConversationChatInProgress ChatEventType = "conversation.chats.in_progress"
-	// Incremental message, usually an incremental message when type=answer.
+	// ChatEventConversationMessageDelta Incremental message, usually an incremental message when type=answer.
 	ChatEventConversationMessageDelta ChatEventType = "conversation.message.delta"
-	// The message has been completely replied to.
+	// ChatEventConversationMessageCompleted The message has been completely replied to.
 	ChatEventConversationMessageCompleted ChatEventType = "conversation.message.completed"
-	// The conversation is completed.
+	// ChatEventConversationChatCompleted The conversation is completed.
 	ChatEventConversationChatCompleted ChatEventType = "conversation.chats.completed"
-	// This event is used to mark a failed conversation.
+	// ChatEventConversationChatFailed This event is used to mark a failed conversation.
 	ChatEventConversationChatFailed ChatEventType = "conversation.chats.failed"
-	// The conversation is interrupted and requires the user to report the execution results of the tool.
+	// ChatEventConversationChatRequiresAction The conversation is interrupted and requires the user to report the execution results of the tool.
 	ChatEventConversationChatRequiresAction ChatEventType = "conversation.chats.requires_action"
-	// Audio delta event
+	// ChatEventConversationAudioDelta Audio delta event
 	ChatEventConversationAudioDelta ChatEventType = "conversation.audio.delta"
-	// Error events during the streaming response process.
+	// ChatEventError Error events during the streaming response process.
 	ChatEventError ChatEventType = "error"
-	// The streaming response for this session ended normally.
+	// ChatEventDone The streaming response for this session ended normally.
 	ChatEventDone ChatEventType = "done"
 )
 

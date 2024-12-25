@@ -48,7 +48,7 @@ func mockResponse(statusCode int, body interface{}) (*http.Response, error) {
 
 func TestPKCEOAuthClient(t *testing.T) {
 	t.Run("GenOAuthURL success", func(t *testing.T) {
-		client, err := NewPKCEOAuthClient("test_client_id", WithAuthBaseURL("https://api.coze.com"))
+		client, err := NewPKCEOAuthClient("test_client_id", WithAuthBaseURL(ComBaseURL))
 		require.NoError(t, err)
 
 		resp, err := client.GenOAuthURL(&GetPKCEAuthURLReq{
@@ -66,7 +66,7 @@ func TestPKCEOAuthClient(t *testing.T) {
 	})
 
 	t.Run("GenWorkspaceOAuthURL success", func(t *testing.T) {
-		client, err := NewPKCEOAuthClient("test_client_id", WithAuthBaseURL("https://api.coze.com"))
+		client, err := NewPKCEOAuthClient("test_client_id", WithAuthBaseURL(ComBaseURL))
 		require.NoError(t, err)
 
 		resp, err := client.GenOAuthURL(&GetPKCEAuthURLReq{
@@ -98,7 +98,7 @@ func TestPKCEOAuthClient(t *testing.T) {
 		}
 
 		client, err := NewPKCEOAuthClient("test_client_id",
-			WithAuthBaseURL("https://api.coze.com"),
+			WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
@@ -126,7 +126,7 @@ func TestDeviceOAuthClient(t *testing.T) {
 		}
 
 		client, err := NewDeviceOAuthClient("test_client_id",
-			WithAuthBaseURL("https://api.coze.com"),
+			WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
@@ -164,7 +164,7 @@ func TestDeviceOAuthClient(t *testing.T) {
 		}
 
 		httpClient, err := NewDeviceOAuthClient("test_client_id",
-			WithAuthBaseURL("https://api.coze.com"),
+			WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
@@ -221,7 +221,7 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 			PublicKey:     "test_public_key",
 			PrivateKeyPEM: testPrivateKey,
 			TTL:           nil,
-		}, WithAuthBaseURL("https://api.coze.com"),
+		}, WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
@@ -238,7 +238,7 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 func TestWebOAuthClient(t *testing.T) {
 	t.Run("GetOAuthURL success", func(t *testing.T) {
 		client, err := NewWebOAuthClient("test_client_id", "test_client_secret",
-			WithAuthBaseURL("https://api.coze.com"))
+			WithAuthBaseURL(ComBaseURL))
 		require.NoError(t, err)
 
 		url := client.GetOAuthURL("https://example.com/callback", "test_state")
@@ -250,7 +250,7 @@ func TestWebOAuthClient(t *testing.T) {
 
 	t.Run("GetOAuthURLWithWorkspace success", func(t *testing.T) {
 		client, err := NewWebOAuthClient("test_client_id", "test_client_secret",
-			WithAuthBaseURL("https://api.coze.com"))
+			WithAuthBaseURL(ComBaseURL))
 		require.NoError(t, err)
 
 		url := client.GetOAuthURLWithWorkspace("https://example.com/callback", "test_state", "workspace_id")
@@ -272,7 +272,7 @@ func TestWebOAuthClient(t *testing.T) {
 		}
 
 		client, err := NewWebOAuthClient("test_client_id", "test_client_secret",
-			WithAuthBaseURL("https://api.coze.com"),
+			WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
@@ -293,7 +293,7 @@ func TestWebOAuthClient(t *testing.T) {
 		}
 
 		client, err := NewWebOAuthClient("test_client_id", "test_client_secret",
-			WithAuthBaseURL("https://api.coze.com"),
+			WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
@@ -316,7 +316,7 @@ func TestOAuthError(t *testing.T) {
 		}
 
 		client, err := NewWebOAuthClient("test_client_id", "test_client_secret",
-			WithAuthBaseURL("https://api.coze.com"),
+			WithAuthBaseURL(ComBaseURL),
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
