@@ -23,9 +23,7 @@ func TestConversationsMessages(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &createMessageResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Message: &CreateMessageResp{
 						Message: Message{
 							ID:             "msg1",
@@ -56,7 +54,7 @@ func TestConversationsMessages(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "msg1", resp.ID)
 		assert.Equal(t, "test_conversation_id", resp.ConversationID)
 		assert.Equal(t, "user", string(resp.Role))
@@ -78,9 +76,7 @@ func TestConversationsMessages(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &listConversationsMessagesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					ListConversationsMessagesResp: &ListConversationsMessagesResp{
 						HasMore: true,
 						FirstID: "msg1",
@@ -146,9 +142,7 @@ func TestConversationsMessages(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &retrieveConversationsMessagesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Message: &RetrieveConversationsMessagesResp{
 						Message: Message{
 							ID:             "msg1",
@@ -171,7 +165,7 @@ func TestConversationsMessages(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "msg1", resp.ID)
 		assert.Equal(t, "test_conversation_id", resp.ConversationID)
 		assert.Equal(t, "user", string(resp.Role))
@@ -193,9 +187,7 @@ func TestConversationsMessages(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &updateConversationMessagesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Message: &UpdateConversationMessagesResp{
 						Message: Message{
 							ID:             "msg1",
@@ -226,7 +218,7 @@ func TestConversationsMessages(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "msg1", resp.ID)
 		assert.Equal(t, "test_conversation_id", resp.ConversationID)
 		assert.Equal(t, "user", string(resp.Role))
@@ -249,9 +241,7 @@ func TestConversationsMessages(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &deleteConversationsMessagesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Message: &DeleteConversationsMessagesResp{
 						Message: Message{
 							ID:             "msg1",
@@ -271,7 +261,7 @@ func TestConversationsMessages(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "msg1", resp.ID)
 		assert.Equal(t, "test_conversation_id", resp.ConversationID)
 	})
@@ -282,9 +272,7 @@ func TestConversationsMessages(t *testing.T) {
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return mock response
 				return mockResponse(http.StatusOK, &listConversationsMessagesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					ListConversationsMessagesResp: &ListConversationsMessagesResp{
 						HasMore:  false,
 						Messages: []*Message{},
@@ -311,9 +299,7 @@ func TestConversationsMessages(t *testing.T) {
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return mock response
 				return mockResponse(http.StatusOK, &createMessageResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Message: &CreateMessageResp{
 						Message: Message{
 							ID:             "msg1",
@@ -346,7 +332,7 @@ func TestConversationsMessages(t *testing.T) {
 		resp, err := messages.Create(context.Background(), createReq)
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, MessageContentTypeObjectString, resp.ContentType)
 	})
 }

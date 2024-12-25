@@ -2,8 +2,6 @@ package coze
 
 import (
 	"net/http"
-
-	"github.com/coze-dev/coze-go/log"
 )
 
 type CozeAPI struct {
@@ -22,7 +20,7 @@ type CozeAPI struct {
 type newCozeAPIOpt struct {
 	baseURL  string
 	client   *http.Client
-	logLevel log.LogLevel
+	logLevel LogLevel
 }
 
 type CozeAPIOption func(*newCozeAPIOpt)
@@ -42,22 +40,22 @@ func WithHttpClient(client *http.Client) CozeAPIOption {
 }
 
 // WithLogLevel sets the logging level
-func WithLogLevel(level log.LogLevel) CozeAPIOption {
+func WithLogLevel(level LogLevel) CozeAPIOption {
 	return func(opt *newCozeAPIOpt) {
 		opt.logLevel = level
 	}
 }
 
-func WithLogger(logger log.Logger) CozeAPIOption {
+func WithLogger(logger Logger) CozeAPIOption {
 	return func(opt *newCozeAPIOpt) {
-		log.SetLogger(logger)
+		setLogger(logger)
 	}
 }
 
 func NewCozeAPI(auth Auth, opts ...CozeAPIOption) CozeAPI {
 	opt := &newCozeAPIOpt{
 		baseURL:  CozeComBaseURL,
-		logLevel: log.LogInfo, // Default log level is Info
+		logLevel: LogLevelInfo, // Default log level is Info
 	}
 	for _, option := range opts {
 		option(opt)
@@ -74,10 +72,8 @@ func NewCozeAPI(auth Auth, opts ...CozeAPIOption) CozeAPI {
 		next: saveTransport,
 	}
 	core := newCore(opt.client, opt.baseURL)
-
+	setLevel(opt.logLevel)
 	// Set log level
-	log.SetLevel(opt.logLevel)
-
 	cozeClient := CozeAPI{
 		Audio:         newAudio(core),
 		Bots:          newBots(core),
@@ -101,7 +97,7 @@ type authTransport struct {
 func (h *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	accessToken, err := h.auth.Token(req.Context())
 	if err != nil {
-		log.Errorf("Failed to get access token: %v", err)
+		logger.Errorf(req.Context(), "Failed to get access token: %v", err)
 		return nil, err
 	}
 	req.Header.Set("Authorization", "Bearer "+accessToken)

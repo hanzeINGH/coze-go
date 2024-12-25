@@ -34,9 +34,7 @@ func TestChats(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &createChatsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Chat: &CreateChatsResp{Chat: Chat{
 						ID:             "chat1",
 						ConversationID: "test_conversation_id",
@@ -64,7 +62,7 @@ func TestChats(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "chat1", resp.Chat.ID)
 		assert.Equal(t, ChatStatusCreated, resp.Chat.Status)
 	})
@@ -77,9 +75,7 @@ func TestChats(t *testing.T) {
 				case "/v3/chat":
 					// Return create response
 					return mockResponse(http.StatusOK, &createChatsResp{
-						baseResponse: baseResponse{
-							LogID: "test_log_id",
-						},
+
 						Chat: &CreateChatsResp{Chat: Chat{
 							ID:             "chat1",
 							ConversationID: "test_conversation_id",
@@ -90,9 +86,7 @@ func TestChats(t *testing.T) {
 				case "/v3/chat/retrieve":
 					// Return retrieve response with completed status
 					return mockResponse(http.StatusOK, &retrieveChatsResp{
-						baseResponse: baseResponse{
-							LogID: "test_log_id",
-						},
+
 						Chat: &RetrieveChatsResp{
 							Chat: Chat{
 								ID:             "chat1",
@@ -104,9 +98,7 @@ func TestChats(t *testing.T) {
 				case "/v3/chat/message/list":
 					// Return message list response
 					return mockResponse(http.StatusOK, &listChatsMessagesResp{
-						baseResponse: baseResponse{
-							LogID: "test_log_id",
-						},
+
 						ListChatsMessagesResp: &ListChatsMessagesResp{
 							Messages: []*Message{
 								{
@@ -120,9 +112,7 @@ func TestChats(t *testing.T) {
 					})
 				case "/v3/chat/cancel":
 					return mockResponse(http.StatusOK, &cancelChatsResp{
-						baseResponse: baseResponse{
-							LogID: "test_log_id",
-						},
+
 						Chat: &CancelChatsResp{
 							Chat: Chat{
 								ID:             "chat1",
@@ -237,9 +227,7 @@ data:
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &cancelChatsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Chat: &CancelChatsResp{
 						Chat: Chat{
 							ID:             "chat1",
@@ -261,7 +249,7 @@ data:
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, ChatStatusCancelled, resp.Chat.Status)
 	})
 
@@ -279,9 +267,7 @@ data:
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &retrieveChatsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Chat: &RetrieveChatsResp{
 						Chat: Chat{
 							ID:             "chat1",
@@ -302,7 +288,7 @@ data:
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, ChatStatusCompleted, resp.Chat.Status)
 	})
 
@@ -320,9 +306,7 @@ data:
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &submitToolOutputsChatResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Chat: &SubmitToolOutputsChatResp{Chat: Chat{
 						ID:             "chat1",
 						ConversationID: "test_conversation_id",
@@ -347,7 +331,7 @@ data:
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, ChatStatusInProgress, resp.Chat.Status)
 	})
 

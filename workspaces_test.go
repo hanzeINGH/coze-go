@@ -25,9 +25,7 @@ func TestWorkspaces(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &listWorkspaceResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: &ListWorkspaceResp{
 						TotalCount: 2,
 						Workspaces: []*Workspace{
@@ -89,9 +87,7 @@ func TestWorkspaces(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &listWorkspaceResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: &ListWorkspaceResp{
 						TotalCount: 0,
 						Workspaces: []*Workspace{},
@@ -115,9 +111,7 @@ func TestWorkspaces(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return error response
-				return mockResponse(http.StatusBadRequest, &baseResponse{
-					LogID: "test_error_log_id",
-				})
+				return mockResponse(http.StatusBadRequest, &baseResponse{})
 			},
 		}
 

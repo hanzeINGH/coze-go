@@ -13,8 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coze-dev/coze-go/log"
-
 	"github.com/golang-jwt/jwt"
 )
 
@@ -477,7 +475,7 @@ func (c *DeviceOAuthClient) GetAccessToken(ctx context.Context, deviceCode strin
 		return c.doGetAccessToken(ctx, req)
 	}
 
-	log.Infof("polling get access token\n")
+	logger.Infof(ctx, "polling get access token\n")
 	interval := 5
 	for {
 		var resp *OAuthToken
@@ -491,14 +489,14 @@ func (c *DeviceOAuthClient) GetAccessToken(ctx context.Context, deviceCode strin
 		}
 		switch authErr.Code {
 		case AuthorizationPending:
-			log.Infof("pending, sleep:%ds\n", interval)
+			logger.Infof(ctx, "pending, sleep:%ds\n", interval)
 		case SlowDown:
 			if interval < 30 {
 				interval += 5
 			}
-			log.Infof("slow down, sleep:%ds\n", interval)
+			logger.Infof(ctx, "slow down, sleep:%ds\n", interval)
 		default:
-			log.Warnf("get access token error:%s, return\n", err.Error())
+			logger.Warnf(ctx, "get access token error:%s, return\n", err.Error())
 			return nil, err
 		}
 		time.Sleep(time.Duration(interval) * time.Second)

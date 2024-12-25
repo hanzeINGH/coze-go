@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/coze-dev/coze-go/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -60,7 +59,7 @@ func TestNewCozeAPI(t *testing.T) {
 	// Test with custom log level
 	t.Run("custom log level", func(t *testing.T) {
 		auth := &mockAuth{token: "test_token"}
-		api := NewCozeAPI(auth, WithLogLevel(log.LogDebug))
+		api := NewCozeAPI(auth, WithLogLevel(LogLevelDebug))
 
 		assert.NotNil(t, api)
 	})
@@ -86,7 +85,7 @@ func TestNewCozeAPI(t *testing.T) {
 		api := NewCozeAPI(auth,
 			WithBaseURL(customURL),
 			WithHttpClient(customClient),
-			WithLogLevel(log.LogDebug),
+			WithLogLevel(LogLevelDebug),
 			WithLogger(customLogger),
 		)
 
@@ -139,7 +138,7 @@ func TestAuthTransport(t *testing.T) {
 // mockLogger implements log.Logger interface for testing
 type mockLogger struct{}
 
-func (m *mockLogger) Debugf(format string, args ...interface{}) {}
-func (m *mockLogger) Infof(format string, args ...interface{})  {}
-func (m *mockLogger) Warnf(format string, args ...interface{})  {}
+func (m *mockLogger) Log(ctx context.Context, level LogLevel, message string, args ...interface{}) {
+}
+
 func (m *mockLogger) Errorf(format string, args ...interface{}) {}

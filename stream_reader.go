@@ -2,11 +2,10 @@ package coze
 
 import (
 	"bufio"
+	"context"
 	"io"
 	"net/http"
 	"strings"
-
-	"github.com/coze-dev/coze-go/log"
 )
 
 type streamable interface {
@@ -17,6 +16,7 @@ type eventProcessor[T streamable] func(line []byte, reader *bufio.Reader) (*T, b
 
 type streamReader[T streamable] struct {
 	isFinished bool
+	ctx        context.Context
 
 	reader       *bufio.Reader
 	response     *http.Response
@@ -65,10 +65,10 @@ func (s *streamReader[T]) checkRespErr() error {
 	if contentType != "" && strings.Contains(contentType, "application/json") {
 		respStr, err := io.ReadAll(s.response.Body)
 		if err != nil {
-			log.Warnf("Error reading response body: ", err)
+			logger.Warnf(s.ctx, "Error reading response body: ", err)
 			return err
 		}
-		return isResponseSuccess(&baseResponse{}, respStr, s.httpResponse)
+		return isResponseSuccess(s.ctx, &baseResponse{}, respStr, s.httpResponse)
 	}
 	return nil
 }

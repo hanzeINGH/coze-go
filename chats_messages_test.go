@@ -23,9 +23,7 @@ func TestChatMessages(t *testing.T) {
 
 				// 返回模拟响应
 				return mockResponse(http.StatusOK, &listChatsMessagesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					ListChatsMessagesResp: &ListChatsMessagesResp{
 						Messages: []*Message{
 							{
@@ -55,7 +53,7 @@ func TestChatMessages(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		require.Len(t, resp.Messages, 2)
 
 		// 验证第一条消息
@@ -75,9 +73,7 @@ func TestChatMessages(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// 返回错误响应
-				return mockResponse(http.StatusBadRequest, &baseResponse{
-					LogID: "test_error_log_id",
-				})
+				return mockResponse(http.StatusBadRequest, &baseResponse{})
 			},
 		}
 
@@ -97,9 +93,7 @@ func TestChatMessages(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				return mockResponse(http.StatusOK, &listChatsMessagesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					ListChatsMessagesResp: &ListChatsMessagesResp{
 						Messages: []*Message{},
 					},
@@ -116,7 +110,7 @@ func TestChatMessages(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Empty(t, resp.Messages)
 	})
 
@@ -127,9 +121,7 @@ func TestChatMessages(t *testing.T) {
 				assert.Empty(t, req.URL.Query().Get("conversation_id"))
 				assert.Empty(t, req.URL.Query().Get("chat_id"))
 
-				return mockResponse(http.StatusBadRequest, &baseResponse{
-					LogID: "test_error_log_id",
-				})
+				return mockResponse(http.StatusBadRequest, &baseResponse{})
 			},
 		}
 

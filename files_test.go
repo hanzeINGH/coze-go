@@ -21,9 +21,7 @@ func TestFiles(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &uploadFilesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					FileInfo: &UploadFilesResp{
 						FileInfo: FileInfo{
 							ID:        "file1",
@@ -47,7 +45,7 @@ func TestFiles(t *testing.T) {
 		resp, err := files.Upload(context.Background(), uploadReq)
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "file1", resp.ID)
 		assert.Equal(t, 1024, resp.Bytes)
 		assert.Equal(t, 1234567890, resp.CreatedAt)
@@ -67,9 +65,7 @@ func TestFiles(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &retrieveFilesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					FileInfo: &RetrieveFilesResp{
 						FileInfo: FileInfo{
 							ID:        "file1",
@@ -90,7 +86,7 @@ func TestFiles(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "file1", resp.ID)
 		assert.Equal(t, 1024, resp.Bytes)
 		assert.Equal(t, 1234567890, resp.CreatedAt)
@@ -102,9 +98,7 @@ func TestFiles(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return error response
-				return mockResponse(http.StatusBadRequest, &baseResponse{
-					LogID: "test_error_log_id",
-				})
+				return mockResponse(http.StatusBadRequest, &baseResponse{})
 			},
 		}
 
@@ -126,9 +120,7 @@ func TestFiles(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return error response
-				return mockResponse(http.StatusBadRequest, &baseResponse{
-					LogID: "test_error_log_id",
-				})
+				return mockResponse(http.StatusBadRequest, &baseResponse{})
 			},
 		}
 

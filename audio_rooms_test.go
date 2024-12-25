@@ -16,13 +16,11 @@ func TestAudioRooms(t *testing.T) {
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Verify request method and path
 				assert.Equal(t, http.MethodPost, req.Method)
-				assert.Equal(t, "/v1/audio/audioRooms", req.URL.Path)
+				assert.Equal(t, "//v1/audio/rooms", req.URL.Path)
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &createAudioRoomsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: &CreateAudioRoomsResp{
 						RoomID: "room1",
 						AppID:  "app1",
@@ -49,7 +47,7 @@ func TestAudioRooms(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "room1", resp.RoomID)
 		assert.Equal(t, "app1", resp.AppID)
 		assert.Equal(t, "token1", resp.Token)
@@ -62,9 +60,7 @@ func TestAudioRooms(t *testing.T) {
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return mock response
 				return mockResponse(http.StatusOK, &createAudioRoomsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: &CreateAudioRoomsResp{
 						RoomID: "room1",
 						AppID:  "app1",
@@ -84,7 +80,7 @@ func TestAudioRooms(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "room1", resp.RoomID)
 	})
 
@@ -93,9 +89,7 @@ func TestAudioRooms(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return error response
-				return mockResponse(http.StatusBadRequest, &baseResponse{
-					LogID: "test_error_log_id",
-				})
+				return mockResponse(http.StatusBadRequest, &baseResponse{})
 			},
 		}
 

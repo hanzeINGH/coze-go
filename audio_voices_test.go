@@ -21,9 +21,7 @@ func TestAudioVoices(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &cloneAudioVoicesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: &CloneAudioVoicesResp{
 						VoiceID: "voice1",
 					},
@@ -53,7 +51,7 @@ func TestAudioVoices(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.HTTPResponse().LogID())
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "voice1", resp.VoiceID)
 	})
 
@@ -62,9 +60,7 @@ func TestAudioVoices(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return error response
-				return mockResponse(http.StatusBadRequest, &baseResponse{
-					LogID: "test_error_log_id",
-				})
+				return mockResponse(http.StatusBadRequest, &baseResponse{})
 			},
 		}
 
@@ -110,9 +106,7 @@ func TestAudioVoices(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &ListAudioVoicesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: struct {
 						VoiceList []*Voice `json:"voice_list"`
 					}{
@@ -196,9 +190,7 @@ func TestAudioVoices(t *testing.T) {
 
 				// Return mock response with empty list
 				return mockResponse(http.StatusOK, &ListAudioVoicesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: struct {
 						VoiceList []*Voice `json:"voice_list"`
 					}{
@@ -223,9 +215,7 @@ func TestAudioVoices(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return error response
-				return mockResponse(http.StatusBadRequest, &baseResponse{
-					LogID: "test_error_log_id",
-				})
+				return mockResponse(http.StatusBadRequest, &baseResponse{})
 			},
 		}
 

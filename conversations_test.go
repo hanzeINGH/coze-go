@@ -25,9 +25,7 @@ func TestConversations(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &listConversationsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: &ListConversationsResp{
 						HasMore: true,
 						Conversations: []*Conversation{
@@ -90,9 +88,7 @@ func TestConversations(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &createConversationsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Conversation: &CreateConversationsResp{
 						Conversation: Conversation{
 							ID:            "conv1",
@@ -124,7 +120,7 @@ func TestConversations(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "conv1", resp.ID)
 		assert.Equal(t, 1234567890, resp.CreatedAt)
 		assert.Equal(t, "section1", resp.LastSectionID)
@@ -144,9 +140,7 @@ func TestConversations(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &retrieveConversationsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Conversation: &RetrieveConversationsResp{
 						Conversation: Conversation{
 							ID:            "conv1",
@@ -169,7 +163,7 @@ func TestConversations(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "conv1", resp.ID)
 		assert.Equal(t, 1234567890, resp.CreatedAt)
 		assert.Equal(t, "section1", resp.LastSectionID)
@@ -186,9 +180,7 @@ func TestConversations(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &clearConversationsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: &ClearConversationsResp{
 						ConversationID: "conv1",
 					},
@@ -204,7 +196,7 @@ func TestConversations(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "conv1", resp.ConversationID)
 	})
 
@@ -218,9 +210,7 @@ func TestConversations(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &listConversationsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					Data: &ListConversationsResp{
 						HasMore:       false,
 						Conversations: []*Conversation{},

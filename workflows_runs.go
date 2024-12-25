@@ -17,7 +17,7 @@ func (r *workflowRuns) Create(ctx context.Context, req *RunWorkflowsReq) (*RunWo
 	if err != nil {
 		return nil, err
 	}
-	resp.RunWorkflowsResp.setHTTPResponse(resp.httpResponse)
+	resp.RunWorkflowsResp.setHTTPResponse(resp.HTTPResponse)
 	return resp.RunWorkflowsResp, nil
 }
 
@@ -31,6 +31,7 @@ func (r *workflowRuns) Resume(ctx context.Context, req *ResumeRunWorkflowsReq) (
 
 	return &WorkflowEventReader{
 		streamReader: &streamReader[WorkflowEvent]{
+			ctx:          ctx,
 			response:     resp,
 			reader:       bufio.NewReader(resp.Body),
 			processor:    parseWorkflowEvent,
@@ -49,6 +50,7 @@ func (r *workflowRuns) Stream(ctx context.Context, req *RunWorkflowsReq) (*Workf
 
 	return &WorkflowEventReader{
 		streamReader: &streamReader[WorkflowEvent]{
+			ctx:          ctx,
 			response:     resp,
 			reader:       bufio.NewReader(resp.Body),
 			processor:    parseWorkflowEvent,

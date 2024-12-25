@@ -7,7 +7,7 @@ import (
 
 func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*CreateAudioRoomsResp, error) {
 	method := http.MethodPost
-	uri := "/v1/audio/audioRooms"
+	uri := "//v1/audio/rooms"
 	resp := &createAudioRoomsResp{}
 	err := r.core.Request(ctx, method, uri, req, resp)
 	if err != nil {

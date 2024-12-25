@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/coze-dev/coze-go/log"
 )
 
 func (r *chats) Create(ctx context.Context, req *CreateChatsReq) (*CreateChatsResp, error) {
@@ -40,13 +38,13 @@ func (r *chats) CreateAndPoll(ctx context.Context, req *CreateChatsReq, timeout 
 	for {
 		time.Sleep(time.Second)
 		if timeout != nil && time.Since(now) > time.Duration(*timeout)*time.Second {
-			log.Infof("Create timeout: ", *timeout, " seconds, cancel Create")
+			logger.Infof(ctx, "Create timeout: ", *timeout, " seconds, cancel Create")
 			cancelResp, err := r.Cancel(ctx, &CancelChatsReq{
 				ConversationID: conversationID,
 				ChatID:         chat.ID,
 			})
 			if err != nil {
-				log.Warnf("Cancel chats failed, err:%v", err)
+				logger.Warnf(ctx, "Cancel chats failed, err:%v", err)
 				return nil, err
 			}
 			chat = cancelResp.Chat
@@ -61,7 +59,7 @@ func (r *chats) CreateAndPoll(ctx context.Context, req *CreateChatsReq, timeout 
 		}
 		if retrieveChat.Chat.Status == ChatStatusCompleted {
 			chat = retrieveChat.Chat
-			log.Infof("Create completed, spend: %v", time.Since(now))
+			logger.Infof(ctx, "Create completed, spend: %v", time.Since(now))
 			break
 		}
 	}
@@ -89,6 +87,7 @@ func (r *chats) Stream(ctx context.Context, req *CreateChatsReq) (*ChatEventRead
 
 	return &ChatEventReader{
 		streamReader: &streamReader[ChatEvent]{
+			ctx:          ctx,
 			response:     resp,
 			reader:       bufio.NewReader(resp.Body),
 			processor:    parseChatEvent,
@@ -195,6 +194,7 @@ func (r *chats) StreamSubmitToolOutputs(ctx context.Context, req *SubmitToolOutp
 
 	return &ChatEventReader{
 		streamReader: &streamReader[ChatEvent]{
+			ctx:          ctx,
 			response:     resp,
 			reader:       bufio.NewReader(resp.Body),
 			processor:    parseChatEvent,

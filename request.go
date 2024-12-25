@@ -10,8 +10,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"time"
-
-	"github.com/coze-dev/coze-go/log"
 )
 
 // HTTPClient an interface for making HTTP requests
@@ -64,7 +62,7 @@ func (c *core) Request(ctx context.Context, method, path string, body any, insta
 		return err
 	}
 
-	return packInstance(instance, resp)
+	return packInstance(ctx, instance, resp)
 }
 
 // UploadFile 上传文件
@@ -112,7 +110,7 @@ func (c *core) UploadFile(ctx context.Context, path string, reader io.Reader, fi
 		return fmt.Errorf("do request: %w", err)
 	}
 
-	return packInstance(instance, resp)
+	return packInstance(ctx, instance, resp)
 }
 
 func (c *core) RawRequest(ctx context.Context, method, path string, body any, opts ...RequestOption) (*http.Response, error) {
@@ -147,15 +145,15 @@ func (c *core) RawRequest(ctx context.Context, method, path string, body any, op
 	if err != nil {
 		return nil, err
 	}
-	err = checkHttpResp(resp)
+	err = checkHttpResp(ctx, resp)
 	if err != nil {
 		return nil, err
 	}
 	return resp, err
 }
 
-func packInstance(instance any, resp *http.Response) error {
-	err := checkHttpResp(resp)
+func packInstance(ctx context.Context, instance any, resp *http.Response) error {
+	err := checkHttpResp(ctx, resp)
 	if err != nil {
 		return err
 	}
@@ -166,25 +164,25 @@ func packInstance(instance any, resp *http.Response) error {
 	httpResponse := newHTTPResponse(resp)
 	err = json.Unmarshal(bodyBytes, instance)
 	if err != nil {
-		log.Errorf(fmt.Sprintf("unmarshal response body: %s", string(bodyBytes)))
+		logger.Errorf(ctx, fmt.Sprintf("unmarshal response body: %s", string(bodyBytes)))
 		return err
 	}
 	if baseResp, ok := instance.(baseRespInterface); ok {
-		return isResponseSuccess(baseResp, bodyBytes, httpResponse)
+		return isResponseSuccess(ctx, baseResp, bodyBytes, httpResponse)
 	}
 	return nil
 }
 
-func isResponseSuccess(baseResp baseRespInterface, bodyBytes []byte, httpResponse *httpResponse) error {
+func isResponseSuccess(ctx context.Context, baseResp baseRespInterface, bodyBytes []byte, httpResponse *httpResponse) error {
 	baseResp.SetHTTPResponse(httpResponse)
 	if baseResp.GetCode() != 0 {
-		log.Warnf("request unsuccessful: %s, log_id:%s", string(bodyBytes), httpResponse.LogID())
+		logger.Warnf(ctx, "request unsuccessful: %s, log_id:%s", string(bodyBytes), httpResponse.LogID())
 		return NewCozeError(baseResp.GetCode(), baseResp.GetMsg(), httpResponse.LogID())
 	}
 	return nil
 }
 
-func checkHttpResp(resp *http.Response) error {
+func checkHttpResp(ctx context.Context, resp *http.Response) error {
 	logID := getLogID(resp.Header)
 	// 鉴权的情况，需要解析
 	if resp.StatusCode != http.StatusOK {
@@ -192,7 +190,7 @@ func checkHttpResp(resp *http.Response) error {
 		errorInfo := authErrorFormat{}
 		err = json.Unmarshal(bodyBytes, &errorInfo)
 		if err != nil {
-			log.Errorf(fmt.Sprintf("unmarshal response body: %s", string(bodyBytes)))
+			logger.Errorf(ctx, fmt.Sprintf("unmarshal response body: %s", string(bodyBytes)))
 			return errors.New(string(bodyBytes) + "log_id:%s" + logID)
 		}
 		return NewCozeAuthExceptionWithoutParent(&errorInfo, resp.StatusCode, logID)

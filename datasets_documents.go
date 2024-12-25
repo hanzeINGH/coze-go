@@ -14,7 +14,7 @@ func (r *datasetsDocuments) Create(ctx context.Context, req *CreateDatasetsDocum
 	if err != nil {
 		return nil, err
 	}
-	resp.CreateDatasetsDocumentsResp.setHTTPResponse(resp.httpResponse)
+	resp.CreateDatasetsDocumentsResp.setHTTPResponse(resp.HTTPResponse)
 	return resp.CreateDatasetsDocumentsResp, nil
 }
 

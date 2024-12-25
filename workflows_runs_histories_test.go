@@ -20,9 +20,7 @@ func TestWorkflowRunHistories(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &retrieveWorkflowRunHistoriesResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					RetrieveWorkflowRunHistoriesResp: &RetrieveWorkflowRunHistoriesResp{
 						Histories: []*WorkflowRunHistory{
 							{
@@ -55,7 +53,7 @@ func TestWorkflowRunHistories(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		require.Len(t, resp.Histories, 1)
 
 		history := resp.Histories[0]
@@ -79,9 +77,7 @@ func TestWorkflowRunHistories(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return error response
-				return mockResponse(http.StatusBadRequest, &baseResponse{
-					LogID: "test_error_log_id",
-				})
+				return mockResponse(http.StatusBadRequest, &baseResponse{})
 			},
 		}
 

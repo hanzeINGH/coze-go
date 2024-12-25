@@ -50,8 +50,8 @@ type stdLogger struct {
 	log *log.Logger
 }
 
-// NewStdLogger ...
-func NewStdLogger() Logger {
+// newStdLogger ...
+func newStdLogger() Logger {
 	return &stdLogger{
 		log: log.New(os.Stderr, "", log.LstdFlags),
 	}
@@ -89,4 +89,33 @@ func (l *levelLogger) Log(ctx context.Context, level LogLevel, message string, a
 	if level >= l.level {
 		l.Logger.Log(ctx, level, message, args...)
 	}
+}
+
+func (l *levelLogger) Debugf(ctx context.Context, message string, args ...interface{}) {
+	l.Log(ctx, LogLevelDebug, message, args...)
+}
+
+func (l *levelLogger) Infof(ctx context.Context, message string, args ...interface{}) {
+	l.Log(ctx, LogLevelInfo, message, args...)
+}
+
+func (l *levelLogger) Warnf(ctx context.Context, message string, args ...interface{}) {
+	l.Log(ctx, LogLevelWarn, message, args...)
+}
+
+func (l *levelLogger) Errorf(ctx context.Context, message string, args ...interface{}) {
+	l.Log(ctx, LogLevelError, message, args...)
+}
+
+var logger = levelLogger{
+	Logger: newStdLogger(),
+	level:  LogLevelInfo,
+}
+
+func setLogger(l Logger) {
+	logger.Logger = l
+}
+
+func setLevel(level LogLevel) {
+	logger.level = level
 }

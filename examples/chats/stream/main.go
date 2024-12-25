@@ -8,8 +8,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/coze-dev/coze-go/log"
-
 	"github.com/coze-dev/coze-go"
 )
 
@@ -43,7 +41,7 @@ func main() {
 
 	resp, err := cozeCli.Chats.Stream(ctx, req)
 	if err != nil {
-		log.Warnf("Error starting chats: %v", err)
+		fmt.Printf("Error starting chats: %v\n", err)
 		return
 	}
 

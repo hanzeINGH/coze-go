@@ -20,9 +20,7 @@ func TestWorkflowRuns(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &runWorkflowsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					RunWorkflowsResp: &RunWorkflowsResp{
 						ExecuteID: "exec1",
 						Data:      `{"result": "success"}`,
@@ -48,7 +46,7 @@ func TestWorkflowRuns(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		assert.Equal(t, "exec1", resp.ExecuteID)
 		assert.Equal(t, `{"result": "success"}`, resp.Data)
 		assert.Equal(t, "https://debug.example.com", resp.DebugURL)

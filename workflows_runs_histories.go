@@ -14,7 +14,7 @@ func (r *workflowRunHistories) Retrieve(ctx context.Context, req *RetrieveWorkfl
 	if err != nil {
 		return nil, err
 	}
-	resp.RetrieveWorkflowRunHistoriesResp.setHTTPResponse(resp.httpResponse)
+	resp.RetrieveWorkflowRunHistoriesResp.setHTTPResponse(resp.HTTPResponse)
 	return resp.RetrieveWorkflowRunHistoriesResp, nil
 }
 

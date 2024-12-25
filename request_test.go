@@ -100,7 +100,7 @@ func TestClient_Request_Error(t *testing.T) {
 		}, "https://api.test.com")
 
 		var resp TestResponse
-		err := client.Request(context.Background(), http.MethodGet, "/test", nil, &resp)
+		err := core.Request(context.Background(), http.MethodGet, "/test", nil, &resp)
 		assert.Error(t, err)
 		cozeErr, ok := err.(*CozeError)
 		assert.True(t, ok)
@@ -129,7 +129,7 @@ func TestClient_Request_Error(t *testing.T) {
 		}, "https://api.test.com")
 
 		var resp TestResponse
-		err := client.Request(context.Background(), http.MethodGet, "/test", nil, &resp)
+		err := core.Request(context.Background(), http.MethodGet, "/test", nil, &resp)
 		assert.Error(t, err)
 		authErr, ok := err.(*CozeAuthError)
 		assert.True(t, ok)
@@ -169,7 +169,7 @@ func TestClient_UploadFile_Success(t *testing.T) {
 	}
 
 	var actualResp TestResponse
-	err := client.UploadFile(
+	err := core.UploadFile(
 		context.Background(),
 		"/upload",
 		strings.NewReader(fileContent),
@@ -194,7 +194,7 @@ func TestClient_UploadFile_Error(t *testing.T) {
 		}, "https://api.test.com")
 
 		var resp TestResponse
-		err := client.UploadFile(
+		err := core.UploadFile(
 			context.Background(),
 			"/upload",
 			strings.NewReader("test"),
@@ -227,7 +227,7 @@ func TestClient_UploadFile_Error(t *testing.T) {
 		}, "https://api.test.com")
 
 		var resp TestResponse
-		err := client.UploadFile(
+		err := core.UploadFile(
 			context.Background(),
 			"/upload",
 			strings.NewReader("test"),
@@ -268,13 +268,13 @@ func TestNewClient(t *testing.T) {
 	t.Run("With Custom Doer", func(t *testing.T) {
 		customDoer := &mockHTTP{}
 		core := newCore(customDoer, "https://api.test.com")
-		assert.Equal(t, customDoer, client.httpClient)
+		assert.Equal(t, customDoer, core.httpClient)
 	})
 
 	t.Run("With Nil Doer", func(t *testing.T) {
 		core := newCore(nil, "https://api.test.com")
-		assert.NotNil(t, client.httpClient)
-		_, ok := client.httpClient.(*http.Client)
+		assert.NotNil(t, core.httpClient)
+		_, ok := core.httpClient.(*http.Client)
 		assert.True(t, ok)
 	})
 }

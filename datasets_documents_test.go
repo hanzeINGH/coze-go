@@ -23,9 +23,6 @@ func TestDatasetsDocuments(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &createDatasetsDocumentsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
 					CreateDatasetsDocumentsResp: &CreateDatasetsDocumentsResp{
 						DocumentInfos: []*Document{
 							{
@@ -64,7 +61,7 @@ func TestDatasetsDocuments(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 		require.Len(t, resp.DocumentInfos, 1)
 		doc := resp.DocumentInfos[0]
 		assert.Equal(t, "doc1", doc.DocumentID)
@@ -86,11 +83,7 @@ func TestDatasetsDocuments(t *testing.T) {
 				assert.Equal(t, "true", req.Header.Get("Agw-Js-Conv"))
 
 				// Return mock response
-				return mockResponse(http.StatusOK, &updateDatasetsDocumentsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
-				})
+				return mockResponse(http.StatusOK, &updateDatasetsDocumentsResp{})
 			},
 		}
 
@@ -104,7 +97,7 @@ func TestDatasetsDocuments(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 	})
 
 	// Test Delete method
@@ -119,11 +112,7 @@ func TestDatasetsDocuments(t *testing.T) {
 				assert.Equal(t, "true", req.Header.Get("Agw-Js-Conv"))
 
 				// Return mock response
-				return mockResponse(http.StatusOK, &deleteDatasetsDocumentsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
-				})
+				return mockResponse(http.StatusOK, &deleteDatasetsDocumentsResp{})
 			},
 		}
 
@@ -135,7 +124,7 @@ func TestDatasetsDocuments(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.LogID)
+		assert.Equal(t, "test_log_id", resp.LogID())
 	})
 
 	// Test List method
@@ -151,9 +140,7 @@ func TestDatasetsDocuments(t *testing.T) {
 
 				// Return mock response
 				return mockResponse(http.StatusOK, &listDatasetsDocumentsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					ListDatasetsDocumentsResp: &ListDatasetsDocumentsResp{
 						Total: 2,
 						DocumentInfos: []*Document{
@@ -215,9 +202,7 @@ func TestDatasetsDocuments(t *testing.T) {
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return mock response
 				return mockResponse(http.StatusOK, &listDatasetsDocumentsResp{
-					baseResponse: baseResponse{
-						LogID: "test_log_id",
-					},
+
 					ListDatasetsDocumentsResp: &ListDatasetsDocumentsResp{
 						Total:         0,
 						DocumentInfos: []*Document{},

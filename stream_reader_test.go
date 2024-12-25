@@ -3,6 +3,7 @@ package coze
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"io"
 	"net/http"
 	"strings"
@@ -13,10 +14,10 @@ import (
 )
 
 func mockHTTPResponse() *httpResponse {
+	header := http.Header{}
+	header.Set(logIDHeader, "test_log_id")
 	return &httpResponse{
-		Header: map[string][]string{
-			logIDHeader: {""},
-		},
+		Header: header,
 	}
 }
 
@@ -44,6 +45,7 @@ func mockEventProcessor(line []byte, reader *bufio.Reader) (*WorkflowEvent, bool
 }
 
 func TestStreamReader(t *testing.T) {
+	ctx := context.Background()
 	t.Run("successful event processing", func(t *testing.T) {
 		// Create mock response with multiple events
 		events := []string{
@@ -55,6 +57,7 @@ func TestStreamReader(t *testing.T) {
 
 		// Create stream reader
 		reader := &streamReader[WorkflowEvent]{
+			ctx:          ctx,
 			reader:       bufio.NewReader(resp.Body),
 			response:     resp,
 			processor:    mockEventProcessor,
@@ -98,6 +101,7 @@ func TestStreamReader(t *testing.T) {
 		resp := createMockResponse(events)
 
 		reader := &streamReader[WorkflowEvent]{
+			ctx:          ctx,
 			reader:       bufio.NewReader(resp.Body),
 			response:     resp,
 			processor:    mockEventProcessor,
@@ -134,6 +138,7 @@ func TestStreamReader(t *testing.T) {
 		}
 
 		reader := &streamReader[WorkflowEvent]{
+			ctx:          ctx,
 			reader:       bufio.NewReader(errorResp.Body),
 			response:     errorResp,
 			processor:    mockEventProcessor,
@@ -149,9 +154,10 @@ func TestStreamReader(t *testing.T) {
 
 	t.Run("LogID method", func(t *testing.T) {
 		reader := &streamReader[WorkflowEvent]{
+			ctx:          ctx,
 			httpResponse: mockHTTPResponse(),
 		}
-		assert.Equal(t, "test_log_id", reader.LogID())
+		assert.Equal(t, "test_log_id", reader.httpResponse.LogID())
 	})
 }
 

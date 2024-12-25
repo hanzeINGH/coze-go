@@ -39,7 +39,7 @@ func (r *bots) Publish(ctx context.Context, req *PublishBotsReq) (*PublishBotsRe
 	if err != nil {
 		return nil, err
 	}
-	resp.Data.LogID = resp.HTTPResponse.LogID()
+	resp.Data.httpResponse = resp.HTTPResponse
 	return resp.Data, nil
 }
 
@@ -51,7 +51,7 @@ func (r *bots) Retrieve(ctx context.Context, req *RetrieveBotsReq) (*RetrieveBot
 	if err != nil {
 		return nil, err
 	}
-	resp.Bot.LogID = resp.HTTPResponse.LogID()
+	resp.Bot.httpResponse = resp.HTTPResponse
 	return resp.Bot, nil
 }
 

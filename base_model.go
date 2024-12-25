@@ -57,7 +57,6 @@ type baseRespInterface interface {
 
 type baseModel struct {
 	httpResponse *httpResponse
-	LogID        string `json:"log_id"`
 }
 
 func (b *baseModel) setHTTPResponse(httpResponse *httpResponse) {
@@ -66,6 +65,10 @@ func (b *baseModel) setHTTPResponse(httpResponse *httpResponse) {
 
 func (b *baseModel) HTTPResponse() HTTPResponse {
 	return b.httpResponse
+}
+
+func (b *baseModel) LogID() string {
+	return b.httpResponse.LogID()
 }
 
 func newHTTPResponse(resp *http.Response) *httpResponse {
