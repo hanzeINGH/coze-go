@@ -2,7 +2,6 @@ package coze
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"testing"
 
@@ -125,68 +124,5 @@ func TestWorkspaces(t *testing.T) {
 
 		require.Error(t, err)
 		assert.Nil(t, paged)
-	})
-}
-
-func TestWorkspaceRoleType(t *testing.T) {
-	t.Run("WorkspaceRoleType String method", func(t *testing.T) {
-		assert.Equal(t, "owner", WorkspaceRoleTypeOwner.String())
-		assert.Equal(t, "admin", WorkspaceRoleTypeAdmin.String())
-		assert.Equal(t, "member", WorkspaceRoleTypeMember.String())
-	})
-
-	t.Run("WorkspaceRoleType UnmarshalJSON", func(t *testing.T) {
-		var roleType WorkspaceRoleType
-
-		// Test valid role types
-		err := json.Unmarshal([]byte(`"owner"`), &roleType)
-		require.NoError(t, err)
-		assert.Equal(t, WorkspaceRoleTypeOwner, roleType)
-
-		err = json.Unmarshal([]byte(`"admin"`), &roleType)
-		require.NoError(t, err)
-		assert.Equal(t, WorkspaceRoleTypeAdmin, roleType)
-
-		err = json.Unmarshal([]byte(`"member"`), &roleType)
-		require.NoError(t, err)
-		assert.Equal(t, WorkspaceRoleTypeMember, roleType)
-
-		// Test unknown role type
-		err = json.Unmarshal([]byte(`"unknown"`), &roleType)
-		require.NoError(t, err)
-		assert.Equal(t, WorkspaceRoleType("unknown"), roleType)
-
-		// Test invalid JSON
-		err = json.Unmarshal([]byte(`invalid`), &roleType)
-		require.Error(t, err)
-	})
-}
-
-func TestWorkspaceType(t *testing.T) {
-	t.Run("WorkspaceType String method", func(t *testing.T) {
-		assert.Equal(t, "personal", WorkspaceTypePersonal.String())
-		assert.Equal(t, "team", WorkspaceTypeTeam.String())
-	})
-
-	t.Run("WorkspaceType UnmarshalJSON", func(t *testing.T) {
-		var workspaceType WorkspaceType
-
-		// Test valid workspace types
-		err := json.Unmarshal([]byte(`"personal"`), &workspaceType)
-		require.NoError(t, err)
-		assert.Equal(t, WorkspaceTypePersonal, workspaceType)
-
-		err = json.Unmarshal([]byte(`"team"`), &workspaceType)
-		require.NoError(t, err)
-		assert.Equal(t, WorkspaceTypeTeam, workspaceType)
-
-		// Test unknown workspace type
-		err = json.Unmarshal([]byte(`"unknown"`), &workspaceType)
-		require.NoError(t, err)
-		assert.Equal(t, WorkspaceType("unknown"), workspaceType)
-
-		// Test invalid JSON
-		err = json.Unmarshal([]byte(`invalid`), &workspaceType)
-		require.Error(t, err)
 	})
 }

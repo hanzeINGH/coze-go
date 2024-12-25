@@ -2,7 +2,6 @@ package coze
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"strconv"
 )
@@ -85,29 +84,6 @@ const (
 	WorkspaceRoleTypeMember WorkspaceRoleType = "member"
 )
 
-func (t WorkspaceRoleType) String() string {
-	return string(t)
-}
-
-func (t *WorkspaceRoleType) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
-	}
-
-	switch s {
-	case "owner":
-		*t = WorkspaceRoleTypeOwner
-	case "admin":
-		*t = WorkspaceRoleTypeAdmin
-	case "member":
-		*t = WorkspaceRoleTypeMember
-	default:
-		*t = WorkspaceRoleType(s)
-	}
-	return nil
-}
-
 // WorkspaceType represents the workspace type
 type WorkspaceType string
 
@@ -115,24 +91,3 @@ const (
 	WorkspaceTypePersonal WorkspaceType = "personal"
 	WorkspaceTypeTeam     WorkspaceType = "team"
 )
-
-func (t WorkspaceType) String() string {
-	return string(t)
-}
-
-func (t *WorkspaceType) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
-	}
-
-	switch s {
-	case "personal":
-		*t = WorkspaceTypePersonal
-	case "team":
-		*t = WorkspaceTypeTeam
-	default:
-		*t = WorkspaceType(s)
-	}
-	return nil
-}
