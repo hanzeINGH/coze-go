@@ -102,7 +102,7 @@ func TestClient_Request_Error(t *testing.T) {
 		var resp TestResponse
 		err := core.Request(context.Background(), http.MethodGet, "/test", nil, &resp)
 		assert.Error(t, err)
-		cozeErr, ok := err.(*CozeError)
+		cozeErr, ok := err.(*Error)
 		assert.True(t, ok)
 		assert.Equal(t, 1001, cozeErr.Code)
 		assert.Equal(t, "business error", cozeErr.Message)
@@ -237,7 +237,7 @@ func TestClient_UploadFile_Error(t *testing.T) {
 		)
 
 		assert.Error(t, err)
-		cozeErr, ok := err.(*CozeError)
+		cozeErr, ok := err.(*Error)
 		assert.True(t, ok)
 		assert.Equal(t, 1002, cozeErr.Code)
 		assert.Equal(t, "upload business error", cozeErr.Message)

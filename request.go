@@ -177,7 +177,7 @@ func isResponseSuccess(ctx context.Context, baseResp baseRespInterface, bodyByte
 	baseResp.SetHTTPResponse(httpResponse)
 	if baseResp.GetCode() != 0 {
 		logger.Warnf(ctx, "request unsuccessful: %s, log_id:%s", string(bodyBytes), httpResponse.LogID())
-		return NewCozeError(baseResp.GetCode(), baseResp.GetMsg(), httpResponse.LogID())
+		return NewError(baseResp.GetCode(), baseResp.GetMsg(), httpResponse.LogID())
 	}
 	return nil
 }

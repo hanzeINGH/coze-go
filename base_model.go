@@ -67,7 +67,7 @@ func (b *baseModel) setHTTPResponse(httpResponse *httpResponse) {
 	b.httpResponse = httpResponse
 }
 
-func (b *baseModel) HTTPResponse() HTTPResponse {
+func (b *baseModel) Response() HTTPResponse {
 	return b.httpResponse
 }
 

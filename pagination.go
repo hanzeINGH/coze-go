@@ -1,5 +1,13 @@
 package coze
 
+type Pagination[T any] interface {
+	Err() error
+	Items() []*T
+	Current() *T
+	Total() int
+	HasMore() bool
+}
+
 type PageRequest struct {
 	PageToken string `json:"page_token,omitempty"`
 	PageNum   int    `json:"page_num,omitempty"`

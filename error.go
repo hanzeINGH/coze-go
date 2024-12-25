@@ -5,14 +5,14 @@ import (
 	"fmt"
 )
 
-type CozeError struct {
+type Error struct {
 	Code    int
 	Message string
 	LogID   string
 }
 
-func NewCozeError(code int, msg, logID string) *CozeError {
-	return &CozeError{
+func NewError(code int, msg, logID string) *Error {
+	return &Error{
 		Code:    code,
 		Message: msg,
 		LogID:   logID,
@@ -20,16 +20,16 @@ func NewCozeError(code int, msg, logID string) *CozeError {
 }
 
 // Error implements the error interface
-func (e *CozeError) Error() string {
-	return fmt.Sprintf("Code: %d, Message: %s, LogID: %s",
+func (e *Error) Error() string {
+	return fmt.Sprintf("code= %d, message= %s, logID= %s",
 		e.Code,
 		e.Message,
 		e.LogID)
 }
 
-// AsCozeError checks if the error is of type CozeError
-func AsCozeError(err error) (*CozeError, bool) {
-	var cozeErr *CozeError
+// AsCozeError checks if the error is of type Error
+func AsCozeError(err error) (*Error, bool) {
+	var cozeErr *Error
 	if errors.As(err, &cozeErr) {
 		return cozeErr, true
 	}

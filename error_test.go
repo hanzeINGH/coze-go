@@ -9,8 +9,8 @@ import (
 )
 
 func TestNewCozeError(t *testing.T) {
-	// 测试创建新的 CozeError
-	err := NewCozeError(1001, "test error", "test-log-id")
+	// 测试创建新的 Error
+	err := NewError(1001, "test error", "test-log-id")
 	assert.NotNil(t, err)
 	assert.Equal(t, 1001, err.Code)
 	assert.Equal(t, "test error", err.Message)
@@ -19,7 +19,7 @@ func TestNewCozeError(t *testing.T) {
 
 func TestCozeError_Error(t *testing.T) {
 	// 测试 Error() 方法
-	err := NewCozeError(1001, "test error", "test-log-id")
+	err := NewError(1001, "test error", "test-log-id")
 	expectedMsg := "Code: 1001, Message: test error, LogID: test-log-id"
 	assert.Equal(t, expectedMsg, err.Error())
 }
@@ -28,7 +28,7 @@ func TestAsCozeError(t *testing.T) {
 	tests := []struct {
 		name     string
 		err      error
-		wantErr  *CozeError
+		wantErr  *Error
 		wantBool bool
 	}{
 		{
@@ -38,22 +38,22 @@ func TestAsCozeError(t *testing.T) {
 			wantBool: false,
 		},
 		{
-			name:     "non-CozeError",
+			name:     "non-Error",
 			err:      errors.New("standard error"),
 			wantErr:  nil,
 			wantBool: false,
 		},
 		{
-			name:     "CozeError",
-			err:      NewCozeError(1001, "test error", "test-log-id"),
-			wantErr:  NewCozeError(1001, "test error", "test-log-id"),
+			name:     "Error",
+			err:      NewError(1001, "test error", "test-log-id"),
+			wantErr:  NewError(1001, "test error", "test-log-id"),
 			wantBool: true,
 		},
 		{
-			name: "wrapped CozeError",
+			name: "wrapped Error",
 			err: fmt.Errorf("wrapped: %w",
-				NewCozeError(1001, "test error", "test-log-id")),
-			wantErr:  NewCozeError(1001, "test error", "test-log-id"),
+				NewError(1001, "test error", "test-log-id")),
+			wantErr:  NewError(1001, "test error", "test-log-id"),
 			wantBool: true,
 		},
 	}
