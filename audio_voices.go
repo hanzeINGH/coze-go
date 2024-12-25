@@ -47,7 +47,7 @@ func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*Clon
 	if err != nil {
 		return nil, err
 	}
-	resp.Data.SetLogID(resp.LogID)
+	resp.Data.setHTTPResponse(resp.HTTPResponse)
 	return resp.Data, nil
 }
 
@@ -72,7 +72,7 @@ func (r *audioVoice) List(ctx context.Context, req *ListAudioVoicesReq) (*Number
 			return &PageResponse[Voice]{
 				HasMore: len(resp.Data.VoiceList) >= request.PageSize,
 				Data:    resp.Data.VoiceList,
-				LogID:   resp.LogID,
+				LogID:   resp.HTTPResponse.GetLogID(),
 			}, nil
 		}, req.PageSize, req.PageNum)
 }

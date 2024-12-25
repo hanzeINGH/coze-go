@@ -40,7 +40,7 @@ func (r *conversations) List(ctx context.Context, req *ListConversationsReq) (*N
 			return &PageResponse[Conversation]{
 				HasMore: resp.Data.HasMore,
 				Data:    resp.Data.Conversations,
-				LogID:   resp.LogID,
+				LogID:   resp.HTTPResponse.GetLogID(),
 			}, nil
 		}, req.PageSize, req.PageNum)
 }
@@ -52,7 +52,7 @@ func (r *conversations) Create(ctx context.Context, req *CreateConversationsReq)
 	if err != nil {
 		return nil, err
 	}
-	resp.Conversation.SetLogID(resp.LogID)
+	resp.Conversation.setHTTPResponse(resp.HTTPResponse)
 	return resp.Conversation, nil
 }
 
@@ -63,7 +63,7 @@ func (r *conversations) Retrieve(ctx context.Context, req *RetrieveConversations
 	if err != nil {
 		return nil, err
 	}
-	resp.Conversation.SetLogID(resp.LogID)
+	resp.Conversation.setHTTPResponse(resp.HTTPResponse)
 	return resp.Conversation, nil
 }
 
@@ -74,7 +74,7 @@ func (r *conversations) Clear(ctx context.Context, req *ClearConversationsReq) (
 	if err != nil {
 		return nil, err
 	}
-	resp.Data.SetLogID(resp.LogID)
+	resp.Data.setHTTPResponse(resp.HTTPResponse)
 	return resp.Data, nil
 }
 

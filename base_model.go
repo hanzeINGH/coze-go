@@ -1,13 +1,34 @@
 package coze
 
-type baseResponse struct {
-	Code  int    `json:"code"`
-	Msg   string `json:"msg"`
-	LogID string
+import "net/http"
+
+type HTTPResponse interface {
+	GetLogID() string
 }
 
-func (b *baseResponse) SetLogID(logID string) {
-	b.LogID = logID
+type httpResponse struct {
+	Status        int
+	Header        http.Header
+	ContentLength int64
+
+	logid string
+}
+
+func (r *httpResponse) GetLogID() string {
+	if r.logid == "" {
+		r.logid = r.Header.Get(logIDHeader)
+	}
+	return r.logid
+}
+
+type baseResponse struct {
+	Code         int           `json:"code"`
+	Msg          string        `json:"msg"`
+	HTTPResponse *httpResponse `json:"http_response"`
+}
+
+func (b *baseResponse) SetHTTPResponse(httpResponse *httpResponse) {
+	b.HTTPResponse = httpResponse
 }
 
 func (b *baseResponse) SetCode(code int) {
@@ -27,7 +48,7 @@ func (b *baseResponse) GetMsg() string {
 }
 
 type baseRespInterface interface {
-	SetLogID(logID string)
+	SetHTTPResponse(httpResponse *httpResponse)
 	SetCode(code int)
 	SetMsg(msg string)
 	GetMsg() string
@@ -35,9 +56,22 @@ type baseRespInterface interface {
 }
 
 type baseModel struct {
-	LogID string `json:"log_id"`
+	httpResponse *httpResponse
+	LogID        string `json:"log_id"`
 }
 
-func (b *baseModel) SetLogID(logID string) {
-	b.LogID = logID
+func (b *baseModel) setHTTPResponse(httpResponse *httpResponse) {
+	b.httpResponse = httpResponse
+}
+
+func (b *baseModel) HTTPResponse() HTTPResponse {
+	return b.httpResponse
+}
+
+func newHTTPResponse(resp *http.Response) *httpResponse {
+	return &httpResponse{
+		Status:        resp.StatusCode,
+		Header:        resp.Header,
+		ContentLength: resp.ContentLength,
+	}
 }

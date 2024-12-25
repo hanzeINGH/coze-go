@@ -22,14 +22,14 @@ func main() {
 	botID := os.Getenv("COZE_BOT_ID")
 
 	// Example 1: Get log ID from bot retrieve API
-	BotsResp, err := cozeCli.Bots.Retrieve(ctx, &coze.RetrieveBotsReq{
+	botsResp, err := cozeCli.Bots.Retrieve(ctx, &coze.RetrieveBotsReq{
 		BotID: botID,
 	})
 	if err != nil {
 		fmt.Printf("Error retrieving bot: %v\n", err)
 		return
 	}
-	fmt.Printf("Bot retrieve log ID: %s\n", BotsResp.LogID)
+	fmt.Printf("Bot retrieve log ID: %s\n", botsResp.HTTPResponse().GetLogID())
 
 	// Example 2: Get log ID from chats API
 	chatResp, err := cozeCli.Chats.Create(ctx, &coze.CreateChatsReq{
@@ -43,7 +43,7 @@ func main() {
 		fmt.Printf("Error creating chats: %v\n", err)
 		return
 	}
-	fmt.Printf("Create create log ID: %s\n", chatResp.LogID)
+	fmt.Printf("Create create log ID: %s\n", chatResp.HTTPResponse().GetLogID())
 
 	// Example 3: Get log ID from file upload API
 	file, err := os.Open(os.Getenv("FILE_PATH"))
@@ -56,5 +56,5 @@ func main() {
 		fmt.Printf("Error uploading file: %v\n", err)
 		return
 	}
-	fmt.Printf("File upload log ID: %s\n", fileResp.LogID)
+	fmt.Printf("File upload log ID: %s\n", fileResp.HTTPResponse().GetLogID())
 }

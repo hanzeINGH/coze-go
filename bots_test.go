@@ -164,7 +164,8 @@ func TestBots(t *testing.T) {
 								ModelID:   "model1",
 								ModelName: "Model 1",
 							},
-						}},
+						},
+					},
 				})
 			},
 		}
@@ -272,7 +273,6 @@ func TestBots(t *testing.T) {
 		require.NoError(t, err)
 		assert.Empty(t, paged.Items())
 	})
-
 }
 
 func TestBotMode(t *testing.T) {

@@ -18,10 +18,10 @@ type eventProcessor[T streamable] func(line []byte, reader *bufio.Reader) (*T, b
 type streamReader[T streamable] struct {
 	isFinished bool
 
-	reader    *bufio.Reader
-	response  *http.Response
-	logID     string
-	processor eventProcessor[T]
+	reader       *bufio.Reader
+	response     *http.Response
+	processor    eventProcessor[T]
+	httpResponse *httpResponse
 }
 
 func (s *streamReader[T]) Recv() (response *T, err error) {
@@ -68,7 +68,7 @@ func (s *streamReader[T]) checkRespErr() error {
 			log.Warnf("Error reading response body: ", err)
 			return err
 		}
-		return isResponseSuccess(&baseResponse{}, respStr, s.logID)
+		return isResponseSuccess(&baseResponse{}, respStr, s.httpResponse)
 	}
 	return nil
 }
@@ -77,6 +77,6 @@ func (s *streamReader[T]) Close() error {
 	return s.response.Body.Close()
 }
 
-func (s *streamReader[T]) LogID() string {
-	return s.logID
+func (s *streamReader[T]) HTTPResponse() HTTPResponse {
+	return s.httpResponse
 }

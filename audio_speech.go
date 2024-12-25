@@ -20,12 +20,11 @@ func (r *audioSpeech) Create(ctx context.Context, req *CreateAudioSpeechReq) (*C
 	if err != nil {
 		return nil, err
 	}
-	logID := getLogID(resp.Header)
-
-	return &CreateAudioSpeechResp{
-		baseResponse: baseResponse{LogID: logID},
-		Data:         resp.Body,
-	}, nil
+	res := &CreateAudioSpeechResp{
+		Data: resp.Body,
+	}
+	res.SetHTTPResponse(newHTTPResponse(resp))
+	return res, nil
 }
 
 // CreateAudioSpeechReq represents the request for creating speech

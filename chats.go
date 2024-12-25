@@ -34,7 +34,7 @@ func (r *chats) Create(ctx context.Context, req *CreateChatsReq) (*CreateChatsRe
 	if err != nil {
 		return nil, err
 	}
-	resp.Chat.SetLogID(resp.LogID)
+	resp.Chat.setHTTPResponse(resp.HTTPResponse)
 	return resp.Chat, nil
 }
 
@@ -101,10 +101,10 @@ func (r *chats) Stream(ctx context.Context, req *CreateChatsReq) (*ChatEventRead
 
 	return &ChatEventReader{
 		streamReader: &streamReader[ChatEvent]{
-			response:  resp,
-			reader:    bufio.NewReader(resp.Body),
-			logID:     getLogID(resp.Header),
-			processor: parseChatEvent,
+			response:     resp,
+			reader:       bufio.NewReader(resp.Body),
+			processor:    parseChatEvent,
+			httpResponse: newHTTPResponse(resp),
 		},
 	}, nil
 }
@@ -146,7 +146,7 @@ func (r *chats) Cancel(ctx context.Context, req *CancelChatsReq) (*CancelChatsRe
 	if err != nil {
 		return nil, err
 	}
-	resp.Chat.SetLogID(resp.LogID)
+	resp.Chat.setHTTPResponse(resp.HTTPResponse)
 	return resp.Chat, nil
 }
 
@@ -161,7 +161,7 @@ func (r *chats) Retrieve(ctx context.Context, req *RetrieveChatsReq) (*RetrieveC
 	if err != nil {
 		return nil, err
 	}
-	resp.Chat.SetLogID(resp.LogID)
+	resp.Chat.setHTTPResponse(resp.HTTPResponse)
 	return resp.Chat, nil
 }
 
@@ -177,7 +177,7 @@ func (r *chats) SubmitToolOutputs(ctx context.Context, req *SubmitToolOutputsCha
 	if err != nil {
 		return nil, err
 	}
-	resp.Chat.SetLogID(resp.LogID)
+	resp.Chat.setHTTPResponse(resp.HTTPResponse)
 	return resp.Chat, nil
 }
 
@@ -195,10 +195,10 @@ func (r *chats) StreamSubmitToolOutputs(ctx context.Context, req *SubmitToolOutp
 
 	return &ChatEventReader{
 		streamReader: &streamReader[ChatEvent]{
-			response:  resp,
-			reader:    bufio.NewReader(resp.Body),
-			logID:     getLogID(resp.Header),
-			processor: parseChatEvent,
+			response:     resp,
+			reader:       bufio.NewReader(resp.Body),
+			processor:    parseChatEvent,
+			httpResponse: newHTTPResponse(resp),
 		},
 	}, nil
 }

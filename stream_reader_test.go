@@ -12,6 +12,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func mockHTTPResponse() *httpResponse {
+	return &httpResponse{
+		Header: map[string][]string{
+			logIDHeader: {""},
+		},
+	}
+}
+
 // Mock event processor for testing
 func mockEventProcessor(line []byte, reader *bufio.Reader) (*WorkflowEvent, bool, error) {
 	if len(line) == 0 {
@@ -47,10 +55,10 @@ func TestStreamReader(t *testing.T) {
 
 		// Create stream reader
 		reader := &streamReader[WorkflowEvent]{
-			reader:    bufio.NewReader(resp.Body),
-			response:  resp,
-			logID:     "test_log_id",
-			processor: mockEventProcessor,
+			reader:       bufio.NewReader(resp.Body),
+			response:     resp,
+			processor:    mockEventProcessor,
+			httpResponse: mockHTTPResponse(),
 		}
 		defer reader.Close()
 
@@ -90,10 +98,10 @@ func TestStreamReader(t *testing.T) {
 		resp := createMockResponse(events)
 
 		reader := &streamReader[WorkflowEvent]{
-			reader:    bufio.NewReader(resp.Body),
-			response:  resp,
-			logID:     "test_log_id",
-			processor: mockEventProcessor,
+			reader:       bufio.NewReader(resp.Body),
+			response:     resp,
+			processor:    mockEventProcessor,
+			httpResponse: mockHTTPResponse(),
 		}
 		defer reader.Close()
 
@@ -126,10 +134,10 @@ func TestStreamReader(t *testing.T) {
 		}
 
 		reader := &streamReader[WorkflowEvent]{
-			reader:    bufio.NewReader(errorResp.Body),
-			response:  errorResp,
-			logID:     "error_log_id",
-			processor: mockEventProcessor,
+			reader:       bufio.NewReader(errorResp.Body),
+			response:     errorResp,
+			processor:    mockEventProcessor,
+			httpResponse: mockHTTPResponse(),
 		}
 		defer reader.Close()
 
@@ -141,7 +149,7 @@ func TestStreamReader(t *testing.T) {
 
 	t.Run("LogID method", func(t *testing.T) {
 		reader := &streamReader[WorkflowEvent]{
-			logID: "test_log_id",
+			httpResponse: mockHTTPResponse(),
 		}
 		assert.Equal(t, "test_log_id", reader.LogID())
 	})

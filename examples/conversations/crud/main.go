@@ -41,7 +41,7 @@ func main() {
 	createMessageReq := &coze.CreateMessageReq{}
 	createMessageReq.Role = coze.MessageRoleAssistant
 	createMessageReq.ConversationID = conversationID
-	createMessageReq.SetObjectContext([]coze.MessageObjectString{
+	createMessageReq.SetObjectContext([]*coze.MessageObjectString{
 		coze.NewFileMessageObjectByURL(os.Getenv("IMAGE_FILE_PATH")),
 		coze.NewTextMessageObject("hello"),
 		coze.NewImageMessageObjectByURL(os.Getenv("IMAGE_FILE_PATH")),

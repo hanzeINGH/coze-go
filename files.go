@@ -22,7 +22,7 @@ func (r *files) Upload(ctx context.Context, req fileInterface) (*UploadFilesResp
 		return nil, err
 	}
 
-	resp.FileInfo.SetLogID(resp.LogID)
+	resp.FileInfo.setHTTPResponse(resp.HTTPResponse)
 	return resp.FileInfo, nil
 }
 
@@ -34,7 +34,7 @@ func (r *files) Retrieve(ctx context.Context, req *RetrieveFilesReq) (*RetrieveF
 	if err != nil {
 		return nil, err
 	}
-	resp.FileInfo.SetLogID(resp.LogID)
+	resp.FileInfo.setHTTPResponse(resp.HTTPResponse)
 	return resp.FileInfo, nil
 }
 

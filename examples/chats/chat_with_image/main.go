@@ -48,7 +48,7 @@ func main() {
 		BotID:  botID,
 		UserID: userID,
 		Messages: []*coze.Message{
-			coze.BuildUserQuestionObjects([]coze.MessageObjectString{
+			coze.BuildUserQuestionObjects([]*coze.MessageObjectString{
 				coze.NewTextMessageObject("Describe this picture"),
 				coze.NewImageMessageObjectByID(imageInfo.FileInfo.ID),
 			}, nil),
@@ -81,5 +81,5 @@ func main() {
 		}
 	}
 
-	fmt.Printf("done, log:%s\n", resp.LogID())
+	fmt.Printf("done, log:%s\n", resp.HTTPResponse().GetLogID())
 }

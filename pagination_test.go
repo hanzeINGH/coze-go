@@ -194,7 +194,6 @@ func TestTokenPaged(t *testing.T) {
 		assert.Equal(t, total, pager.Total())
 		assert.NoError(t, pager.Err())
 	})
-
 }
 
 func TestPagerError(t *testing.T) {

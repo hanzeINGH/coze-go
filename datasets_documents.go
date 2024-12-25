@@ -25,7 +25,7 @@ func (r *datasetsDocuments) Create(ctx context.Context, req *CreateDatasetsDocum
 	if err != nil {
 		return nil, err
 	}
-	resp.CreateDatasetsDocumentsResp.SetLogID(resp.LogID)
+	resp.CreateDatasetsDocumentsResp.setHTTPResponse(resp.httpResponse)
 	return resp.CreateDatasetsDocumentsResp, nil
 }
 
@@ -38,7 +38,7 @@ func (r *datasetsDocuments) Update(ctx context.Context, req *UpdateDatasetsDocum
 		return nil, err
 	}
 	result := &UpdateDatasetsDocumentsResp{}
-	result.SetLogID(resp.LogID)
+	result.setHTTPResponse(resp.HTTPResponse)
 	return result, nil
 }
 
@@ -51,7 +51,7 @@ func (r *datasetsDocuments) Delete(ctx context.Context, req *DeleteDatasetsDocum
 		return nil, err
 	}
 	result := &DeleteDatasetsDocumentsResp{}
-	result.SetLogID(resp.LogID)
+	result.setHTTPResponse(resp.HTTPResponse)
 	return result, nil
 }
 
@@ -79,7 +79,7 @@ func (r *datasetsDocuments) List(ctx context.Context, req *ListDatasetsDocuments
 				Total:   int(resp.Total),
 				HasMore: request.PageSize <= len(resp.DocumentInfos),
 				Data:    resp.DocumentInfos,
-				LogID:   resp.LogID,
+				LogID:   resp.HTTPResponse.GetLogID(),
 			}, nil
 		}, req.Size, req.Page)
 }

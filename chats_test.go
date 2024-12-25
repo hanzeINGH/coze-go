@@ -93,12 +93,14 @@ func TestChats(t *testing.T) {
 						baseResponse: baseResponse{
 							LogID: "test_log_id",
 						},
-						Chat: &RetrieveChatsResp{Chat: Chat{
-							ID:             "chat1",
-							ConversationID: "test_conversation_id",
-							Status:         ChatStatusCompleted,
+						Chat: &RetrieveChatsResp{
+							Chat: Chat{
+								ID:             "chat1",
+								ConversationID: "test_conversation_id",
+								Status:         ChatStatusCompleted,
+							},
 						},
-						}})
+					})
 				case "/v3/chat/message/list":
 					// Return message list response
 					return mockResponse(http.StatusOK, &listChatsMessagesResp{
@@ -127,7 +129,8 @@ func TestChats(t *testing.T) {
 								ConversationID: "test_conversation_id",
 								BotID:          "bot1",
 								Status:         ChatStatusCancelled,
-							}},
+							},
+						},
 					})
 				default:
 					t.Fatalf("Unexpected request path: %s", req.URL.Path)
@@ -170,7 +173,6 @@ func TestChats(t *testing.T) {
 			require.Len(t, resp.Messages, 1)
 			assert.Equal(t, "Hello!", resp.Messages[0].Content)
 		})
-
 	})
 
 	// Test Stream method
@@ -244,7 +246,8 @@ data:
 							ConversationID: "test_conversation_id",
 							BotID:          "bot1",
 							Status:         ChatStatusCancelled,
-						}},
+						},
+					},
 				})
 			},
 		}
@@ -279,12 +282,14 @@ data:
 					baseResponse: baseResponse{
 						LogID: "test_log_id",
 					},
-					Chat: &RetrieveChatsResp{Chat: Chat{
-						ID:             "chat1",
-						ConversationID: "test_conversation_id",
-						Status:         ChatStatusCompleted,
+					Chat: &RetrieveChatsResp{
+						Chat: Chat{
+							ID:             "chat1",
+							ConversationID: "test_conversation_id",
+							Status:         ChatStatusCompleted,
+						},
 					},
-					}})
+				})
 			},
 		}
 

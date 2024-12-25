@@ -54,5 +54,4 @@ func Test_GenerateRandomString(t *testing.T) {
 func Test_MustToJson(t *testing.T) {
 	jsonStr := mustToJson(map[string]string{"test": "test"})
 	assert.Equal(t, jsonStr, `{"test":"test"}`)
-
 }

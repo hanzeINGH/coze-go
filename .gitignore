@@ -27,5 +27,3 @@ go.work.sum
 /.vscode
 /output
 coverage.out
-*.log
-/log

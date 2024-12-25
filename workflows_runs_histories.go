@@ -22,7 +22,7 @@ func (r *workflowRunHistories) Retrieve(ctx context.Context, req *RetrieveWorkfl
 	if err != nil {
 		return nil, err
 	}
-	resp.RetrieveWorkflowRunHistoriesResp.SetLogID(resp.LogID)
+	resp.RetrieveWorkflowRunHistoriesResp.setHTTPResponse(resp.httpResponse)
 	return resp.RetrieveWorkflowRunHistoriesResp, nil
 }
 

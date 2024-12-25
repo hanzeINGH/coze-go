@@ -23,7 +23,7 @@ func (r *conversationsMessages) Create(ctx context.Context, req *CreateMessageRe
 	if err != nil {
 		return nil, err
 	}
-	resp.Message.SetLogID(resp.LogID)
+	resp.Message.setHTTPResponse(resp.HTTPResponse)
 	return resp.Message, nil
 }
 
@@ -55,7 +55,7 @@ func (r *conversationsMessages) List(ctx context.Context, req *ListConversations
 				Data:    resp.Messages,
 				LastID:  resp.FirstID,
 				NextID:  resp.LastID,
-				LogID:   resp.LogID,
+				LogID:   resp.HTTPResponse.GetLogID(),
 			}, nil
 		}, req.Limit, req.AfterID)
 }
@@ -71,7 +71,7 @@ func (r *conversationsMessages) Retrieve(ctx context.Context, req *RetrieveConve
 	if err != nil {
 		return nil, err
 	}
-	resp.Message.SetLogID(resp.LogID)
+	resp.Message.setHTTPResponse(resp.HTTPResponse)
 	return resp.Message, nil
 }
 
@@ -90,7 +90,7 @@ func (r *conversationsMessages) Update(ctx context.Context, req *UpdateConversat
 	if err != nil {
 		return nil, err
 	}
-	resp.Message.SetLogID(resp.LogID)
+	resp.Message.setHTTPResponse(resp.HTTPResponse)
 	return resp.Message, nil
 }
 
@@ -105,7 +105,7 @@ func (r *conversationsMessages) Delete(ctx context.Context, req *DeleteConversat
 	if err != nil {
 		return nil, err
 	}
-	resp.Message.SetLogID(resp.LogID)
+	resp.Message.setHTTPResponse(resp.HTTPResponse)
 	return resp.Message, nil
 }
 

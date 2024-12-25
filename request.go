@@ -75,23 +75,23 @@ func packInstance(instance any, resp *http.Response) error {
 	if err != nil {
 		return fmt.Errorf("read response body: %w", err)
 	}
-	logID := getLogID(resp.Header)
+	httpResponse := newHTTPResponse(resp)
 	err = json.Unmarshal(bodyBytes, instance)
 	if err != nil {
 		log.Errorf(fmt.Sprintf("unmarshal response body: %s", string(bodyBytes)))
 		return err
 	}
 	if baseResp, ok := instance.(baseRespInterface); ok {
-		return isResponseSuccess(baseResp, bodyBytes, logID)
+		return isResponseSuccess(baseResp, bodyBytes, httpResponse)
 	}
 	return nil
 }
 
-func isResponseSuccess(baseResp baseRespInterface, bodyBytes []byte, logID string) error {
-	baseResp.SetLogID(logID)
+func isResponseSuccess(baseResp baseRespInterface, bodyBytes []byte, httpResponse *httpResponse) error {
+	baseResp.SetHTTPResponse(httpResponse)
 	if baseResp.GetCode() != 0 {
-		log.Warnf("request unsuccessful: %s, log_id:%s", string(bodyBytes), logID)
-		return NewCozeError(baseResp.GetCode(), baseResp.GetMsg(), logID)
+		log.Warnf("request unsuccessful: %s, log_id:%s", string(bodyBytes), httpResponse.GetLogID())
+		return NewCozeError(baseResp.GetCode(), baseResp.GetMsg(), httpResponse.GetLogID())
 	}
 	return nil
 }

@@ -29,7 +29,7 @@ func (r *workflowRuns) Create(ctx context.Context, req *RunWorkflowsReq) (*RunWo
 	if err != nil {
 		return nil, err
 	}
-	resp.RunWorkflowsResp.SetLogID(resp.LogID)
+	resp.RunWorkflowsResp.setHTTPResponse(resp.httpResponse)
 	return resp.RunWorkflowsResp, nil
 }
 
@@ -47,10 +47,10 @@ func (r *workflowRuns) Resume(ctx context.Context, req *ResumeRunWorkflowsReq) (
 
 	return &WorkflowEventReader{
 		streamReader: &streamReader[WorkflowEvent]{
-			response:  resp,
-			reader:    bufio.NewReader(resp.Body),
-			logID:     getLogID(resp.Header),
-			processor: parseWorkflowEvent,
+			response:     resp,
+			reader:       bufio.NewReader(resp.Body),
+			processor:    parseWorkflowEvent,
+			httpResponse: newHTTPResponse(resp),
 		},
 	}, nil
 }
@@ -65,10 +65,10 @@ func (r *workflowRuns) Stream(ctx context.Context, req *RunWorkflowsReq) (*Workf
 
 	return &WorkflowEventReader{
 		streamReader: &streamReader[WorkflowEvent]{
-			response:  resp,
-			reader:    bufio.NewReader(resp.Body),
-			logID:     getLogID(resp.Header),
-			processor: parseWorkflowEvent,
+			response:     resp,
+			reader:       bufio.NewReader(resp.Body),
+			processor:    parseWorkflowEvent,
+			httpResponse: newHTTPResponse(resp),
 		},
 	}, nil
 }

@@ -67,5 +67,5 @@ func main() {
 		}
 	}
 
-	fmt.Printf("done, log:%s\n", resp.LogID())
+	fmt.Printf("done, log:%s\n", resp.HTTPResponse().GetLogID())
 }

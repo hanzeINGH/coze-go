@@ -21,7 +21,7 @@ func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*Cre
 	if err != nil {
 		return nil, err
 	}
-	resp.Data.SetLogID(resp.LogID)
+	resp.Data.setHTTPResponse(resp.HTTPResponse)
 	return resp.Data, nil
 }
 

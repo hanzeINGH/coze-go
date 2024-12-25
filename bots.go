@@ -14,7 +14,7 @@ func (r *bots) Create(ctx context.Context, req *CreateBotsReq) (*CreateBotsResp,
 	if err != nil {
 		return nil, err
 	}
-	resp.Data.LogID = resp.LogID
+	resp.Data.setHTTPResponse(resp.HTTPResponse)
 	return resp.Data, nil
 }
 
@@ -27,7 +27,7 @@ func (r *bots) Update(ctx context.Context, req *UpdateBotsReq) (*UpdateBotsResp,
 		return nil, err
 	}
 	result := &UpdateBotsResp{}
-	result.LogID = resp.LogID
+	result.setHTTPResponse(resp.HTTPResponse)
 	return result, nil
 }
 
@@ -39,7 +39,7 @@ func (r *bots) Publish(ctx context.Context, req *PublishBotsReq) (*PublishBotsRe
 	if err != nil {
 		return nil, err
 	}
-	resp.Data.LogID = resp.LogID
+	resp.Data.LogID = resp.HTTPResponse.GetLogID()
 	return resp.Data, nil
 }
 
@@ -51,7 +51,7 @@ func (r *bots) Retrieve(ctx context.Context, req *RetrieveBotsReq) (*RetrieveBot
 	if err != nil {
 		return nil, err
 	}
-	resp.Bot.LogID = resp.LogID
+	resp.Bot.LogID = resp.HTTPResponse.GetLogID()
 	return resp.Bot, nil
 }
 
@@ -77,7 +77,7 @@ func (r *bots) List(ctx context.Context, req *ListBotsReq) (*NumberPaged[SimpleB
 				Total:   resp.Data.Total,
 				HasMore: len(resp.Data.Bots) >= request.PageSize,
 				Data:    resp.Data.Bots,
-				LogID:   resp.LogID,
+				LogID:   resp.HTTPResponse.GetLogID(),
 			}, nil
 		}, req.PageSize, req.PageNum)
 }
