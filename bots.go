@@ -82,6 +82,14 @@ func (r *bots) List(ctx context.Context, req *ListBotsReq) (*NumberPaged[SimpleB
 		}, req.PageSize, req.PageNum)
 }
 
+type bots struct {
+	core *core
+}
+
+func newBots(core *core) *bots {
+	return &bots{core: core}
+}
+
 // BotMode represents the bot mode
 type BotMode int
 
@@ -243,12 +251,4 @@ type updateBotsResp struct {
 
 type UpdateBotsResp struct {
 	baseModel
-}
-
-type bots struct {
-	core *core
-}
-
-func newBots(core *core) *bots {
-	return &bots{core: core}
 }

@@ -5,14 +5,6 @@ import (
 	"net/http"
 )
 
-type conversationsMessages struct {
-	core *core
-}
-
-func newConversationMessage(core *core) *conversationsMessages {
-	return &conversationsMessages{core: core}
-}
-
 func (r *conversationsMessages) Create(ctx context.Context, req *CreateMessageReq) (*CreateMessageResp, error) {
 	method := http.MethodPost
 	uri := "/v1/conversation/message/create"
@@ -107,6 +99,14 @@ func (r *conversationsMessages) Delete(ctx context.Context, req *DeleteConversat
 	}
 	resp.Message.setHTTPResponse(resp.HTTPResponse)
 	return resp.Message, nil
+}
+
+type conversationsMessages struct {
+	core *core
+}
+
+func newConversationMessage(core *core) *conversationsMessages {
+	return &conversationsMessages{core: core}
 }
 
 // CreateMessageReq represents request for creating message

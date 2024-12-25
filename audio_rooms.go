@@ -5,14 +5,6 @@ import (
 	"net/http"
 )
 
-type audioRooms struct {
-	core *core
-}
-
-func newRooms(core *core) *audioRooms {
-	return &audioRooms{core: core}
-}
-
 func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*CreateAudioRoomsResp, error) {
 	method := http.MethodPost
 	uri := "/v1/audio/audioRooms"
@@ -23,6 +15,14 @@ func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*Cre
 	}
 	resp.Data.setHTTPResponse(resp.HTTPResponse)
 	return resp.Data, nil
+}
+
+type audioRooms struct {
+	core *core
+}
+
+func newRooms(core *core) *audioRooms {
+	return &audioRooms{core: core}
 }
 
 // AudioCodec represents the audio codec

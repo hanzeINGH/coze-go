@@ -9,18 +9,6 @@ import (
 	"strings"
 )
 
-type workflowRuns struct {
-	client    *core
-	Histories *workflowRunHistories
-}
-
-func newWorkflowRun(core *core) *workflowRuns {
-	return &workflowRuns{
-		client:    core,
-		Histories: newWorkflowRunHistories(core),
-	}
-}
-
 func (r *workflowRuns) Create(ctx context.Context, req *RunWorkflowsReq) (*RunWorkflowsResp, error) {
 	method := http.MethodPost
 	uri := "/v1/workflow/run"
@@ -31,10 +19,6 @@ func (r *workflowRuns) Create(ctx context.Context, req *RunWorkflowsReq) (*RunWo
 	}
 	resp.RunWorkflowsResp.setHTTPResponse(resp.httpResponse)
 	return resp.RunWorkflowsResp, nil
-}
-
-type WorkflowEventReader struct {
-	*streamReader[WorkflowEvent]
 }
 
 func (r *workflowRuns) Resume(ctx context.Context, req *ResumeRunWorkflowsReq) (*WorkflowEventReader, error) {
@@ -71,6 +55,22 @@ func (r *workflowRuns) Stream(ctx context.Context, req *RunWorkflowsReq) (*Workf
 			httpResponse: newHTTPResponse(resp),
 		},
 	}, nil
+}
+
+type workflowRuns struct {
+	client    *core
+	Histories *workflowRunHistories
+}
+
+func newWorkflowRun(core *core) *workflowRuns {
+	return &workflowRuns{
+		client:    core,
+		Histories: newWorkflowRunHistories(core),
+	}
+}
+
+type WorkflowEventReader struct {
+	*streamReader[WorkflowEvent]
 }
 
 func parseWorkflowEvent(lineBytes []byte, reader *bufio.Reader) (*WorkflowEvent, bool, error) {

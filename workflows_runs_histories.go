@@ -6,14 +6,6 @@ import (
 	"net/http"
 )
 
-type workflowRunHistories struct {
-	core *core
-}
-
-func newWorkflowRunHistories(core *core) *workflowRunHistories {
-	return &workflowRunHistories{core: core}
-}
-
 func (r *workflowRunHistories) Retrieve(ctx context.Context, req *RetrieveWorkflowsRunHistoriesReq) (*RetrieveWorkflowRunHistoriesResp, error) {
 	method := http.MethodGet
 	uri := fmt.Sprintf("/v1/workflows/%s/run_histories/%s", req.WorkflowID, req.ExecuteID)
@@ -26,17 +18,25 @@ func (r *workflowRunHistories) Retrieve(ctx context.Context, req *RetrieveWorkfl
 	return resp.RetrieveWorkflowRunHistoriesResp, nil
 }
 
+type workflowRunHistories struct {
+	core *core
+}
+
+func newWorkflowRunHistories(core *core) *workflowRunHistories {
+	return &workflowRunHistories{core: core}
+}
+
 // WorkflowRunMode represents how the workflow runs
 type WorkflowRunMode int
 
 const (
-	// Synchronous operation.
+	// WorkflowRunModeSynchronous Synchronous operation.
 	WorkflowRunModeSynchronous WorkflowRunMode = 0
 
-	// Streaming operation.
+	// WorkflowRunModeStreaming Streaming operation.
 	WorkflowRunModeStreaming WorkflowRunMode = 1
 
-	// Asynchronous operation.
+	// WorkflowRunModeAsynchronous Asynchronous operation.
 	WorkflowRunModeAsynchronous WorkflowRunMode = 2
 )
 
@@ -44,13 +44,13 @@ const (
 type WorkflowExecuteStatus string
 
 const (
-	// Execution succeeded.
+	// WorkflowExecuteStatusSuccess Execution succeeded.
 	WorkflowExecuteStatusSuccess WorkflowExecuteStatus = "Success"
 
-	// Execution in progress.
+	// WorkflowExecuteStatusRunning Execution in progress.
 	WorkflowExecuteStatusRunning WorkflowExecuteStatus = "Running"
 
-	// Execution failed.
+	// WorkflowExecuteStatusFail Execution failed.
 	WorkflowExecuteStatusFail WorkflowExecuteStatus = "Fail"
 )
 

@@ -8,14 +8,6 @@ import (
 	"strconv"
 )
 
-type audioVoice struct {
-	core *core
-}
-
-func newVoice(core *core) *audioVoice {
-	return &audioVoice{core: core}
-}
-
 func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*CloneAudioVoicesResp, error) {
 	path := "/v1/audio/voices/clone"
 	if req.File == nil {
@@ -75,6 +67,14 @@ func (r *audioVoice) List(ctx context.Context, req *ListAudioVoicesReq) (*Number
 				LogID:   resp.HTTPResponse.LogID(),
 			}, nil
 		}, req.PageSize, req.PageNum)
+}
+
+type audioVoice struct {
+	core *core
+}
+
+func newVoice(core *core) *audioVoice {
+	return &audioVoice{core: core}
 }
 
 // Voice represents the voice model

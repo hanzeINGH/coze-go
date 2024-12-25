@@ -7,18 +7,6 @@ import (
 	"strconv"
 )
 
-type conversations struct {
-	client   *core
-	Messages *conversationsMessages
-}
-
-func newConversations(core *core) *conversations {
-	return &conversations{
-		client:   core,
-		Messages: newConversationMessage(core),
-	}
-}
-
 func (r *conversations) List(ctx context.Context, req *ListConversationsReq) (*NumberPaged[Conversation], error) {
 	if req.PageSize == 0 {
 		req.PageSize = 20
@@ -76,6 +64,18 @@ func (r *conversations) Clear(ctx context.Context, req *ClearConversationsReq) (
 	}
 	resp.Data.setHTTPResponse(resp.HTTPResponse)
 	return resp.Data, nil
+}
+
+type conversations struct {
+	client   *core
+	Messages *conversationsMessages
+}
+
+func newConversations(core *core) *conversations {
+	return &conversations{
+		client:   core,
+		Messages: newConversationMessage(core),
+	}
 }
 
 // Conversation represents conversation information

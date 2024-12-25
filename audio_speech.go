@@ -6,14 +6,6 @@ import (
 	"net/http"
 )
 
-type audioSpeech struct {
-	core *core
-}
-
-func newSpeech(core *core) *audioSpeech {
-	return &audioSpeech{core: core}
-}
-
 func (r *audioSpeech) Create(ctx context.Context, req *CreateAudioSpeechReq) (*CreateAudioSpeechResp, error) {
 	uri := "/v1/audio/speech"
 	resp, err := r.core.RawRequest(ctx, http.MethodPost, uri, req)
@@ -25,6 +17,14 @@ func (r *audioSpeech) Create(ctx context.Context, req *CreateAudioSpeechReq) (*C
 	}
 	res.SetHTTPResponse(newHTTPResponse(resp))
 	return res, nil
+}
+
+type audioSpeech struct {
+	core *core
+}
+
+func newSpeech(core *core) *audioSpeech {
+	return &audioSpeech{core: core}
 }
 
 // CreateAudioSpeechReq represents the request for creating speech

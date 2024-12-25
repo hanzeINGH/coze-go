@@ -6,17 +6,6 @@ import (
 	"net/http"
 )
 
-type datasetsDocuments struct {
-	client          *core
-	commonHeaderOpt []RequestOption
-}
-
-func newDocuments(core *core) *datasetsDocuments {
-	return &datasetsDocuments{client: core, commonHeaderOpt: []RequestOption{
-		withHTTPHeader("Agw-Js-Conv", "true"),
-	}}
-}
-
 func (r *datasetsDocuments) Create(ctx context.Context, req *CreateDatasetsDocumentsReq) (*CreateDatasetsDocumentsResp, error) {
 	method := http.MethodPost
 	uri := "/open_api/knowledge/document/create"
@@ -82,6 +71,17 @@ func (r *datasetsDocuments) List(ctx context.Context, req *ListDatasetsDocuments
 				LogID:   resp.HTTPResponse.LogID(),
 			}, nil
 		}, req.Size, req.Page)
+}
+
+type datasetsDocuments struct {
+	client          *core
+	commonHeaderOpt []RequestOption
+}
+
+func newDocuments(core *core) *datasetsDocuments {
+	return &datasetsDocuments{client: core, commonHeaderOpt: []RequestOption{
+		withHTTPHeader("Agw-Js-Conv", "true"),
+	}}
 }
 
 // Document represents a document in the datasets

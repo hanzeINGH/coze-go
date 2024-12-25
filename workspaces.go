@@ -7,14 +7,6 @@ import (
 	"strconv"
 )
 
-type workspace struct {
-	core *core
-}
-
-func newWorkspace(core *core) *workspace {
-	return &workspace{core: core}
-}
-
 func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*NumberPaged[Workspace], error) {
 	if req.PageSize == 0 {
 		req.PageSize = 20
@@ -39,6 +31,14 @@ func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*NumberPag
 				LogID:   resp.HTTPResponse.LogID(),
 			}, nil
 		}, req.PageSize, req.PageNum)
+}
+
+type workspace struct {
+	core *core
+}
+
+func newWorkspace(core *core) *workspace {
+	return &workspace{core: core}
 }
 
 // ListWorkspaceReq represents the request parameters for listing workspaces

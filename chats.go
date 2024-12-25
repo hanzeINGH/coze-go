@@ -12,18 +12,6 @@ import (
 	"github.com/coze-dev/coze-go/log"
 )
 
-type chats struct {
-	client   *core
-	Messages *chatMessages
-}
-
-func newChats(core *core) *chats {
-	return &chats{
-		client:   core,
-		Messages: newChatMessages(core),
-	}
-}
-
 func (r *chats) Create(ctx context.Context, req *CreateChatsReq) (*CreateChatsResp, error) {
 	method := http.MethodPost
 	uri := "/v3/chat"
@@ -107,6 +95,18 @@ func (r *chats) Stream(ctx context.Context, req *CreateChatsReq) (*ChatEventRead
 			httpResponse: newHTTPResponse(resp),
 		},
 	}, nil
+}
+
+type chats struct {
+	client   *core
+	Messages *chatMessages
+}
+
+func newChats(core *core) *chats {
+	return &chats{
+		client:   core,
+		Messages: newChatMessages(core),
+	}
 }
 
 type ChatEventReader struct {

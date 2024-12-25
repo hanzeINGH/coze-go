@@ -6,14 +6,6 @@ import (
 	"net/http"
 )
 
-type files struct {
-	core *core
-}
-
-func newFiles(core *core) *files {
-	return &files{core: core}
-}
-
 func (r *files) Upload(ctx context.Context, req fileInterface) (*UploadFilesResp, error) {
 	path := "/v1/files/upload"
 	resp := &uploadFilesResp{}
@@ -36,6 +28,14 @@ func (r *files) Retrieve(ctx context.Context, req *RetrieveFilesReq) (*RetrieveF
 	}
 	resp.FileInfo.setHTTPResponse(resp.HTTPResponse)
 	return resp.FileInfo, nil
+}
+
+type files struct {
+	core *core
+}
+
+func newFiles(core *core) *files {
+	return &files{core: core}
 }
 
 // FileInfo represents information about a file

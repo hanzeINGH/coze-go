@@ -5,6 +5,34 @@ import (
 	"net/http"
 )
 
+func (r *chatMessages) List(ctx context.Context, req *ListChatsMessagesReq) (*ListChatsMessagesResp, error) {
+	method := http.MethodGet
+	uri := "/v3/chat/message/list"
+	resp := &listChatsMessagesResp{}
+	err := r.core.Request(ctx, method, uri, nil, resp,
+		withHTTPQuery("conversation_id", req.ConversationID),
+		withHTTPQuery("chat_id", req.ChatID),
+	)
+	if err != nil {
+		return nil, err
+	}
+	result := &ListChatsMessagesResp{
+		baseModel: baseModel{
+			LogID: resp.HTTPResponse.LogID(),
+		},
+		Messages: resp.Messages,
+	}
+	return result, nil
+}
+
+type chatMessages struct {
+	core *core
+}
+
+func newChatMessages(core *core) *chatMessages {
+	return &chatMessages{core: core}
+}
+
 // ListChatsMessagesReq represents the request to list messages
 type ListChatsMessagesReq struct {
 	// The Conversation ID can be viewed in the 'conversation_id' field of the Response when
@@ -25,32 +53,4 @@ type listChatsMessagesResp struct {
 type ListChatsMessagesResp struct {
 	baseModel
 	Messages []*Message `json:"data"`
-}
-
-type chatMessages struct {
-	core *core
-}
-
-func newChatMessages(core *core) *chatMessages {
-	return &chatMessages{core: core}
-}
-
-func (r *chatMessages) List(ctx context.Context, req *ListChatsMessagesReq) (*ListChatsMessagesResp, error) {
-	method := http.MethodGet
-	uri := "/v3/chat/message/list"
-	resp := &listChatsMessagesResp{}
-	err := r.core.Request(ctx, method, uri, nil, resp,
-		withHTTPQuery("conversation_id", req.ConversationID),
-		withHTTPQuery("chat_id", req.ChatID),
-	)
-	if err != nil {
-		return nil, err
-	}
-	result := &ListChatsMessagesResp{
-		baseModel: baseModel{
-			LogID: resp.HTTPResponse.LogID(),
-		},
-		Messages: resp.Messages,
-	}
-	return result, nil
 }
