@@ -63,7 +63,7 @@ func TestClient_Request_Success(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, expectedResp.Code, actualResp.Code)
 	assert.Equal(t, expectedResp.Data.Name, actualResp.Data.Name)
-	assert.Equal(t, "test-log-id", actualResp.HTTPResponse.GetLogID())
+	assert.Equal(t, "test-log-id", actualResp.HTTPResponse.LogID())
 }
 
 func TestClient_Request_Error(t *testing.T) {
@@ -182,7 +182,7 @@ func TestClient_UploadFile_Success(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, expectedResp.Code, actualResp.Code)
 	assert.Equal(t, expectedResp.Data.Name, actualResp.Data.Name)
-	assert.Equal(t, "test-log-id", actualResp.HTTPResponse.GetLogID())
+	assert.Equal(t, "test-log-id", actualResp.HTTPResponse.LogID())
 }
 
 func TestClient_UploadFile_Error(t *testing.T) {

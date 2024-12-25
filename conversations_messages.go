@@ -55,7 +55,7 @@ func (r *conversationsMessages) List(ctx context.Context, req *ListConversations
 				Data:    resp.Messages,
 				LastID:  resp.FirstID,
 				NextID:  resp.LastID,
-				LogID:   resp.HTTPResponse.GetLogID(),
+				LogID:   resp.HTTPResponse.LogID(),
 			}, nil
 		}, req.Limit, req.AfterID)
 }

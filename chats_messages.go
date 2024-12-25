@@ -48,7 +48,7 @@ func (r *chatMessages) List(ctx context.Context, req *ListChatsMessagesReq) (*Li
 	}
 	result := &ListChatsMessagesResp{
 		baseModel: baseModel{
-			LogID: resp.HTTPResponse.GetLogID(),
+			LogID: resp.HTTPResponse.LogID(),
 		},
 		Messages: resp.Messages,
 	}

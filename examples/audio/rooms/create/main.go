@@ -31,5 +31,5 @@ func main() {
 
 	fmt.Println(resp)
 	fmt.Println("Room ID:", resp.RoomID)
-	fmt.Println("Log ID:", resp.HTTPResponse().GetLogID())
+	fmt.Println("Log ID:", resp.HTTPResponse().LogID())
 }

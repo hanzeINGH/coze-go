@@ -3,7 +3,7 @@ package coze
 import "net/http"
 
 type HTTPResponse interface {
-	GetLogID() string
+	LogID() string
 }
 
 type httpResponse struct {
@@ -14,7 +14,7 @@ type httpResponse struct {
 	logid string
 }
 
-func (r *httpResponse) GetLogID() string {
+func (r *httpResponse) LogID() string {
 	if r.logid == "" {
 		r.logid = r.Header.Get(logIDHeader)
 	}

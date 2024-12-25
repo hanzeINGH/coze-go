@@ -80,5 +80,5 @@ func handleEvents(ctx context.Context, resp *coze.WorkflowEventReader, cozeCli c
 			handleEvents(ctx, newResp, cozeCli, workflowID)
 		}
 	}
-	fmt.Printf("done, log:%s\n", resp.HTTPResponse().GetLogID())
+	fmt.Printf("done, log:%s\n", resp.HTTPResponse().LogID())
 }

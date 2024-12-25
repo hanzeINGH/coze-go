@@ -36,7 +36,7 @@ func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*NumberPag
 				Total:   resp.Data.TotalCount,
 				HasMore: len(resp.Data.Workspaces) >= request.PageSize,
 				Data:    resp.Data.Workspaces,
-				LogID:   resp.HTTPResponse.GetLogID(),
+				LogID:   resp.HTTPResponse.LogID(),
 			}, nil
 		}, req.PageSize, req.PageNum)
 }

@@ -40,7 +40,7 @@ func (r *conversations) List(ctx context.Context, req *ListConversationsReq) (*N
 			return &PageResponse[Conversation]{
 				HasMore: resp.Data.HasMore,
 				Data:    resp.Data.Conversations,
-				LogID:   resp.HTTPResponse.GetLogID(),
+				LogID:   resp.HTTPResponse.LogID(),
 			}, nil
 		}, req.PageSize, req.PageNum)
 }

@@ -79,7 +79,7 @@ func (r *datasetsDocuments) List(ctx context.Context, req *ListDatasetsDocuments
 				Total:   int(resp.Total),
 				HasMore: request.PageSize <= len(resp.DocumentInfos),
 				Data:    resp.DocumentInfos,
-				LogID:   resp.HTTPResponse.GetLogID(),
+				LogID:   resp.HTTPResponse.LogID(),
 			}, nil
 		}, req.Size, req.Page)
 }

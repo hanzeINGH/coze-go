@@ -53,7 +53,7 @@ func TestAudioVoices(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "test_log_id", resp.HTTPResponse().GetLogID())
+		assert.Equal(t, "test_log_id", resp.HTTPResponse().LogID())
 		assert.Equal(t, "voice1", resp.VoiceID)
 	})
 
