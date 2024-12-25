@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWorkflowRunHistories(t *testing.T) {
+func TestWorkflowRunsHistories(t *testing.T) {
 	// Test Retrieve method
 	t.Run("Retrieve workflow run history success", func(t *testing.T) {
 		mockTransport := &mockTransport{
@@ -19,9 +19,9 @@ func TestWorkflowRunHistories(t *testing.T) {
 				assert.Equal(t, "/v1/workflows/workflow1/run_histories/exec1", req.URL.Path)
 
 				// Return mock response
-				return mockResponse(http.StatusOK, &retrieveWorkflowRunHistoriesResp{
+				return mockResponse(http.StatusOK, &retrieveWorkflowRunsHistoriesResp{
 
-					RetrieveWorkflowRunHistoriesResp: &RetrieveWorkflowRunHistoriesResp{
+					RetrieveWorkflowRunsHistoriesResp: &RetrieveWorkflowRunsHistoriesResp{
 						Histories: []*WorkflowRunHistory{
 							{
 								ExecuteID:     "exec1",
@@ -36,7 +36,7 @@ func TestWorkflowRunHistories(t *testing.T) {
 								Output:        `{"result": "success"}`,
 								ErrorCode:     "0",
 								ErrorMessage:  "",
-								DebugUrl:      "https://debug.example.com",
+								DebugURL:      "https://debug.example.com",
 							},
 						},
 					},
@@ -45,9 +45,9 @@ func TestWorkflowRunHistories(t *testing.T) {
 		}
 
 		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		histories := newWorkflowRunHistories(core)
+		histories := newWorkflowRunsHistories(core)
 
-		resp, err := histories.Retrieve(context.Background(), &RetrieveWorkflowsRunHistoriesReq{
+		resp, err := histories.Retrieve(context.Background(), &RetrieveWorkflowsRunsHistoriesReq{
 			WorkflowID: "workflow1",
 			ExecuteID:  "exec1",
 		})
@@ -69,7 +69,7 @@ func TestWorkflowRunHistories(t *testing.T) {
 		assert.Equal(t, `{"result": "success"}`, history.Output)
 		assert.Equal(t, "0", history.ErrorCode)
 		assert.Empty(t, history.ErrorMessage)
-		assert.Equal(t, "https://debug.example.com", history.DebugUrl)
+		assert.Equal(t, "https://debug.example.com", history.DebugURL)
 	})
 
 	// Test Retrieve method with error
@@ -82,9 +82,9 @@ func TestWorkflowRunHistories(t *testing.T) {
 		}
 
 		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		histories := newWorkflowRunHistories(core)
+		histories := newWorkflowRunsHistories(core)
 
-		resp, err := histories.Retrieve(context.Background(), &RetrieveWorkflowsRunHistoriesReq{
+		resp, err := histories.Retrieve(context.Background(), &RetrieveWorkflowsRunsHistoriesReq{
 			WorkflowID: "invalid_workflow",
 			ExecuteID:  "invalid_exec",
 		})

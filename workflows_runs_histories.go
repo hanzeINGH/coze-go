@@ -6,24 +6,24 @@ import (
 	"net/http"
 )
 
-func (r *workflowRunHistories) Retrieve(ctx context.Context, req *RetrieveWorkflowsRunHistoriesReq) (*RetrieveWorkflowRunHistoriesResp, error) {
+func (r *workflowRunsHistories) Retrieve(ctx context.Context, req *RetrieveWorkflowsRunsHistoriesReq) (*RetrieveWorkflowRunsHistoriesResp, error) {
 	method := http.MethodGet
 	uri := fmt.Sprintf("/v1/workflows/%s/run_histories/%s", req.WorkflowID, req.ExecuteID)
-	resp := &retrieveWorkflowRunHistoriesResp{}
+	resp := &retrieveWorkflowRunsHistoriesResp{}
 	err := r.core.Request(ctx, method, uri, nil, resp)
 	if err != nil {
 		return nil, err
 	}
-	resp.RetrieveWorkflowRunHistoriesResp.setHTTPResponse(resp.HTTPResponse)
-	return resp.RetrieveWorkflowRunHistoriesResp, nil
+	resp.RetrieveWorkflowRunsHistoriesResp.setHTTPResponse(resp.HTTPResponse)
+	return resp.RetrieveWorkflowRunsHistoriesResp, nil
 }
 
-type workflowRunHistories struct {
+type workflowRunsHistories struct {
 	core *core
 }
 
-func newWorkflowRunHistories(core *core) *workflowRunHistories {
-	return &workflowRunHistories{core: core}
+func newWorkflowRunsHistories(core *core) *workflowRunsHistories {
+	return &workflowRunsHistories{core: core}
 }
 
 // WorkflowRunMode represents how the workflow runs
@@ -54,8 +54,8 @@ const (
 	WorkflowExecuteStatusFail WorkflowExecuteStatus = "Fail"
 )
 
-// RetrieveWorkflowsRunHistoriesReq represents request for retrieving workflow runs history
-type RetrieveWorkflowsRunHistoriesReq struct {
+// RetrieveWorkflowsRunsHistoriesReq represents request for retrieving workflow runs history
+type RetrieveWorkflowsRunsHistoriesReq struct {
 	// The ID of the workflow.
 	ExecuteID string `json:"execute_id"`
 
@@ -83,14 +83,14 @@ type RunWorkflowsResp struct {
 	Cost     string `json:"cost,omitempty"`
 }
 
-// retrieveWorkflowRunHistoriesResp represents response for retrieving workflow runs history
-type retrieveWorkflowRunHistoriesResp struct {
+// retrieveWorkflowRunsHistoriesResp represents response for retrieving workflow runs history
+type retrieveWorkflowRunsHistoriesResp struct {
 	baseResponse
-	*RetrieveWorkflowRunHistoriesResp
+	*RetrieveWorkflowRunsHistoriesResp
 }
 
-// RetrieveWorkflowRunHistoriesResp represents response for retrieving workflow runs history
-type RetrieveWorkflowRunHistoriesResp struct {
+// RetrieveWorkflowRunsHistoriesResp represents response for retrieving workflow runs history
+type RetrieveWorkflowRunsHistoriesResp struct {
 	baseModel
 	Histories []*WorkflowRunHistory `json:"data"`
 }
@@ -140,5 +140,5 @@ type WorkflowRunHistory struct {
 
 	// Workflow trial runs debugging page. Visit this page to view the running results, input and
 	// output information of each workflow node.
-	DebugUrl string `json:"debug_url"`
+	DebugURL string `json:"debug_url"`
 }

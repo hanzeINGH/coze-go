@@ -43,7 +43,7 @@ func main() {
 	isFinished := false
 
 	for !isFinished {
-		historyResp, err := cozeCli.Workflows.Runs.Histories.Retrieve(ctx, &coze.RetrieveWorkflowsRunHistoriesReq{
+		historyResp, err := cozeCli.Workflows.Runs.Histories.Retrieve(ctx, &coze.RetrieveWorkflowsRunsHistoriesReq{
 			WorkflowID: workflowID,
 			ExecuteID:  executeID,
 		})

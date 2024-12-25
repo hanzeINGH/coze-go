@@ -3,6 +3,6 @@ package coze
 const (
 	authorizeHeader = "Authorization"
 
-	CozeComBaseURL = "https://api.coze.com"
-	CozeCnBaseURL  = "https://api.coze.cn"
+	ComBaseURL = "https://api.coze.com"
+	CnBaseURL  = "https://api.coze.cn"
 )

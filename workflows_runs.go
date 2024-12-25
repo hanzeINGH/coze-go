@@ -61,13 +61,13 @@ func (r *workflowRuns) Stream(ctx context.Context, req *RunWorkflowsReq) (*Workf
 
 type workflowRuns struct {
 	client    *core
-	Histories *workflowRunHistories
+	Histories *workflowRunsHistories
 }
 
 func newWorkflowRun(core *core) *workflowRuns {
 	return &workflowRuns{
 		client:    core,
-		Histories: newWorkflowRunHistories(core),
+		Histories: newWorkflowRunsHistories(core),
 	}
 }
 
