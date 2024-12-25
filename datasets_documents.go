@@ -7,12 +7,12 @@ import (
 )
 
 type datasetsDocuments struct {
-	client          *httpClient
+	client          *core
 	commonHeaderOpt []RequestOption
 }
 
-func newDocuments(client *httpClient) *datasetsDocuments {
-	return &datasetsDocuments{client: client, commonHeaderOpt: []RequestOption{
+func newDocuments(core *core) *datasetsDocuments {
+	return &datasetsDocuments{client: core, commonHeaderOpt: []RequestOption{
 		withHTTPHeader("Agw-Js-Conv", "true"),
 	}}
 }

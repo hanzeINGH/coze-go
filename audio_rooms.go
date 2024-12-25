@@ -6,18 +6,18 @@ import (
 )
 
 type audioRooms struct {
-	client *httpClient
+	core *core
 }
 
-func newRooms(client *httpClient) *audioRooms {
-	return &audioRooms{client: client}
+func newRooms(core *core) *audioRooms {
+	return &audioRooms{core: core}
 }
 
 func (r *audioRooms) Create(ctx context.Context, req *CreateAudioRoomsReq) (*CreateAudioRoomsResp, error) {
 	method := http.MethodPost
 	uri := "/v1/audio/audioRooms"
 	resp := &createAudioRoomsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
+	err := r.core.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}

@@ -47,8 +47,8 @@ func TestChats(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		chats := newChats(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		chats := newChats(core)
 
 		resp, err := chats.Create(context.Background(), &CreateChatsReq{
 			ConversationID: "test_conversation_id",
@@ -140,8 +140,8 @@ func TestChats(t *testing.T) {
 		}
 
 		t.Run("CreateAndPoll success", func(t *testing.T) {
-			client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-			chats := newChats(client)
+			core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+			chats := newChats(core)
 
 			timeout := 5
 			resp, err := chats.CreateAndPoll(context.Background(), &CreateChatsReq{
@@ -157,8 +157,8 @@ func TestChats(t *testing.T) {
 			assert.Equal(t, "Hello!", resp.Messages[0].Content)
 		})
 		t.Run("CreateAndPoll success with cancel chat", func(t *testing.T) {
-			client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-			chats := newChats(client)
+			core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+			chats := newChats(core)
 
 			timeout := 0
 			resp, err := chats.CreateAndPoll(context.Background(), &CreateChatsReq{
@@ -199,8 +199,8 @@ data:
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		chats := newChats(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		chats := newChats(core)
 
 		reader, err := chats.Stream(context.Background(), &CreateChatsReq{
 			ConversationID: "test_conversation_id",
@@ -252,8 +252,8 @@ data:
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		chats := newChats(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		chats := newChats(core)
 
 		resp, err := chats.Cancel(context.Background(), &CancelChatsReq{
 			ConversationID: "test_conversation_id",
@@ -293,8 +293,8 @@ data:
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		chats := newChats(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		chats := newChats(core)
 
 		resp, err := chats.Retrieve(context.Background(), &RetrieveChatsReq{
 			ConversationID: "test_conversation_id",
@@ -332,8 +332,8 @@ data:
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		chats := newChats(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		chats := newChats(core)
 
 		resp, err := chats.SubmitToolOutputs(context.Background(), &SubmitToolOutputsChatReq{
 			ConversationID: "test_conversation_id",
@@ -376,8 +376,8 @@ data:
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		chats := newChats(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		chats := newChats(core)
 
 		reader, err := chats.StreamSubmitToolOutputs(context.Background(), &SubmitToolOutputsChatReq{
 			ConversationID: "test_conversation_id",

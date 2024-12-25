@@ -7,18 +7,18 @@ import (
 )
 
 type workflowRunHistories struct {
-	client *httpClient
+	core *core
 }
 
-func newWorkflowRunHistories(client *httpClient) *workflowRunHistories {
-	return &workflowRunHistories{client: client}
+func newWorkflowRunHistories(core *core) *workflowRunHistories {
+	return &workflowRunHistories{core: core}
 }
 
 func (r *workflowRunHistories) Retrieve(ctx context.Context, req *RetrieveWorkflowsRunHistoriesReq) (*RetrieveWorkflowRunHistoriesResp, error) {
 	method := http.MethodGet
 	uri := fmt.Sprintf("/v1/workflows/%s/run_histories/%s", req.WorkflowID, req.ExecuteID)
 	resp := &retrieveWorkflowRunHistoriesResp{}
-	err := r.client.Request(ctx, method, uri, nil, resp)
+	err := r.core.Request(ctx, method, uri, nil, resp)
 	if err != nil {
 		return nil, err
 	}

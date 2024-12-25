@@ -51,8 +51,8 @@ func TestWorkspaces(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		workspaces := newWorkspace(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		workspaces := newWorkspace(core)
 
 		paged, err := workspaces.List(context.Background(), &ListWorkspaceReq{
 			PageNum:  1,
@@ -100,8 +100,8 @@ func TestWorkspaces(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		workspaces := newWorkspace(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		workspaces := newWorkspace(core)
 
 		paged, err := workspaces.List(context.Background(), NewListWorkspaceReq())
 
@@ -121,8 +121,8 @@ func TestWorkspaces(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		workspaces := newWorkspace(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		workspaces := newWorkspace(core)
 
 		paged, err := workspaces.List(context.Background(), &ListWorkspaceReq{
 			PageNum:  1,

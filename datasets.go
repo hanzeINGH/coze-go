@@ -4,8 +4,8 @@ type datasets struct {
 	Documents *datasetsDocuments
 }
 
-func newDatasets(client *httpClient) *datasets {
+func newDatasets(core *core) *datasets {
 	return &datasets{
-		Documents: newDocuments(client),
+		Documents: newDocuments(core),
 	}
 }

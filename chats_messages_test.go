@@ -46,8 +46,8 @@ func TestChatMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newChatMessages(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newChatMessages(core)
 
 		resp, err := messages.List(context.Background(), &ListChatsMessagesReq{
 			ConversationID: "test_conversation_id",
@@ -81,8 +81,8 @@ func TestChatMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newChatMessages(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newChatMessages(core)
 
 		resp, err := messages.List(context.Background(), &ListChatsMessagesReq{
 			ConversationID: "invalid_conversation_id",
@@ -107,8 +107,8 @@ func TestChatMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newChatMessages(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newChatMessages(core)
 
 		resp, err := messages.List(context.Background(), &ListChatsMessagesReq{
 			ConversationID: "test_conversation_id",
@@ -133,8 +133,8 @@ func TestChatMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newChatMessages(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newChatMessages(core)
 
 		resp, err := messages.List(context.Background(), &ListChatsMessagesReq{})
 

@@ -50,8 +50,8 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		documents := newDocuments(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		documents := newDocuments(core)
 
 		resp, err := documents.Create(context.Background(), &CreateDatasetsDocumentsReq{
 			DatasetID: 123,
@@ -94,8 +94,8 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		documents := newDocuments(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		documents := newDocuments(core)
 
 		resp, err := documents.Update(context.Background(), &UpdateDatasetsDocumentsReq{
 			DocumentID:   123,
@@ -127,8 +127,8 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		documents := newDocuments(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		documents := newDocuments(core)
 
 		resp, err := documents.Delete(context.Background(), &DeleteDatasetsDocumentsReq{
 			DocumentIDs: []int64{123, 456},
@@ -181,8 +181,8 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		documents := newDocuments(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		documents := newDocuments(core)
 
 		paged, err := documents.List(context.Background(), &ListDatasetsDocumentsReq{
 			DatasetID: 123,
@@ -226,8 +226,8 @@ func TestDatasetsDocuments(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		documents := newDocuments(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		documents := newDocuments(core)
 
 		paged, err := documents.List(context.Background(), &ListDatasetsDocumentsReq{
 			DatasetID: 123,

@@ -42,8 +42,8 @@ func TestConversationsMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newConversationMessage(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newConversationMessage(core)
 
 		resp, err := messages.Create(context.Background(), &CreateMessageReq{
 			ConversationID: "test_conversation_id",
@@ -106,8 +106,8 @@ func TestConversationsMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newConversationMessage(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newConversationMessage(core)
 
 		paged, err := messages.List(context.Background(), &ListConversationsMessagesReq{
 			ConversationID: "test_conversation_id",
@@ -162,8 +162,8 @@ func TestConversationsMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newConversationMessage(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newConversationMessage(core)
 
 		resp, err := messages.Retrieve(context.Background(), &RetrieveConversationsMessagesReq{
 			ConversationID: "test_conversation_id",
@@ -212,8 +212,8 @@ func TestConversationsMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newConversationMessage(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newConversationMessage(core)
 
 		resp, err := messages.Update(context.Background(), &UpdateConversationMessagesReq{
 			ConversationID: "test_conversation_id",
@@ -262,8 +262,8 @@ func TestConversationsMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newConversationMessage(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newConversationMessage(core)
 
 		resp, err := messages.Delete(context.Background(), &DeleteConversationsMessagesReq{
 			ConversationID: "test_conversation_id",
@@ -293,8 +293,8 @@ func TestConversationsMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newConversationMessage(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newConversationMessage(core)
 
 		paged, err := messages.List(context.Background(), &ListConversationsMessagesReq{
 			ConversationID: "test_conversation_id",
@@ -326,8 +326,8 @@ func TestConversationsMessages(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		messages := newConversationMessage(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		messages := newConversationMessage(core)
 
 		createReq := &CreateMessageReq{
 			ConversationID: "test_conversation_id",

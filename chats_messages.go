@@ -28,18 +28,18 @@ type ListChatsMessagesResp struct {
 }
 
 type chatMessages struct {
-	client *httpClient
+	core *core
 }
 
-func newChatMessages(client *httpClient) *chatMessages {
-	return &chatMessages{client: client}
+func newChatMessages(core *core) *chatMessages {
+	return &chatMessages{core: core}
 }
 
 func (r *chatMessages) List(ctx context.Context, req *ListChatsMessagesReq) (*ListChatsMessagesResp, error) {
 	method := http.MethodGet
 	uri := "/v3/chat/message/list"
 	resp := &listChatsMessagesResp{}
-	err := r.client.Request(ctx, method, uri, nil, resp,
+	err := r.core.Request(ctx, method, uri, nil, resp,
 		withHTTPQuery("conversation_id", req.ConversationID),
 		withHTTPQuery("chat_id", req.ChatID),
 	)

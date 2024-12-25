@@ -10,14 +10,14 @@ import (
 )
 
 type workflowRuns struct {
-	client    *httpClient
+	client    *core
 	Histories *workflowRunHistories
 }
 
-func newWorkflowRun(client *httpClient) *workflowRuns {
+func newWorkflowRun(core *core) *workflowRuns {
 	return &workflowRuns{
-		client:    client,
-		Histories: newWorkflowRunHistories(client),
+		client:    core,
+		Histories: newWorkflowRunHistories(core),
 	}
 }
 

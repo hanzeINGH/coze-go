@@ -8,14 +8,14 @@ import (
 )
 
 type conversations struct {
-	client   *httpClient
+	client   *core
 	Messages *conversationsMessages
 }
 
-func newConversations(client *httpClient) *conversations {
+func newConversations(core *core) *conversations {
 	return &conversations{
-		client:   client,
-		Messages: newConversationMessage(client),
+		client:   core,
+		Messages: newConversationMessage(core),
 	}
 }
 

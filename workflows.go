@@ -4,8 +4,8 @@ type workflows struct {
 	Runs *workflowRuns
 }
 
-func newWorkflows(client *httpClient) *workflows {
+func newWorkflows(core *core) *workflows {
 	return &workflows{
-		Runs: newWorkflowRun(client),
+		Runs: newWorkflowRun(core),
 	}
 }

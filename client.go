@@ -34,7 +34,7 @@ func WithBaseURL(baseURL string) CozeAPIOption {
 	}
 }
 
-// WithHttpClient sets a custom HTTP httpClient
+// WithHttpClient sets a custom HTTP core
 func WithHttpClient(client *http.Client) CozeAPIOption {
 	return func(opt *newCozeAPIOpt) {
 		opt.client = client
@@ -73,20 +73,20 @@ func NewCozeAPI(auth Auth, opts ...CozeAPIOption) CozeAPI {
 		auth: auth,
 		next: saveTransport,
 	}
-	client := newHTTPClient(opt.client, opt.baseURL)
+	core := newCore(opt.client, opt.baseURL)
 
 	// Set log level
 	log.SetLevel(opt.logLevel)
 
 	cozeClient := CozeAPI{
-		Audio:         newAudio(client),
-		Bots:          newBots(client),
-		Chats:         newChats(client),
-		Conversations: newConversations(client),
-		Workflows:     newWorkflows(client),
-		Workspaces:    newWorkspace(client),
-		Datasets:      newDatasets(client),
-		Files:         newFiles(client),
+		Audio:         newAudio(core),
+		Bots:          newBots(core),
+		Chats:         newChats(core),
+		Conversations: newConversations(core),
+		Workflows:     newWorkflows(core),
+		Workspaces:    newWorkspace(core),
+		Datasets:      newDatasets(core),
+		Files:         newFiles(core),
 
 		baseURL: opt.baseURL,
 	}

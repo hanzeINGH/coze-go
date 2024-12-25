@@ -46,7 +46,7 @@ func TestClient_Request_Success(t *testing.T) {
 	mockResp.Header.Set(logIDHeader, "test-log-id")
 
 	// 创建测试客户端
-	client := newHTTPClient(&mockDoer{
+	core := newCore(&mockHTTP{
 		Response: mockResp,
 		Error:    nil,
 	}, "https://api.test.com")
@@ -57,25 +57,25 @@ func TestClient_Request_Success(t *testing.T) {
 		Test: "test",
 		Data: "data",
 	}
-	err := client.Request(context.Background(), http.MethodGet, "/test", actualReq, &actualResp, withHTTPQuery("test", "data"))
+	err := core.Request(context.Background(), http.MethodGet, "/test", actualReq, &actualResp, withHTTPQuery("test", "data"))
 
 	// 验证结果
 	assert.NoError(t, err)
 	assert.Equal(t, expectedResp.Code, actualResp.Code)
 	assert.Equal(t, expectedResp.Data.Name, actualResp.Data.Name)
-	assert.Equal(t, "test-log-id", actualResp.LogID)
+	assert.Equal(t, "test-log-id", actualResp.HTTPResponse.GetLogID())
 }
 
 func TestClient_Request_Error(t *testing.T) {
 	// 测试 HTTP 错误
 	t.Run("HTTP Error", func(t *testing.T) {
-		client := newHTTPClient(&mockDoer{
+		core := newCore(&mockHTTP{
 			Response: nil,
 			Error:    errors.New("network error"),
 		}, "https://api.test.com")
 
 		var resp TestResponse
-		err := client.Request(context.Background(), http.MethodGet, "/test", nil, &resp)
+		err := core.Request(context.Background(), http.MethodGet, "/test", nil, &resp)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "network error")
 	})
@@ -94,7 +94,7 @@ func TestClient_Request_Error(t *testing.T) {
 		}
 		mockResp.Header.Set(logIDHeader, "test-log-id")
 
-		client := newHTTPClient(&mockDoer{
+		core := newCore(&mockHTTP{
 			Response: mockResp,
 			Error:    nil,
 		}, "https://api.test.com")
@@ -123,7 +123,7 @@ func TestClient_Request_Error(t *testing.T) {
 		}
 		mockResp.Header.Set(logIDHeader, "test-log-id")
 
-		client := newHTTPClient(&mockDoer{
+		core := newCore(&mockHTTP{
 			Response: mockResp,
 			Error:    nil,
 		}, "https://api.test.com")
@@ -156,7 +156,7 @@ func TestClient_UploadFile_Success(t *testing.T) {
 	}
 	mockResp.Header.Set(logIDHeader, "test-log-id")
 
-	client := newHTTPClient(&mockDoer{
+	core := newCore(&mockHTTP{
 		Response: mockResp,
 		Error:    nil,
 	}, "https://api.test.com")
@@ -182,13 +182,13 @@ func TestClient_UploadFile_Success(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, expectedResp.Code, actualResp.Code)
 	assert.Equal(t, expectedResp.Data.Name, actualResp.Data.Name)
-	assert.Equal(t, "test-log-id", actualResp.LogID)
+	assert.Equal(t, "test-log-id", actualResp.HTTPResponse.GetLogID())
 }
 
 func TestClient_UploadFile_Error(t *testing.T) {
 	// 测试上传错误
 	t.Run("Upload Error", func(t *testing.T) {
-		client := newHTTPClient(&mockDoer{
+		core := newCore(&mockHTTP{
 			Response: nil,
 			Error:    errors.New("upload failed"),
 		}, "https://api.test.com")
@@ -221,7 +221,7 @@ func TestClient_UploadFile_Error(t *testing.T) {
 		}
 		mockResp.Header.Set(logIDHeader, "test-log-id")
 
-		client := newHTTPClient(&mockDoer{
+		core := newCore(&mockHTTP{
 			Response: mockResp,
 			Error:    nil,
 		}, "https://api.test.com")
@@ -266,15 +266,15 @@ func TestRequestOptions(t *testing.T) {
 func TestNewClient(t *testing.T) {
 	// 测试创建客户端
 	t.Run("With Custom Doer", func(t *testing.T) {
-		customDoer := &mockDoer{}
-		client := newHTTPClient(customDoer, "https://api.test.com")
-		assert.Equal(t, customDoer, client.doer)
+		customDoer := &mockHTTP{}
+		core := newCore(customDoer, "https://api.test.com")
+		assert.Equal(t, customDoer, client.httpClient)
 	})
 
 	t.Run("With Nil Doer", func(t *testing.T) {
-		client := newHTTPClient(nil, "https://api.test.com")
-		assert.NotNil(t, client.doer)
-		_, ok := client.doer.(*http.Client)
+		core := newCore(nil, "https://api.test.com")
+		assert.NotNil(t, client.httpClient)
+		_, ok := client.httpClient.(*http.Client)
 		assert.True(t, ok)
 	})
 }

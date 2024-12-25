@@ -13,14 +13,14 @@ import (
 )
 
 type chats struct {
-	client   *httpClient
+	client   *core
 	Messages *chatMessages
 }
 
-func newChats(client *httpClient) *chats {
+func newChats(core *core) *chats {
 	return &chats{
-		client:   client,
-		Messages: newChatMessages(client),
+		client:   core,
+		Messages: newChatMessages(core),
 	}
 }
 

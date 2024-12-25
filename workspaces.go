@@ -8,11 +8,11 @@ import (
 )
 
 type workspace struct {
-	client *httpClient
+	core *core
 }
 
-func newWorkspace(client *httpClient) *workspace {
-	return &workspace{client: client}
+func newWorkspace(core *core) *workspace {
+	return &workspace{core: core}
 }
 
 func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*NumberPaged[Workspace], error) {
@@ -26,7 +26,7 @@ func (r *workspace) List(ctx context.Context, req *ListWorkspaceReq) (*NumberPag
 		func(request *PageRequest) (*PageResponse[Workspace], error) {
 			uri := "/v1/workspaces"
 			resp := &listWorkspaceResp{}
-			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
+			err := r.core.Request(ctx, http.MethodGet, uri, nil, resp,
 				withHTTPQuery("page_num", strconv.Itoa(request.PageNum)),
 				withHTTPQuery("page_size", strconv.Itoa(request.PageSize)))
 			if err != nil {

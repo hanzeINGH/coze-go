@@ -33,8 +33,8 @@ func TestAudioRooms(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		rooms := newRooms(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		rooms := newRooms(core)
 
 		// Test with all optional fields
 		resp, err := rooms.Create(context.Background(), &CreateAudioRoomsReq{
@@ -75,8 +75,8 @@ func TestAudioRooms(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		rooms := newRooms(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		rooms := newRooms(core)
 
 		// Test with only required fields
 		resp, err := rooms.Create(context.Background(), &CreateAudioRoomsReq{
@@ -99,8 +99,8 @@ func TestAudioRooms(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		rooms := newRooms(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		rooms := newRooms(core)
 
 		resp, err := rooms.Create(context.Background(), &CreateAudioRoomsReq{
 			BotID: "invalid_bot",

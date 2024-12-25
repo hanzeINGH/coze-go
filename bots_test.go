@@ -26,8 +26,8 @@ func TestBots(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		bots := newBots(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		bots := newBots(core)
 
 		resp, err := bots.Create(context.Background(), &CreateBotsReq{
 			SpaceID:     "test_space_id",
@@ -61,8 +61,8 @@ func TestBots(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		bots := newBots(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		bots := newBots(core)
 
 		resp, err := bots.Update(context.Background(), &UpdateBotsReq{
 			BotID:       "test_bot_id",
@@ -104,8 +104,8 @@ func TestBots(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		bots := newBots(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		bots := newBots(core)
 
 		resp, err := bots.Publish(context.Background(), &PublishBotsReq{
 			BotID:        "test_bot_id",
@@ -170,8 +170,8 @@ func TestBots(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		bots := newBots(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		bots := newBots(core)
 
 		resp, err := bots.Retrieve(context.Background(), &RetrieveBotsReq{
 			BotID: "test_bot_id",
@@ -223,8 +223,8 @@ func TestBots(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		bots := newBots(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		bots := newBots(core)
 
 		paged, err := bots.List(context.Background(), &ListBotsReq{
 			SpaceID:  "test_space_id",
@@ -263,8 +263,8 @@ func TestBots(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		bots := newBots(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		bots := newBots(core)
 
 		paged, err := bots.List(context.Background(), &ListBotsReq{
 			SpaceID: "test_space_id",

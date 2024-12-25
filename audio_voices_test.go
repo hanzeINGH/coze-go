@@ -31,8 +31,8 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		voices := newVoice(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		voices := newVoice(core)
 
 		// Create mock audio file
 		audioData := strings.NewReader("mock audio data")
@@ -68,8 +68,8 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		voices := newVoice(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		voices := newVoice(core)
 
 		resp, err := voices.Clone(context.Background(), &CloneAudioVoicesReq{
 			VoiceName: "test_voice",
@@ -82,8 +82,8 @@ func TestAudioVoices(t *testing.T) {
 
 	// Test Clone method with nil file
 	t.Run("Clone voice with nil file", func(t *testing.T) {
-		client := newHTTPClient(&http.Client{}, "https://api.coze.com")
-		voices := newVoice(client)
+		core := newCore(&http.Client{}, "https://api.coze.com")
+		voices := newVoice(core)
 
 		resp, err := voices.Clone(context.Background(), &CloneAudioVoicesReq{
 			VoiceName: "test_voice",
@@ -147,8 +147,8 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		voices := newVoice(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		voices := newVoice(core)
 
 		paged, err := voices.List(context.Background(), &ListAudioVoicesReq{
 			FilterSystemVoice: true,
@@ -208,8 +208,8 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		voices := newVoice(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		voices := newVoice(core)
 
 		paged, err := voices.List(context.Background(), &ListAudioVoicesReq{})
 
@@ -229,8 +229,8 @@ func TestAudioVoices(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		voices := newVoice(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		voices := newVoice(core)
 
 		paged, err := voices.List(context.Background(), &ListAudioVoicesReq{
 			PageNum:  -1, // Invalid page number

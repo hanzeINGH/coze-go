@@ -9,11 +9,11 @@ import (
 )
 
 type audioVoice struct {
-	client *httpClient
+	core *core
 }
 
-func newVoice(client *httpClient) *audioVoice {
-	return &audioVoice{client: client}
+func newVoice(core *core) *audioVoice {
+	return &audioVoice{core: core}
 }
 
 func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*CloneAudioVoicesResp, error) {
@@ -43,7 +43,7 @@ func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*Clon
 		fields["text"] = *req.Text
 	}
 	resp := &cloneAudioVoicesResp{}
-	err := r.client.UploadFile(ctx, path, req.File, req.VoiceName, fields, resp)
+	err := r.core.UploadFile(ctx, path, req.File, req.VoiceName, fields, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (r *audioVoice) List(ctx context.Context, req *ListAudioVoicesReq) (*Number
 		func(request *PageRequest) (*PageResponse[Voice], error) {
 			uri := "/v1/audio/voices"
 			resp := &ListAudioVoicesResp{}
-			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
+			err := r.core.Request(ctx, http.MethodGet, uri, nil, resp,
 				withHTTPQuery("page_num", strconv.Itoa(request.PageNum)),
 				withHTTPQuery("page_size", strconv.Itoa(request.PageSize)),
 				withHTTPQuery("filter_system_voice", strconv.FormatBool(req.FilterSystemVoice)))

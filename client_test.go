@@ -46,8 +46,8 @@ func TestNewCozeAPI(t *testing.T) {
 		assert.Equal(t, customURL, api.baseURL)
 	})
 
-	// Test with custom HTTP client
-	t.Run("custom HTTP client", func(t *testing.T) {
+	// Test with custom HTTP core
+	t.Run("custom HTTP core", func(t *testing.T) {
 		auth := &mockAuth{token: "test_token"}
 		customClient := &http.Client{
 			Timeout: 30,

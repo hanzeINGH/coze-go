@@ -1,10 +1,20 @@
 package coze
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+type mockHTTP struct {
+	Response *http.Response
+	Error    error
+}
+
+func (m *mockHTTP) Do(*http.Request) (*http.Response, error) {
+	return m.Response, m.Error
+}
 
 func Test_Ptr(t *testing.T) {
 	as := assert.New(t)

@@ -143,12 +143,12 @@ func (m CodeChallengeMethod) Ptr() *CodeChallengeMethod {
 	return &m
 }
 
-// OAuthClient represents the base OAuth httpClient structure
+// OAuthClient represents the base OAuth core structure
 type OAuthClient struct {
 	clientID     string
 	clientSecret string
 	baseURL      string
-	httpClient   *httpClient
+	httpClient   *core
 	hostName     string
 }
 
@@ -178,7 +178,7 @@ func WithAuthHttpClient(client *http.Client) OAuthClientOption {
 	}
 }
 
-// newOAuthClient creates a new OAuth httpClient
+// newOAuthClient creates a new OAuth core
 func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*OAuthClient, error) {
 	initSettings := &oauthOpt{
 		baseURL: CozeComBaseURL,
@@ -210,7 +210,7 @@ func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*
 		clientSecret: clientSecret,
 		baseURL:      initSettings.baseURL,
 		hostName:     hostName,
-		httpClient:   newHTTPClient(httpClient, initSettings.baseURL),
+		httpClient:   newCore(httpClient, initSettings.baseURL),
 	}, nil
 }
 
@@ -310,12 +310,12 @@ func (c *OAuthClient) refreshAccessTokenWithClientSecret(ctx context.Context, re
 	})
 }
 
-// PKCEOAuthClient PKCE OAuth httpClient
+// PKCEOAuthClient PKCE OAuth core
 type PKCEOAuthClient struct {
 	*OAuthClient
 }
 
-// NewPKCEOAuthClient creates a new PKCE OAuth httpClient
+// NewPKCEOAuthClient creates a new PKCE OAuth core
 func NewPKCEOAuthClient(clientID string, opts ...OAuthClientOption) (*PKCEOAuthClient, error) {
 	client, err := newOAuthClient(clientID, "", opts...)
 	if err != nil {
@@ -421,12 +421,12 @@ func withCodeChallengeMethod(method string) urlOption {
 	}
 }
 
-// DeviceOAuthClient represents the device OAuth httpClient
+// DeviceOAuthClient represents the device OAuth core
 type DeviceOAuthClient struct {
 	*OAuthClient
 }
 
-// NewDeviceOAuthClient creates a new device OAuth httpClient
+// NewDeviceOAuthClient creates a new device OAuth core
 func NewDeviceOAuthClient(clientID string, opts ...OAuthClientOption) (*DeviceOAuthClient, error) {
 	client, err := newOAuthClient(clientID, "", opts...)
 	if err != nil {
@@ -524,7 +524,7 @@ func (c *DeviceOAuthClient) RefreshToken(ctx context.Context, refreshToken strin
 	return c.refreshAccessToken(ctx, refreshToken)
 }
 
-// JWTOAuthClient represents the JWT OAuth httpClient
+// JWTOAuthClient represents the JWT OAuth core
 type JWTOAuthClient struct {
 	*OAuthClient
 	ttl        int
@@ -539,7 +539,7 @@ type NewJWTOAuthClientParam struct {
 	TTL           *int
 }
 
-// NewJWTOAuthClient creates a new JWT OAuth httpClient
+// NewJWTOAuthClient creates a new JWT OAuth core
 func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) (*JWTOAuthClient, error) {
 	privateKey, err := parsePrivateKey(param.PrivateKeyPEM)
 	if err != nil {
@@ -636,12 +636,12 @@ func (c *JWTOAuthClient) generateJWT(ttl int, sessionName *string) (string, erro
 	return tokenString, nil
 }
 
-// WebOAuthClient Web OAuth httpClient
+// WebOAuthClient Web OAuth core
 type WebOAuthClient struct {
 	*OAuthClient
 }
 
-// NewWebOAuthClient creates a new Web OAuth httpClient
+// NewWebOAuthClient creates a new Web OAuth core
 func NewWebOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*WebOAuthClient, error) {
 	client, err := newOAuthClient(clientID, clientSecret, opts...)
 	if err != nil {

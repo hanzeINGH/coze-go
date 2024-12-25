@@ -310,7 +310,7 @@ func TestOAuthError(t *testing.T) {
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				return mockResponse(http.StatusUnauthorized, &authErrorFormat{
 					ErrorCode:    "unauthorized",
-					ErrorMessage: "Invalid httpClient credentials",
+					ErrorMessage: "Invalid core credentials",
 				})
 			},
 		}

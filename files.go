@@ -7,17 +7,17 @@ import (
 )
 
 type files struct {
-	client *httpClient
+	core *core
 }
 
-func newFiles(client *httpClient) *files {
-	return &files{client: client}
+func newFiles(core *core) *files {
+	return &files{core: core}
 }
 
 func (r *files) Upload(ctx context.Context, req fileInterface) (*UploadFilesResp, error) {
 	path := "/v1/files/upload"
 	resp := &uploadFilesResp{}
-	err := r.client.UploadFile(ctx, path, req, req.Name(), nil, resp)
+	err := r.core.UploadFile(ctx, path, req, req.Name(), nil, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func (r *files) Retrieve(ctx context.Context, req *RetrieveFilesReq) (*RetrieveF
 	method := http.MethodPost
 	uri := "/v1/files/retrieve"
 	resp := &retrieveFilesResp{}
-	err := r.client.Request(ctx, method, uri, nil, resp, withHTTPQuery("file_id", req.FileID))
+	err := r.core.Request(ctx, method, uri, nil, resp, withHTTPQuery("file_id", req.FileID))
 	if err != nil {
 		return nil, err
 	}

@@ -53,8 +53,8 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		conversations := newConversations(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		conversations := newConversations(core)
 
 		paged, err := conversations.List(context.Background(), &ListConversationsReq{
 			BotID:    "test_bot_id",
@@ -107,8 +107,8 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		conversations := newConversations(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		conversations := newConversations(core)
 
 		resp, err := conversations.Create(context.Background(), &CreateConversationsReq{
 			Messages: []*Message{
@@ -161,8 +161,8 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		conversations := newConversations(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		conversations := newConversations(core)
 
 		resp, err := conversations.Retrieve(context.Background(), &RetrieveConversationsReq{
 			ConversationID: "conv1",
@@ -196,8 +196,8 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		conversations := newConversations(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		conversations := newConversations(core)
 
 		resp, err := conversations.Clear(context.Background(), &ClearConversationsReq{
 			ConversationID: "conv1",
@@ -229,8 +229,8 @@ func TestConversations(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		conversations := newConversations(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		conversations := newConversations(core)
 
 		paged, err := conversations.List(context.Background(), &ListConversationsReq{
 			BotID: "test_bot_id",

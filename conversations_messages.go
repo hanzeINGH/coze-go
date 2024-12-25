@@ -6,11 +6,11 @@ import (
 )
 
 type conversationsMessages struct {
-	client *httpClient
+	core *core
 }
 
-func newConversationMessage(client *httpClient) *conversationsMessages {
-	return &conversationsMessages{client: client}
+func newConversationMessage(core *core) *conversationsMessages {
+	return &conversationsMessages{core: core}
 }
 
 func (r *conversationsMessages) Create(ctx context.Context, req *CreateMessageReq) (*CreateMessageResp, error) {
@@ -18,7 +18,7 @@ func (r *conversationsMessages) Create(ctx context.Context, req *CreateMessageRe
 	uri := "/v1/conversation/message/create"
 	resp := &createMessageResp{}
 
-	err := r.client.Request(ctx, method, uri, req, resp,
+	err := r.core.Request(ctx, method, uri, req, resp,
 		withHTTPQuery("conversation_id", req.ConversationID))
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (r *conversationsMessages) List(ctx context.Context, req *ListConversations
 			if request.PageToken != "" {
 				doReq.AfterID = ptr(request.PageToken)
 			}
-			err := r.client.Request(ctx, http.MethodPost, uri, doReq, resp,
+			err := r.core.Request(ctx, http.MethodPost, uri, doReq, resp,
 				withHTTPQuery("conversation_id", req.ConversationID))
 			if err != nil {
 				return nil, err
@@ -64,7 +64,7 @@ func (r *conversationsMessages) Retrieve(ctx context.Context, req *RetrieveConve
 	method := http.MethodGet
 	uri := "/v1/conversation/message/retrieve"
 	resp := &retrieveConversationsMessagesResp{}
-	err := r.client.Request(ctx, method, uri, nil, resp,
+	err := r.core.Request(ctx, method, uri, nil, resp,
 		withHTTPQuery("conversation_id", req.ConversationID),
 		withHTTPQuery("message_id", req.MessageID),
 	)
@@ -83,7 +83,7 @@ func (r *conversationsMessages) Update(ctx context.Context, req *UpdateConversat
 	messageID := req.MessageID
 	req.ConversationID = ""
 	req.MessageID = ""
-	err := r.client.Request(ctx, method, uri, req, resp,
+	err := r.core.Request(ctx, method, uri, req, resp,
 		withHTTPQuery("conversation_id", conversationID),
 		withHTTPQuery("message_id", messageID),
 	)
@@ -98,7 +98,7 @@ func (r *conversationsMessages) Delete(ctx context.Context, req *DeleteConversat
 	method := http.MethodPost
 	uri := "/v1/conversation/message/delete"
 	resp := &deleteConversationsMessagesResp{}
-	err := r.client.Request(ctx, method, uri, nil, resp,
+	err := r.core.Request(ctx, method, uri, nil, resp,
 		withHTTPQuery("conversation_id", req.ConversationID),
 		withHTTPQuery("message_id", req.MessageID),
 	)

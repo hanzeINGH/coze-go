@@ -42,10 +42,10 @@ type audio struct {
 	Voices *audioVoice
 }
 
-func newAudio(client *httpClient) *audio {
+func newAudio(core *core) *audio {
 	return &audio{
-		Rooms:  newRooms(client),
-		Speech: newSpeech(client),
-		Voices: newVoice(client),
+		Rooms:  newRooms(core),
+		Speech: newSpeech(core),
+		Voices: newVoice(core),
 	}
 }

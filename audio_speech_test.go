@@ -31,8 +31,8 @@ func TestAudioSpeech(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		speech := newSpeech(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		speech := newSpeech(core)
 
 		resp, err := speech.Create(context.Background(), &CreateAudioSpeechReq{
 			Input:          "Hello, world!",
@@ -62,8 +62,8 @@ func TestAudioSpeech(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		speech := newSpeech(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		speech := newSpeech(core)
 
 		resp, err := speech.Create(context.Background(), &CreateAudioSpeechReq{
 			Input:          "Hello, world!",
@@ -87,8 +87,8 @@ func TestAudioSpeech(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		speech := newSpeech(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		speech := newSpeech(core)
 
 		resp, err := speech.Create(context.Background(), &CreateAudioSpeechReq{
 			Input:          "Hello, world!",

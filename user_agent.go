@@ -2,14 +2,32 @@ package coze
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"runtime"
 	"strings"
 )
 
-const Version = "1.0.0"
+const version = "0.1.0"
+
+var (
+	userAgentSDK         = "cozego"
+	userAgentLang        = "go"
+	userAgentLangVersion = strings.TrimPrefix(runtime.Version(), "go")
+	userAgentOsName      = runtime.GOOS
+	userAgentOsVersion   = os.Getenv("OSVERSION")
+	userAgent            = userAgentSDK + "/" + version + " " + userAgentLang + "/" + userAgentLangVersion + " " + userAgentOsName + "/" + userAgentOsVersion
+	clientUserAgent      string
+)
+
+func setUserAgent(req *http.Request) {
+	req.Header.Set("User-Agent", userAgent)
+	req.Header.Set("X-Coze-Client-User-Agent", clientUserAgent)
+}
+
+func init() {
+	clientUserAgent = getCozeClientUserAgent()
+}
 
 type userAgentInfo struct {
 	Version     string `json:"version"`
@@ -19,41 +37,13 @@ type userAgentInfo struct {
 	OsVersion   string `json:"os_version"`
 }
 
-func setUserAgent(req *http.Request) {
-	req.Header.Set("User-Agent", getUserAgent())
-
-	// 添加 X-Coze-httpClient-User-Agent 头
-	clientUA, err := getCozeClientUserAgent()
-	if err == nil {
-		req.Header.Set("X-Coze-Client-User-Agent", clientUA)
-	}
-}
-
-func getOsVersion() string {
-	return runtime.GOOS + "/" + os.Getenv("OSVERSION")
-}
-
-func getUserAgent() string {
-	return fmt.Sprintf(
-		"cozego/%s go/%s %s",
-		Version,
-		strings.TrimPrefix(runtime.Version(), "go"),
-		getOsVersion(),
-	)
-}
-
-func getCozeClientUserAgent() (string, error) {
-	ua := userAgentInfo{
-		Version:     Version,
-		Lang:        "go",
-		LangVersion: strings.TrimPrefix(runtime.Version(), "go"),
-		OsName:      runtime.GOOS,
-		OsVersion:   os.Getenv("OSVERSION"),
-	}
-
-	data, err := json.Marshal(ua)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
+func getCozeClientUserAgent() string {
+	data, _ := json.Marshal(userAgentInfo{
+		Version:     version,
+		Lang:        userAgentSDK,
+		LangVersion: userAgentLangVersion,
+		OsName:      userAgentOsName,
+		OsVersion:   userAgentOsVersion,
+	})
+	return string(data)
 }

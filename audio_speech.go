@@ -7,16 +7,16 @@ import (
 )
 
 type audioSpeech struct {
-	client *httpClient
+	core *core
 }
 
-func newSpeech(client *httpClient) *audioSpeech {
-	return &audioSpeech{client: client}
+func newSpeech(core *core) *audioSpeech {
+	return &audioSpeech{core: core}
 }
 
 func (r *audioSpeech) Create(ctx context.Context, req *CreateAudioSpeechReq) (*CreateAudioSpeechResp, error) {
 	uri := "/v1/audio/speech"
-	resp, err := r.client.RawRequest(ctx, http.MethodPost, uri, req)
+	resp, err := r.core.RawRequest(ctx, http.MethodPost, uri, req)
 	if err != nil {
 		return nil, err
 	}

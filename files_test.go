@@ -36,8 +36,8 @@ func TestFiles(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		files := newFiles(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		files := newFiles(core)
 
 		// Create a test file content
 		content := []byte("test file content")
@@ -82,8 +82,8 @@ func TestFiles(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		files := newFiles(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		files := newFiles(core)
 
 		resp, err := files.Retrieve(context.Background(), &RetrieveFilesReq{
 			FileID: "file1",
@@ -108,8 +108,8 @@ func TestFiles(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		files := newFiles(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		files := newFiles(core)
 
 		content := []byte("test file content")
 		fileReader := bytes.NewReader(content)
@@ -132,8 +132,8 @@ func TestFiles(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		files := newFiles(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		files := newFiles(core)
 
 		resp, err := files.Retrieve(context.Background(), &RetrieveFilesReq{
 			FileID: "invalid_file_id",

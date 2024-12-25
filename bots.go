@@ -10,7 +10,7 @@ func (r *bots) Create(ctx context.Context, req *CreateBotsReq) (*CreateBotsResp,
 	method := http.MethodPost
 	uri := "/v1/bot/create"
 	resp := &createBotsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
+	err := r.core.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func (r *bots) Update(ctx context.Context, req *UpdateBotsReq) (*UpdateBotsResp,
 	method := http.MethodPost
 	uri := "/v1/bot/update"
 	resp := &updateBotsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
+	err := r.core.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (r *bots) Publish(ctx context.Context, req *PublishBotsReq) (*PublishBotsRe
 	method := http.MethodPost
 	uri := "/v1/bot/publish"
 	resp := &publishBotsResp{}
-	err := r.client.Request(ctx, method, uri, req, resp)
+	err := r.core.Request(ctx, method, uri, req, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (r *bots) Retrieve(ctx context.Context, req *RetrieveBotsReq) (*RetrieveBot
 	method := http.MethodGet
 	uri := "/v1/bot/get_online_info"
 	resp := &retrieveBotsResp{}
-	err := r.client.Request(ctx, method, uri, nil, resp, withHTTPQuery("bot_id", req.BotID))
+	err := r.core.Request(ctx, method, uri, nil, resp, withHTTPQuery("bot_id", req.BotID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (r *bots) List(ctx context.Context, req *ListBotsReq) (*NumberPaged[SimpleB
 		func(request *PageRequest) (*PageResponse[SimpleBot], error) {
 			uri := "/v1/space/published_bots_list"
 			resp := &listBotsResp{}
-			err := r.client.Request(ctx, http.MethodGet, uri, nil, resp,
+			err := r.core.Request(ctx, http.MethodGet, uri, nil, resp,
 				withHTTPQuery("space_id", req.SpaceID),
 				withHTTPQuery("page_index", strconv.Itoa(request.PageNum)),
 				withHTTPQuery("page_size", strconv.Itoa(request.PageSize)))
@@ -246,9 +246,9 @@ type UpdateBotsResp struct {
 }
 
 type bots struct {
-	client *httpClient
+	core *core
 }
 
-func newBots(client *httpClient) *bots {
-	return &bots{client: client}
+func newBots(core *core) *bots {
+	return &bots{core: core}
 }

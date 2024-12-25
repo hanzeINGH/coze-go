@@ -34,8 +34,8 @@ func TestWorkflowRuns(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		workflowRuns := newWorkflowRun(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		workflowRuns := newWorkflowRun(core)
 
 		resp, err := workflowRuns.Create(context.Background(), &RunWorkflowsReq{
 			WorkflowID: "workflow1",
@@ -80,8 +80,8 @@ data:
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		workflowRuns := newWorkflowRun(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		workflowRuns := newWorkflowRun(core)
 
 		reader, err := workflowRuns.Stream(context.Background(), &RunWorkflowsReq{
 			WorkflowID: "workflow1",
@@ -141,8 +141,8 @@ data:
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		workflowRuns := newWorkflowRun(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		workflowRuns := newWorkflowRun(core)
 
 		reader, err := workflowRuns.Resume(context.Background(), &ResumeRunWorkflowsReq{
 			WorkflowID:    "workflow1",
@@ -183,8 +183,8 @@ data:{"error_code":400,"error_message":"Bad Request"}
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		workflowRuns := newWorkflowRun(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		workflowRuns := newWorkflowRun(core)
 
 		reader, err := workflowRuns.Stream(context.Background(), &RunWorkflowsReq{
 			WorkflowID: "workflow1",
@@ -211,8 +211,8 @@ data:{"interrupt_data":{"event_id":"event1","type":1},"node_title":"Question"}
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		workflowRuns := newWorkflowRun(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		workflowRuns := newWorkflowRun(core)
 
 		reader, err := workflowRuns.Stream(context.Background(), &RunWorkflowsReq{
 			WorkflowID: "workflow1",

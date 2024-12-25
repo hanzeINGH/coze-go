@@ -46,8 +46,8 @@ func TestWorkflowRunHistories(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		histories := newWorkflowRunHistories(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		histories := newWorkflowRunHistories(core)
 
 		resp, err := histories.Retrieve(context.Background(), &RetrieveWorkflowsRunHistoriesReq{
 			WorkflowID: "workflow1",
@@ -85,8 +85,8 @@ func TestWorkflowRunHistories(t *testing.T) {
 			},
 		}
 
-		client := newHTTPClient(&http.Client{Transport: mockTransport}, "https://api.coze.com")
-		histories := newWorkflowRunHistories(client)
+		core := newCore(&http.Client{Transport: mockTransport}, "https://api.coze.com")
+		histories := newWorkflowRunHistories(core)
 
 		resp, err := histories.Retrieve(context.Background(), &RetrieveWorkflowsRunHistoriesReq{
 			WorkflowID: "invalid_workflow",
