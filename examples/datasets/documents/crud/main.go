@@ -35,6 +35,7 @@ func main() {
 		return
 	}
 	fmt.Println(createResp)
+	fmt.Println(createResp.LogID())
 
 	var documentIDs []int64
 	for _, doc := range createResp.DocumentInfos {
@@ -55,6 +56,7 @@ func main() {
 		return
 	}
 	fmt.Println(updateResp)
+	fmt.Println(updateResp.LogID())
 
 	//
 	// delete document. It means success that no exception has been thrown
@@ -67,4 +69,5 @@ func main() {
 		return
 	}
 	fmt.Println(deleteResp)
+	fmt.Println(deleteResp.LogID())
 }

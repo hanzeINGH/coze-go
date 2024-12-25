@@ -55,6 +55,7 @@ func main() {
 	}
 	botID := createResp.BotID
 	fmt.Println(createResp)
+	fmt.Println(createResp.LogID())
 
 	//
 	// step two, update the bot, you can update the bot after being created
@@ -69,6 +70,7 @@ func main() {
 		return
 	}
 	fmt.Println(publishResp)
+	fmt.Println(publishResp.LogID())
 
 	//
 	// step three, you can also modify the bot configuration and republish it.
@@ -85,9 +87,10 @@ func main() {
 		return
 	}
 	fmt.Println(newAvatarInfo)
+	fmt.Println(newAvatarInfo.LogID())
 
 	// Update bot
-	_, err = cozeCli.Bots.Update(ctx, &coze.UpdateBotsReq{
+	updateResp, err := cozeCli.Bots.Update(ctx, &coze.UpdateBotsReq{
 		BotID:      botID,
 		IconFileID: newAvatarInfo.FileInfo.ID,
 	})
@@ -95,6 +98,7 @@ func main() {
 		fmt.Println("Error updating bot:", err)
 		return
 	}
+	fmt.Println(updateResp.LogID())
 
 	// Republish bot
 	publishResp, err = cozeCli.Bots.Publish(ctx, &coze.PublishBotsReq{
@@ -106,4 +110,5 @@ func main() {
 		return
 	}
 	fmt.Println(publishResp)
+	fmt.Println(publishResp.LogID())
 }

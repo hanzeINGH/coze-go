@@ -58,6 +58,7 @@ func main() {
 		return
 	}
 	fmt.Printf("Access token response: %+v\n", resp)
+	fmt.Println(resp.LogID())
 
 	// The jwt oauth process does not support refreshing tokens. When the token expires,
 	// just directly call get_access_token to generate a new token.
@@ -65,5 +66,5 @@ func main() {
 		coze.NewJWTAuth(oauth, nil),
 		coze.WithBaseURL(cozeAPIBase),
 	)
-	fmt.Println(cozeCli)
+	_ = cozeCli
 }

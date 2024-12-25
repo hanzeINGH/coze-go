@@ -46,10 +46,10 @@ func (r *datasetsDocuments) Delete(ctx context.Context, req *DeleteDatasetsDocum
 
 func (r *datasetsDocuments) List(ctx context.Context, req *ListDatasetsDocumentsReq) (*NumberPaged[Document], error) {
 	if req.Page == 0 {
-		req.Page = 20
+		req.Page = 1
 	}
 	if req.Size == 0 {
-		req.Size = 1
+		req.Size = 20
 	}
 	return NewNumberPaged[Document](
 		func(request *PageRequest) (*PageResponse[Document], error) {
@@ -80,7 +80,7 @@ type datasetsDocuments struct {
 
 func newDocuments(core *core) *datasetsDocuments {
 	return &datasetsDocuments{client: core, commonHeaderOpt: []RequestOption{
-		withHTTPHeader("Agw-Js-Conv", "true"),
+		withHTTPHeader("Agw-Js-Conv", "str"),
 	}}
 }
 

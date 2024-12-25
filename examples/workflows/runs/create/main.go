@@ -28,6 +28,7 @@ func main() {
 	req := &coze.RunWorkflowsReq{
 		WorkflowID: workflowID,
 		Parameters: data,
+		IsAsync:    true,
 	}
 
 	resp, err := cozeCli.Workflows.Runs.Create(ctx, req)
@@ -36,4 +37,5 @@ func main() {
 		return
 	}
 	fmt.Println(resp)
+	fmt.Println(resp.LogID())
 }

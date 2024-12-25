@@ -18,7 +18,7 @@ func main() {
 
 	ctx := context.Background()
 	// you can use iterator to automatically retrieve next page
-	voices, err := cozeCli.Audio.Voices.List(ctx, &coze.ListAudioVoicesReq{PageSize: 2})
+	voices, err := cozeCli.Audio.Voices.List(ctx, &coze.ListAudioVoicesReq{PageSize: 10})
 	if err != nil {
 		fmt.Println("Error fetching voices:", err)
 		return

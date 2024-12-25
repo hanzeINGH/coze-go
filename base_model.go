@@ -47,6 +47,10 @@ func (b *baseResponse) GetMsg() string {
 	return b.Msg
 }
 
+func (b *baseResponse) LogID() string {
+	return b.HTTPResponse.LogID()
+}
+
 type baseRespInterface interface {
 	SetHTTPResponse(httpResponse *httpResponse)
 	SetCode(code int)

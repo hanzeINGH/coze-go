@@ -43,7 +43,7 @@ func TestAudioVoices(t *testing.T) {
 		resp, err := voices.Clone(context.Background(), &CloneAudioVoicesReq{
 			VoiceName:   "test_voice",
 			File:        audioData,
-			AudioFormat: &audioFormat,
+			AudioFormat: audioFormat,
 			Language:    &language,
 			VoiceID:     &voiceID,
 			PreviewText: &previewText,

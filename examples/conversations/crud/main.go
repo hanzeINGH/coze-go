@@ -26,6 +26,7 @@ func main() {
 		return
 	}
 	fmt.Println("create conversations:", resp.Conversation)
+	fmt.Println(resp.LogID())
 
 	conversationID := resp.Conversation.ID
 
@@ -36,6 +37,7 @@ func main() {
 		return
 	}
 	fmt.Println("retrieve conversations:", getResp)
+	fmt.Println(getResp.LogID())
 
 	// you can manually create message for conversation
 	createMessageReq := &coze.CreateMessageReq{}
@@ -54,6 +56,7 @@ func main() {
 		return
 	}
 	fmt.Println(msgs)
+	fmt.Println(msgs.LogID())
 
 	// Clear the conversation
 	clearResp, err := cozeCli.Conversations.Clear(ctx, &coze.ClearConversationsReq{ConversationID: conversationID})
@@ -62,4 +65,5 @@ func main() {
 		return
 	}
 	fmt.Println(clearResp)
+	fmt.Println(clearResp.LogID())
 }

@@ -80,3 +80,10 @@ func (s *streamReader[T]) Close() error {
 func (s *streamReader[T]) HTTPResponse() HTTPResponse {
 	return s.httpResponse
 }
+
+func (s *streamReader[T]) LogID() string {
+	if s.httpResponse == nil {
+		return ""
+	}
+	return s.httpResponse.LogID()
+}

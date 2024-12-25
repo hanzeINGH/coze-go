@@ -27,7 +27,7 @@ func main() {
 	resp, err := cozeCli.Audio.Voices.Clone(ctx, &coze.CloneAudioVoicesReq{
 		File:        file,
 		VoiceName:   "your voices name",
-		AudioFormat: coze.AudioFormatM4A.Ptr(),
+		AudioFormat: coze.AudioFormatM4A,
 	})
 	if err != nil {
 		fmt.Println("Error cloning voices:", err)
@@ -35,4 +35,5 @@ func main() {
 	}
 
 	fmt.Println(resp)
+	fmt.Println(resp.LogID())
 }

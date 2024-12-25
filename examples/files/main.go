@@ -52,4 +52,5 @@ func main() {
 	}
 	retrievedInfo := retrievedResp.FileInfo
 	fmt.Println(retrievedInfo)
+	fmt.Println(retrievedResp.LogID())
 }

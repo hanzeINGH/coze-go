@@ -47,6 +47,7 @@ func main() {
 		return
 	}
 	fmt.Println(chatResp)
+	fmt.Println(chatResp.LogID())
 	chat := chatResp.Chat
 	chatID := chat.ID
 	conversationID := chat.ConversationID
@@ -58,7 +59,7 @@ func main() {
 	// And when the chats status is not completed, poll the status of the chats once every second.
 	// After the chats is completed, retrieve all messages in the chats.
 	//
-	timeout := time.After(2) // time.Second
+	timeout := time.After(1) // time.Second
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
 
@@ -73,7 +74,9 @@ func main() {
 			if err != nil {
 				fmt.Println("Error cancelling chats:", err)
 			}
+			fmt.Println("cancel")
 			fmt.Println(cancelResp)
+			fmt.Println(cancelResp.LogID())
 			break
 		case <-ticker.C:
 			resp, err := cozeCli.Chats.Retrieve(ctx, &coze.RetrieveChatsReq{
@@ -84,7 +87,9 @@ func main() {
 				fmt.Println("Error retrieving chats:", err)
 				continue
 			}
+			fmt.Println("retrieve")
 			fmt.Println(resp)
+			fmt.Println(resp.LogID())
 			chat = resp.Chat
 			if chat.Status == coze.ChatStatusCompleted {
 				break

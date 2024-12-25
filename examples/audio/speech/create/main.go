@@ -31,8 +31,10 @@ func main() {
 	}
 
 	fmt.Println(resp)
-	// if err := resp.WriteToFile(saveFilePath); err != nil {
-	// 	fmt.Println("Error writing to file:", err)
-	// 	return
-	// }
+	fmt.Println(resp.LogID())
+
+	if err := resp.WriteToFile(os.Getenv("SAVE_SPEECH_PATH")); err != nil {
+		fmt.Println("Error writing to file:", err)
+		return
+	}
 }

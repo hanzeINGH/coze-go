@@ -49,7 +49,6 @@ type GetAccessTokenReq struct {
 
 // GetPKCEAuthURLResp represents the PKCE authorization URL response
 type GetPKCEAuthURLResp struct {
-	baseResponse
 	CodeVerifier     string `json:"code_verifier"`
 	AuthorizationURL string `json:"authorization_url"`
 }
@@ -77,7 +76,7 @@ type getOAuthTokenResp struct {
 
 // OAuthToken represents the OAuth token response
 type OAuthToken struct {
-	baseModel
+	baseResponse
 	AccessToken  string `json:"access_token"`
 	ExpiresIn    int64  `json:"expires_in"`
 	RefreshToken string `json:"refresh_token,omitempty"`
@@ -513,7 +512,6 @@ func (c *DeviceOAuthClient) doGetAccessToken(ctx context.Context, req *GetAccess
 		ExpiresIn:    resp.ExpiresIn,
 		RefreshToken: resp.RefreshToken,
 	}
-	res.setHTTPResponse(resp.HTTPResponse)
 	return res, nil
 }
 

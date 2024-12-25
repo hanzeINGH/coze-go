@@ -35,6 +35,7 @@ func main() {
 	}
 	message := messageResp.Message
 	fmt.Println(message)
+	fmt.Println(messageResp.LogID())
 
 	//
 	// retrieve message
@@ -49,6 +50,7 @@ func main() {
 	}
 	retrievedMsg := retrievedMsgResp.Message
 	fmt.Println(retrievedMsg)
+	fmt.Println(retrievedMsgResp.LogID())
 
 	//
 	// update message
@@ -66,6 +68,7 @@ func main() {
 	}
 	updatedMsg := updateResp.Message
 	fmt.Println(updatedMsg)
+	fmt.Println(updateResp.LogID())
 
 	//
 	// delete message
@@ -80,4 +83,5 @@ func main() {
 	}
 	deletedMsg := deletedMsgResp.Message
 	fmt.Println(deletedMsg)
+	fmt.Println(deletedMsgResp.LogID())
 }

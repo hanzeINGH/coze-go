@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"os"
 )
 
 func (r *audioSpeech) Create(ctx context.Context, req *CreateAudioSpeechReq) (*CreateAudioSpeechResp, error) {
@@ -29,14 +30,29 @@ func newSpeech(core *core) *audioSpeech {
 
 // CreateAudioSpeechReq represents the request for creating speech
 type CreateAudioSpeechReq struct {
-	Input          string      `json:"input"`
-	VoiceID        string      `json:"voice_id"`
-	ResponseFormat AudioFormat `json:"response_format"`
-	Speed          float32     `json:"speed"`
+	Input          string       `json:"input"`
+	VoiceID        string       `json:"voice_id"`
+	ResponseFormat *AudioFormat `json:"response_format"`
+	Speed          *float32     `json:"speed"`
 }
 
 // CreateAudioSpeechResp represents the response for creating speech
 type CreateAudioSpeechResp struct {
 	baseResponse
 	Data io.ReadCloser
+}
+
+func (c *CreateAudioSpeechResp) WriteToFile(path string) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = io.Copy(file, c.Data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -32,7 +32,7 @@ func main() {
 		return
 	}
 	fmt.Println(botInfo.Bot)
-	fmt.Println("Log ID:", botInfo.LogID)
+	fmt.Println("Log ID:", botInfo.LogID())
 
 	//
 	// get published bot list
@@ -42,7 +42,7 @@ func main() {
 	botList, err := cozeCli.Bots.List(ctx, &coze.ListBotsReq{
 		SpaceID:  workspaceID,
 		PageNum:  pageNum,
-		PageSize: 10,
+		PageSize: 4,
 	})
 	if err != nil {
 		fmt.Println("Error listing bots:", err)

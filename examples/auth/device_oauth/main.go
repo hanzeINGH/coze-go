@@ -52,6 +52,7 @@ func main() {
 		return
 	}
 	fmt.Printf("%+v\n", codeResp)
+	fmt.Println(codeResp.LogID())
 
 	// The space permissions for which the Access Token is granted can be specified. As following codes:
 	// GetDeviceAuthResp wCodeResp = oauth.getDeviceCode("workspaceID");
@@ -105,4 +106,5 @@ func main() {
 		return
 	}
 	fmt.Println(resp)
+	fmt.Println(resp.LogID())
 }

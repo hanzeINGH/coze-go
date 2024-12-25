@@ -15,10 +15,8 @@ func (r *audioVoice) Clone(ctx context.Context, req *CloneAudioVoicesReq) (*Clon
 	}
 
 	fields := map[string]string{
-		"voice_name": req.VoiceName,
-	}
-	if req.AudioFormat != nil {
-		fields["audio_format"] = req.AudioFormat.String()
+		"voice_name":   req.VoiceName,
+		"audio_format": req.AudioFormat.String(),
 	}
 
 	// Add other fields
@@ -95,7 +93,7 @@ type Voice struct {
 type CloneAudioVoicesReq struct {
 	VoiceName   string
 	File        io.Reader
-	AudioFormat *AudioFormat
+	AudioFormat AudioFormat
 	Language    *LanguageCode
 	VoiceID     *string
 	PreviewText *string

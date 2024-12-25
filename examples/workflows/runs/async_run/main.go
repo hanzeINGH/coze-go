@@ -37,6 +37,7 @@ func main() {
 		return
 	}
 	fmt.Println("Start async workflow runs:", resp.ExecuteID)
+	fmt.Println(resp.LogID())
 
 	executeID := resp.ExecuteID
 	isFinished := false
@@ -51,6 +52,7 @@ func main() {
 			return
 		}
 		fmt.Println(historyResp)
+		fmt.Println(historyResp.LogID())
 
 		history := historyResp.Histories[0]
 		switch history.ExecuteStatus {
