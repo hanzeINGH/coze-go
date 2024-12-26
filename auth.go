@@ -376,11 +376,11 @@ func (c *PKCEOAuthClient) getCode(codeVerifier string, method CodeChallengeMetho
 	return genS256CodeChallenge(codeVerifier)
 }
 
-type PKCEGetAccessTokenReq struct {
+type GetPKCEAccessTokenReq struct {
 	Code, RedirectURI, CodeVerifier string
 }
 
-func (c *PKCEOAuthClient) GetAccessToken(ctx context.Context, req *PKCEGetAccessTokenReq) (*OAuthToken, error) {
+func (c *PKCEOAuthClient) GetAccessToken(ctx context.Context, req *GetPKCEAccessTokenReq) (*OAuthToken, error) {
 	return c.getAccessToken(ctx, getAccessTokenParams{
 		Request: &getAccessTokenReq{
 			ClientID:     c.clientID,
@@ -563,17 +563,17 @@ func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) 
 	return jwtClient, nil
 }
 
-// JWTGetAccessTokenReq represents options for getting JWT OAuth token
-type JWTGetAccessTokenReq struct {
+// GetJWTAccessTokenReq represents options for getting JWT OAuth token
+type GetJWTAccessTokenReq struct {
 	TTL         int     `json:"ttl,omitempty"`          // Token validity period (in seconds)
 	Scope       *Scope  `json:"scope,omitempty"`        // Permission scope
 	SessionName *string `json:"session_name,omitempty"` // Session name
 }
 
 // GetAccessToken gets the access token, using options pattern
-func (c *JWTOAuthClient) GetAccessToken(ctx context.Context, opts *JWTGetAccessTokenReq) (*OAuthToken, error) {
+func (c *JWTOAuthClient) GetAccessToken(ctx context.Context, opts *GetJWTAccessTokenReq) (*OAuthToken, error) {
 	if opts == nil {
-		opts = &JWTGetAccessTokenReq{}
+		opts = &GetJWTAccessTokenReq{}
 	}
 
 	ttl := c.ttl

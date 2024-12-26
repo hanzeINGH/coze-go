@@ -102,7 +102,7 @@ func TestPKCEOAuthClient(t *testing.T) {
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
-		token, err := client.GetAccessToken(context.Background(), &PKCEGetAccessTokenReq{Code: "test_code", RedirectURI: "https://example.com/callback", CodeVerifier: "test_verifier"})
+		token, err := client.GetAccessToken(context.Background(), &GetPKCEAccessTokenReq{Code: "test_code", RedirectURI: "https://example.com/callback", CodeVerifier: "test_verifier"})
 		require.NoError(t, err)
 		assert.Equal(t, "test_access_token", token.AccessToken)
 		assert.Equal(t, int64(3600), token.ExpiresIn)
@@ -228,7 +228,7 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
-		token, err := client.GetAccessToken(context.Background(), &JWTGetAccessTokenReq{
+		token, err := client.GetAccessToken(context.Background(), &GetJWTAccessTokenReq{
 			TTL:         900,
 			Scope:       BuildBotChat([]string{"bot id"}, []string{"permission id"}),
 			SessionName: ptr("session"),

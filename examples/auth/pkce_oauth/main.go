@@ -78,7 +78,7 @@ func main() {
 	// After obtaining the code after redirection, the interface to exchange the code for a
 	// token can be invoked to generate the coze access_token of the authorized user.
 	// The developer should use code verifier returned by genOAuthURL() method
-	resp, err := oauth.GetAccessToken(ctx, &coze.PKCEGetAccessTokenReq{Code: code, RedirectURI: redirectURI, CodeVerifier: codeVerifier})
+	resp, err := oauth.GetAccessToken(ctx, &coze.GetPKCEAccessTokenReq{Code: code, RedirectURI: redirectURI, CodeVerifier: codeVerifier})
 	if err != nil {
 		fmt.Printf("Failed to get access token: %v\n", err)
 		return
