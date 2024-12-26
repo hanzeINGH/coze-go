@@ -44,7 +44,7 @@ func main() {
 
 	// In the SDK, we have wrapped up the code_challenge process of PKCE.
 	// Developers only need to select the code_challenge_method.
-	oauthURL, err := oauth.GenOAuthURL(&coze.GetPKCEAuthURLReq{
+	oauthURL, err := oauth.GetOAuthURL(&coze.GetPKCEAuthURLReq{
 		RedirectURI: redirectURI,
 		State:       "state",
 		Method:      coze.CodeChallengeMethodS256.Ptr(),
