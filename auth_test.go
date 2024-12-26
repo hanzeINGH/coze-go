@@ -102,7 +102,7 @@ func TestPKCEOAuthClient(t *testing.T) {
 			WithAuthHttpClient(&http.Client{Transport: mockTransport}))
 		require.NoError(t, err)
 
-		token, err := client.GetAccessToken(context.Background(), "test_code", "https://example.com/callback", "test_verifier")
+		token, err := client.GetAccessToken(context.Background(), &PKCEGetAccessTokenReq{Code: "test_code", RedirectURI: "https://example.com/callback", CodeVerifier: "test_verifier"})
 		require.NoError(t, err)
 		assert.Equal(t, "test_access_token", token.AccessToken)
 		assert.Equal(t, int64(3600), token.ExpiresIn)

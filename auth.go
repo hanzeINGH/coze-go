@@ -376,16 +376,19 @@ func (c *PKCEOAuthClient) getCode(codeVerifier string, method CodeChallengeMetho
 	return genS256CodeChallenge(codeVerifier)
 }
 
-func (c *PKCEOAuthClient) GetAccessToken(ctx context.Context, code, redirectURI, codeVerifier string) (*OAuthToken, error) {
-	req := &GetAccessTokenReq{
-		ClientID:     c.clientID,
-		GrantType:    string(GrantTypeAuthorizationCode),
-		Code:         code,
-		RedirectURI:  redirectURI,
-		CodeVerifier: codeVerifier,
-	}
+type PKCEGetAccessTokenReq struct {
+	Code, RedirectURI, CodeVerifier string
+}
+
+func (c *PKCEOAuthClient) GetAccessToken(ctx context.Context, req *PKCEGetAccessTokenReq) (*OAuthToken, error) {
 	return c.getAccessToken(ctx, getAccessTokenParams{
-		Request: req,
+		Request: &GetAccessTokenReq{
+			ClientID:     c.clientID,
+			GrantType:    string(GrantTypeAuthorizationCode),
+			Code:         req.Code,
+			RedirectURI:  req.RedirectURI,
+			CodeVerifier: req.CodeVerifier,
+		},
 	})
 }
 
