@@ -50,8 +50,6 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage.out
-          flags: unittests
-          name: codecov-umbrella
           fail_ci_if_error: true 
   test_success:
     # this aggregates success state of all jobs listed in `needs`
