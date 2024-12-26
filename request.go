@@ -188,7 +188,7 @@ func checkHttpResp(ctx context.Context, resp *http.Response) error {
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return fmt.Errorf("read response body error: %w, log_id: %s", err, logID)
+			return fmt.Errorf("coze read response body failed: %w, log_id: %s", err, logID)
 		}
 		errorInfo := authErrorFormat{}
 		err = json.Unmarshal(bodyBytes, &errorInfo)
