@@ -51,7 +51,7 @@ func TestPKCEOAuthClient(t *testing.T) {
 		client, err := NewPKCEOAuthClient("test_client_id", WithAuthBaseURL(ComBaseURL))
 		require.NoError(t, err)
 
-		resp, err := client.GetOAuthURL(&GetPKCEAuthURLReq{
+		resp, err := client.GetOAuthURL(&GetPKCEOAuthURLReq{
 			RedirectURI: "https://example.com/callback",
 			State:       "test_state",
 		})
@@ -69,7 +69,7 @@ func TestPKCEOAuthClient(t *testing.T) {
 		client, err := NewPKCEOAuthClient("test_client_id", WithAuthBaseURL(ComBaseURL))
 		require.NoError(t, err)
 
-		resp, err := client.GetOAuthURL(&GetPKCEAuthURLReq{
+		resp, err := client.GetOAuthURL(&GetPKCEOAuthURLReq{
 			RedirectURI: "https://example.com/callback",
 			State:       "test_state",
 			Method:      CodeChallengeMethodS256.Ptr(),

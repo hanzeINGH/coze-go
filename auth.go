@@ -47,8 +47,8 @@ type getAccessTokenReq struct {
 	LogID           string `json:"log_id,omitempty"`
 }
 
-// GetPKCEAuthURLResp represents the PKCE authorization URL response
-type GetPKCEAuthURLResp struct {
+// GetPKCEOAuthURLResp represents the PKCE authorization URL response
+type GetPKCEOAuthURLResp struct {
 	CodeVerifier     string `json:"code_verifier"`
 	AuthorizationURL string `json:"authorization_url"`
 }
@@ -324,7 +324,7 @@ func NewPKCEOAuthClient(clientID string, opts ...OAuthClientOption) (*PKCEOAuthC
 	}, err
 }
 
-type GetPKCEAuthURLReq struct {
+type GetPKCEOAuthURLReq struct {
 	RedirectURI string
 	State       string
 	Method      *CodeChallengeMethod
@@ -332,7 +332,7 @@ type GetPKCEAuthURLReq struct {
 }
 
 // GetOAuthURL generates OAuth URL
-func (c *PKCEOAuthClient) GetOAuthURL(req *GetPKCEAuthURLReq) (*GetPKCEAuthURLResp, error) {
+func (c *PKCEOAuthClient) GetOAuthURL(req *GetPKCEOAuthURLReq) (*GetPKCEOAuthURLResp, error) {
 	if req == nil {
 		return nil, errors.New("request is required")
 	}
@@ -362,7 +362,7 @@ func (c *PKCEOAuthClient) GetOAuthURL(req *GetPKCEAuthURLReq) (*GetPKCEAuthURLRe
 			withCodeChallengeMethod(string(method)))
 	}
 
-	return &GetPKCEAuthURLResp{
+	return &GetPKCEOAuthURLResp{
 		CodeVerifier:     codeVerifier,
 		AuthorizationURL: authorizationURL,
 	}, nil
