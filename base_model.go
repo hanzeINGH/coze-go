@@ -59,6 +59,10 @@ type baseRespInterface interface {
 	GetCode() int
 }
 
+type Responser interface {
+	Response() HTTPResponse
+}
+
 type baseModel struct {
 	httpResponse *httpResponse
 }
