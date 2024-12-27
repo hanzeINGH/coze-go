@@ -82,7 +82,8 @@ func main() {
 	resp, err := oauth.GetAccessToken(ctx, &coze.GetPKCEAccessTokenReq{
 		Code:         code,
 		RedirectURI:  redirectURI,
-		CodeVerifier: codeVerifier})
+		CodeVerifier: codeVerifier,
+	})
 	if err != nil {
 		fmt.Printf("Failed to get access token: %v\n", err)
 		return
