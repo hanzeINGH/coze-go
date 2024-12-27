@@ -40,7 +40,6 @@ jobs:
 
       - name: Run gofumpt
         run: |
-          gofumpt -l -w . 
           if ! test -z "$(gofumpt -d -e . | tee /dev/stderr)"; then
             echo "❗️ gofumpt check failed"
             exit 1
