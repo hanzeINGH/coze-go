@@ -438,9 +438,13 @@ func NewDeviceOAuthClient(clientID string, opts ...OAuthClientOption) (*DeviceOA
 	}, err
 }
 
+type GetDeviceOAuthCodeReq struct {
+	WorkspaceID *string
+}
+
 // GetDeviceCode gets the device code
-func (c *DeviceOAuthClient) GetDeviceCode(ctx context.Context, workspaceID *string) (*GetDeviceAuthResp, error) {
-	return c.doGetDeviceCode(ctx, workspaceID)
+func (c *DeviceOAuthClient) GetDeviceCode(ctx context.Context, req *GetDeviceOAuthCodeReq) (*GetDeviceAuthResp, error) {
+	return c.doGetDeviceCode(ctx, req.WorkspaceID)
 }
 
 func (c *DeviceOAuthClient) doGetDeviceCode(ctx context.Context, workspaceID *string) (*GetDeviceAuthResp, error) {
