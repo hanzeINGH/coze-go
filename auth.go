@@ -444,7 +444,11 @@ type GetDeviceOAuthCodeReq struct {
 
 // GetDeviceCode gets the device code
 func (c *DeviceOAuthClient) GetDeviceCode(ctx context.Context, req *GetDeviceOAuthCodeReq) (*GetDeviceAuthResp, error) {
-	return c.doGetDeviceCode(ctx, req.WorkspaceID)
+	var workspaceID *string
+	if req != nil {
+		workspaceID = req.WorkspaceID
+	}
+	return c.doGetDeviceCode(ctx, workspaceID)
 }
 
 func (c *DeviceOAuthClient) doGetDeviceCode(ctx context.Context, workspaceID *string) (*GetDeviceAuthResp, error) {
