@@ -66,8 +66,8 @@ const (
 )
 
 // String implements the Stringer interface
-func (c *AuthErrorCode) String() string {
-	return string(*c)
+func (c AuthErrorCode) String() string {
+	return string(c)
 }
 
 type CozeAuthError struct {

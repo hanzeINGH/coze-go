@@ -76,7 +76,7 @@ type getOAuthTokenResp struct {
 
 // OAuthToken represents the OAuth token response
 type OAuthToken struct {
-	baseResponse
+	baseModel
 	AccessToken  string `json:"access_token"`
 	ExpiresIn    int64  `json:"expires_in"`
 	RefreshToken string `json:"refresh_token,omitempty"`
@@ -524,6 +524,7 @@ func (c *DeviceOAuthClient) doGetAccessToken(ctx context.Context, req *getAccess
 		ExpiresIn:    resp.ExpiresIn,
 		RefreshToken: resp.RefreshToken,
 	}
+	res.setHTTPResponse(resp.HTTPResponse)
 	return res, nil
 }
 
