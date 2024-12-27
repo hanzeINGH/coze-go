@@ -332,7 +332,7 @@ type GetPKCEOAuthURLReq struct {
 }
 
 // GetOAuthURL generates OAuth URL
-func (c *PKCEOAuthClient) GetOAuthURL(req *GetPKCEOAuthURLReq) (*GetPKCEOAuthURLResp, error) {
+func (c *PKCEOAuthClient) GetOAuthURL(ctx context.Context, req *GetPKCEOAuthURLReq) (*GetPKCEOAuthURLResp, error) {
 	if req == nil {
 		return nil, errors.New("request is required")
 	}
@@ -675,7 +675,7 @@ type GetWebOAuthURLReq struct {
 }
 
 // GetOAuthURL Get OAuth URL
-func (c *WebOAuthClient) GetOAuthURL(req *GetWebOAuthURLReq) string {
+func (c *WebOAuthClient) GetOAuthURL(ctx context.Context, req *GetWebOAuthURLReq) string {
 	if req.WorkspaceID != nil {
 		return c.getWorkspaceOAuthURL(req.RedirectURI, req.State, *req.WorkspaceID)
 	}

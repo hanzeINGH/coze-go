@@ -41,14 +41,18 @@ func main() {
 	}
 
 	// Generate the authorization link and direct the user to open it.
-	oauthURL := oauth.GetOAuthURL(&coze.GetWebOAuthURLReq{
+	oauthURL := oauth.GetOAuthURL(ctx, &coze.GetWebOAuthURLReq{
 		RedirectURI: redirectURI,
 		State:       "state",
 	})
 	fmt.Println(oauthURL)
 
 	// The space permissions for which the Access Token is granted can be specified. As following codes:
-	// oauthURL = oauth.GetOAuthURL(redirectURI, "state", "workspaceID")
+	// oauthURL = oauth.GetOAuthURL(&coze.GetWebOAuthURLReq{
+	// 	RedirectURI: redirectURI,
+	// 	State:       "state",
+	// 	WorkspaceID: &workspaceID,
+	// })
 	// fmt.Println(oauthURL)
 
 	// After the user clicks the authorization consent button, the coze web page will redirect

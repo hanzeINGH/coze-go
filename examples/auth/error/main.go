@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// Generate the authorization link and direct the user to open it.
-	oauthURL := oauth.GetOAuthURL(&coze.GetWebOAuthURLReq{
+	oauthURL := oauth.GetOAuthURL(ctx, &coze.GetWebOAuthURLReq{
 		RedirectURI: redirectURI,
 		State:       "state",
 	})
