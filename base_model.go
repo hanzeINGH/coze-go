@@ -2,6 +2,10 @@ package coze
 
 import "net/http"
 
+type Responser interface {
+	Response() HTTPResponse
+}
+
 type HTTPResponse interface {
 	LogID() string
 }
@@ -57,10 +61,6 @@ type baseRespInterface interface {
 	SetMsg(msg string)
 	GetMsg() string
 	GetCode() int
-}
-
-type Responser interface {
-	Response() HTTPResponse
 }
 
 type baseModel struct {
