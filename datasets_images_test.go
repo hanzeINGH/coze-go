@@ -127,5 +127,4 @@ func TestDatasetsImages(t *testing.T) {
 		assert.Equal(t, 2, pager.Total())
 		assert.False(t, pager.HasMore())
 	})
-
 }

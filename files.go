@@ -53,7 +53,7 @@ type FileInfo struct {
 	FileName string `json:"file_name"`
 }
 
-type FileInterface interface {
+type FileTypes interface {
 	io.Reader
 	Name() string
 }
@@ -68,10 +68,10 @@ func (r *implFileInterface) Name() string {
 }
 
 type UploadFilesReq struct {
-	File FileInterface
+	File FileTypes
 }
 
-func NewUploadFile(reader io.Reader, fileName string) FileInterface {
+func NewUploadFile(reader io.Reader, fileName string) FileTypes {
 	return &implFileInterface{
 		Reader:   reader,
 		fileName: fileName,
