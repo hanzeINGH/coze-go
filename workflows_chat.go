@@ -13,7 +13,7 @@ type workflowsChat struct {
 func (r *workflowsChat) Stream(ctx context.Context, req *WorkflowsChatStreamReq) (Stream[ChatEvent], error) {
 	method := http.MethodPost
 	uri := "/v1/workflows/chat"
-	resp, err := r.client.RawRequest(ctx, method, uri, req)
+	resp, err := r.client.StreamRequest(ctx, method, uri, req)
 	if err != nil {
 		return nil, err
 	}

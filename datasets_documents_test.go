@@ -225,22 +225,22 @@ func TestDatasetsDocuments(t *testing.T) {
 		// Test BuildWebPage
 		webPage := DocumentBaseBuildWebPage("test page", "https://example.com", nil)
 		assert.Equal(t, "test page", webPage.Name)
-		assert.Equal(t, "https://example.com", webPage.SourceInfo.WebUrl)
-		assert.Equal(t, 1, webPage.SourceInfo.DocumentSource)
+		assert.Equal(t, "https://example.com", *webPage.SourceInfo.WebUrl)
+		assert.Equal(t, 1, *webPage.SourceInfo.DocumentSource)
 		assert.Equal(t, DocumentUpdateTypeNoAutoUpdate, webPage.UpdateRule.UpdateType)
 
 		// Test BuildWebPageWithInterval
 		webPageWithInterval := DocumentBaseBuildWebPage("test page", "https://example.com", ptr(24))
 		assert.Equal(t, "test page", webPageWithInterval.Name)
-		assert.Equal(t, "https://example.com", webPageWithInterval.SourceInfo.WebUrl)
-		assert.Equal(t, 1, webPageWithInterval.SourceInfo.DocumentSource)
+		assert.Equal(t, "https://example.com", *webPageWithInterval.SourceInfo.WebUrl)
+		assert.Equal(t, 1, *webPageWithInterval.SourceInfo.DocumentSource)
 		assert.Equal(t, DocumentUpdateTypeAutoUpdate, webPageWithInterval.UpdateRule.UpdateType)
 		assert.Equal(t, 24, webPageWithInterval.UpdateRule.UpdateInterval)
 
 		// Test BuildLocalFile
 		localFile := DocumentBaseBuildLocalFile("test.txt", "test content", "txt")
 		assert.Equal(t, "test.txt", localFile.Name)
-		assert.Equal(t, "txt", localFile.SourceInfo.FileType)
+		assert.Equal(t, "txt", *localFile.SourceInfo.FileType)
 		assert.NotEmpty(t, localFile.SourceInfo.FileBase64)
 
 		// Test BuildAutoUpdateRule

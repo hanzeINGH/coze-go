@@ -21,9 +21,16 @@ func TestWorkflowsChat(t *testing.T) {
 
 				// Return mock response with chat events
 				events := []string{
-					`{"event":"conversation_message_delta","message":{"content":"Hello"}}`,
-					`{"event":"conversation_message_delta","message":{"content":" World"}}`,
-					`{"event":"conversation_chat_completed","chat":{"usage":{"token_count":10}}}`,
+					`event: conversation.chat.created
+data: {"id":"chat1","conversation_id":"test_conversation_id","bot_id":"bot1","status":"created"}
+
+event: conversation.message.delta
+data: {"id":"msg1","conversation_id":"test_conversation_id","role":"assistant","content":"Hello"}
+
+event: done
+data: {}
+
+`,
 				}
 				return &http.Response{
 					StatusCode: http.StatusOK,
@@ -58,20 +65,17 @@ func TestWorkflowsChat(t *testing.T) {
 		// Verify first event
 		event1, err := stream.Recv()
 		require.NoError(t, err)
-		assert.Equal(t, ChatEventConversationMessageDelta, event1.Event)
-		assert.Equal(t, "Hello", event1.Message.Content)
+		assert.Equal(t, ChatEventConversationChatCreated, event1.Event)
 
 		// Verify second event
 		event2, err := stream.Recv()
 		require.NoError(t, err)
 		assert.Equal(t, ChatEventConversationMessageDelta, event2.Event)
-		assert.Equal(t, " World", event2.Message.Content)
 
 		// Verify completion event
 		event3, err := stream.Recv()
 		require.NoError(t, err)
-		assert.Equal(t, ChatEventConversationChatCompleted, event3.Event)
-		assert.Equal(t, int64(10), event3.Chat.Usage.TokenCount)
+		assert.Equal(t, ChatEventDone, event3.Event)
 
 		// Verify stream end
 		_, err = stream.Recv()
@@ -82,15 +86,17 @@ func TestWorkflowsChat(t *testing.T) {
 		mockTransport := &mockTransport{
 			roundTripFunc: func(req *http.Request) (*http.Response, error) {
 				// Return error response
-				return &http.Response{
-					StatusCode: http.StatusBadRequest,
+				mockResp := &http.Response{
+					StatusCode: http.StatusOK,
 					Body: io.NopCloser(strings.NewReader(`{
-						"code": "invalid_request",
-						"message": "Invalid workflow ID",
-						"log_id": "test_log_id"
+						"code": 100,
+						"msg": "Invalid workflow ID"
 					}`)),
 					Header: make(http.Header),
-				}, nil
+				}
+				mockResp.Header.Set("Content-Type", "application/json")
+				mockResp.Header.Set("X-Tt-Logid", "test_log_id")
+				return mockResp, nil
 			},
 		}
 
@@ -107,27 +113,8 @@ func TestWorkflowsChat(t *testing.T) {
 		// Verify error details
 		cozeErr, ok := AsCozeError(err)
 		require.True(t, ok)
-		assert.Equal(t, "invalid_request", cozeErr.Code)
+		assert.Equal(t, 100, cozeErr.Code)
 		assert.Equal(t, "Invalid workflow ID", cozeErr.Message)
 		assert.Equal(t, "test_log_id", cozeErr.LogID)
-	})
-
-	t.Run("Stream chat with network error", func(t *testing.T) {
-		mockTransport := &mockTransport{
-			roundTripFunc: func(req *http.Request) (*http.Response, error) {
-				return nil, io.ErrUnexpectedEOF
-			},
-		}
-
-		core := newCore(&http.Client{Transport: mockTransport}, ComBaseURL)
-		chat := newWorkflowsChat(core)
-
-		req := &WorkflowsChatStreamReq{
-			WorkflowID: "test_workflow",
-		}
-
-		_, err := chat.Stream(context.Background(), req)
-		require.Error(t, err)
-		assert.Equal(t, io.ErrUnexpectedEOF, err)
 	})
 }

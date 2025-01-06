@@ -9,6 +9,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -150,6 +151,18 @@ func (c *core) RawRequest(ctx context.Context, method, path string, body any, op
 		return nil, err
 	}
 	return resp, err
+}
+
+func (c *core) StreamRequest(ctx context.Context, method, path string, body any, opts ...RequestOption) (*http.Response, error) {
+	resp, err := c.RawRequest(ctx, method, path, body, opts...)
+	if err != nil {
+		return nil, err
+	}
+	contentType := resp.Header.Get("Content-Type")
+	if contentType != "" && strings.Contains(contentType, "application/json") {
+		return nil, packInstance(ctx, &baseResponse{}, resp)
+	}
+	return resp, nil
 }
 
 func packInstance(ctx context.Context, instance any, resp *http.Response) error {
