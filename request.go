@@ -209,7 +209,7 @@ func checkHttpResp(ctx context.Context, resp *http.Response) error {
 			logger.Errorf(ctx, fmt.Sprintf("unmarshal response body: %s", string(bodyBytes)))
 			return errors.New(string(bodyBytes) + " log_id: " + logID)
 		}
-		return NewCozeAuthExceptionWithoutParent(&errorInfo, resp.StatusCode, logID)
+		return NewAuthError(&errorInfo, resp.StatusCode, logID)
 	}
 	return nil
 }

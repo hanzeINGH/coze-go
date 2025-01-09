@@ -51,6 +51,8 @@ func main() {
 		fmt.Printf("Error opening file: %v\n", err)
 		return
 	}
+	defer file.Close()
+
 	fileResp, err := cozeCli.Files.Upload(ctx, &coze.UploadFilesReq{File: file})
 	if err != nil {
 		fmt.Printf("Error uploading file: %v\n", err)

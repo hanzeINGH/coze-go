@@ -79,7 +79,7 @@ type AuthError struct {
 	parent       error
 }
 
-func NewCozeAuthExceptionWithoutParent(error *authErrorFormat, statusCode int, logID string) *AuthError {
+func NewAuthError(error *authErrorFormat, statusCode int, logID string) *AuthError {
 	return &AuthError{
 		HttpCode:     statusCode,
 		ErrorMessage: error.ErrorMessage,

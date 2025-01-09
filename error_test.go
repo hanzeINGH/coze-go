@@ -115,7 +115,7 @@ func TestNewCozeAuthExceptionWithoutParent(t *testing.T) {
 		ErrorCode:    "invalid_token",
 		Error:        "token_error",
 	}
-	err := NewCozeAuthExceptionWithoutParent(errorFormat, 401, "test-log-id")
+	err := NewAuthError(errorFormat, 401, "test-log-id")
 
 	assert.NotNil(t, err)
 	assert.Equal(t, 401, err.HttpCode)
