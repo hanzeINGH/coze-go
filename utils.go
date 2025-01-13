@@ -50,8 +50,12 @@ func mustToJson(obj any) string {
 	return string(jsonArray)
 }
 
+// 定义自定义类型作为 context key
+type contextKey string
+
 const (
-	authContextKey   = "auth_context"
+	// 将 string 类型的 key 改为自定义类型
+	authContextKey   = contextKey("auth_context")
 	authContextValue = "1"
 )
 
