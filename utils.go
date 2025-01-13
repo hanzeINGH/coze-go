@@ -1,6 +1,7 @@
 package coze
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/json"
 )
@@ -47,4 +48,25 @@ func mustToJson(obj any) string {
 		return "{}"
 	}
 	return string(jsonArray)
+}
+
+const (
+	authContextKey   = "auth_context"
+	authContextValue = "1"
+)
+
+func genAuthContext(ctx context.Context) context.Context {
+	return context.WithValue(ctx, authContextKey, authContextValue)
+}
+
+func isAuthContext(ctx context.Context) bool {
+	v := ctx.Value(authContextKey)
+	if v == nil {
+		return false
+	}
+	strV, ok := v.(string)
+	if !ok {
+		return false
+	}
+	return strV == authContextValue
 }
