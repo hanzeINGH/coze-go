@@ -620,7 +620,7 @@ func (c *JWTOAuthClient) generateJWT(ttl int, sessionName *string) (string, erro
 		"iss": c.clientID,
 		"aud": c.hostName,
 		"iat": now.Unix(),
-		"exp": now.Add(time.Duration(14400) * time.Second).Unix(),
+		"exp": now.Add(time.Duration(ttl) * time.Second).Unix(),
 		"jti": jti,
 	}
 
