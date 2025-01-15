@@ -599,9 +599,10 @@ func (c *JWTOAuthClient) GetAccessToken(ctx context.Context, opts *GetJWTAccessT
 		Type:   GrantTypeJWTCode,
 		Secret: jwtCode,
 		Request: &getAccessTokenReq{
-			ClientID:  c.clientID,
-			GrantType: string(GrantTypeJWTCode),
-			Scope:     opts.Scope,
+			ClientID:        c.clientID,
+			GrantType:       string(GrantTypeJWTCode),
+			DurationSeconds: ttl,
+			Scope:           opts.Scope,
 		},
 	}
 	return c.getAccessToken(ctx, req)
@@ -619,7 +620,7 @@ func (c *JWTOAuthClient) generateJWT(ttl int, sessionName *string) (string, erro
 		"iss": c.clientID,
 		"aud": c.hostName,
 		"iat": now.Unix(),
-		"exp": now.Add(time.Duration(ttl) * time.Second).Unix(),
+		"exp": now.Add(time.Duration(14400) * time.Second).Unix(),
 		"jti": jti,
 	}
 
