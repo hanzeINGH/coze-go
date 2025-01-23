@@ -159,6 +159,7 @@ const (
 
 type oauthOption struct {
 	baseURL    string
+	wwwURL     string
 	httpClient HTTPClient
 }
 
@@ -168,6 +169,13 @@ type OAuthClientOption func(*oauthOption)
 func WithAuthBaseURL(baseURL string) OAuthClientOption {
 	return func(opt *oauthOption) {
 		opt.baseURL = baseURL
+	}
+}
+
+// WithAuthWWWURL adds base URL
+func WithAuthWWWURL(wwwURL string) OAuthClientOption {
+	return func(opt *oauthOption) {
+		opt.wwwURL = wwwURL
 	}
 }
 
@@ -204,11 +212,15 @@ func newOAuthClient(clientID, clientSecret string, opts ...OAuthClientOption) (*
 		httpClient = http.DefaultClient
 	}
 
+	if initSettings.wwwURL == "" {
+		initSettings.wwwURL = strings.Replace(initSettings.baseURL, "api.", "www.", 1)
+	}
+
 	return &OAuthClient{
 		clientID:     clientID,
 		clientSecret: clientSecret,
 		baseURL:      initSettings.baseURL,
-		wwwURL:       strings.Replace(initSettings.baseURL, "api.", "www.", 1),
+		wwwURL:       initSettings.wwwURL,
 		hostName:     hostName,
 		core:         newCore(httpClient, initSettings.baseURL),
 	}, nil
