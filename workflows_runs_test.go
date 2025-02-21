@@ -115,6 +115,7 @@ data:{"debug_url":"https://www.coze.cn/work_flow?***"}
 		require.NoError(t, err)
 		assert.Equal(t, 2, event.ID)
 		assert.Equal(t, WorkflowEventTypeDone, event.Event)
+		assert.Equal(t, "https://www.coze.cn/work_flow?***", event.DebugURL.URL)
 		assert.True(t, event.IsDone())
 	})
 
@@ -166,6 +167,7 @@ data:{"debug_url":"https://www.coze.cn/work_flow?***"}
 		require.NoError(t, err)
 		assert.Equal(t, 1, event.ID)
 		assert.Equal(t, WorkflowEventTypeDone, event.Event)
+		assert.Equal(t, "https://www.coze.cn/work_flow?***", event.DebugURL.URL)
 		assert.True(t, event.IsDone())
 	})
 
