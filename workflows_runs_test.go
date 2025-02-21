@@ -72,7 +72,7 @@ data:{"content":"World","node_title":"End","node_seq_id":"1","node_is_finish":tr
 
 id:2
 event:Done
-data:
+data:{"debug_url":"https://www.coze.cn/work_flow?***"}
 `)
 			},
 		}
@@ -133,7 +133,7 @@ data:{"content":"Resumed","node_title":"Resume","node_seq_id":"0","node_is_finis
 
 id:1
 event:Done
-data:
+data:{"debug_url":"https://www.coze.cn/work_flow?***"}
 `)
 			},
 		}
