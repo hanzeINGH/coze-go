@@ -40,12 +40,11 @@ func getRefreshBefore(ttl int) int64 {
 func NewJWTAuth(client *JWTOAuthClient, opt *GetJWTAccessTokenReq) Auth {
 	ttl := 900
 	// default refresh token before expire in 30 seconds
-	refreshBefore := int64(30)
 	if opt == nil {
 		return &jwtOAuthImpl{
 			TTL:           ttl,
 			client:        client,
-			refreshBefore: refreshBefore,
+			refreshBefore: getRefreshBefore(ttl),
 		}
 	}
 	if opt.TTL > 0 {
