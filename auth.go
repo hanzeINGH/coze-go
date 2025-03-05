@@ -566,6 +566,7 @@ type NewJWTOAuthClientParam struct {
 	PublicKey     string
 	PrivateKeyPEM string
 	TTL           *int
+	RefreshBefore *int64
 }
 
 // NewJWTOAuthClient creates a new JWT OAuth core
@@ -582,6 +583,10 @@ func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) 
 	if ttl == nil {
 		ttl = ptr(900) // Default 15 minutes
 	}
+	refreshBefore := param.RefreshBefore
+	if refreshBefore == nil {
+		refreshBefore = ptr(int64(30))
+	}
 	jwtClient := &JWTOAuthClient{
 		OAuthClient: client,
 		ttl:         *ttl,
@@ -594,10 +599,11 @@ func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) 
 
 // GetJWTAccessTokenReq represents options for getting JWT OAuth token
 type GetJWTAccessTokenReq struct {
-	TTL         int     `json:"ttl,omitempty"`          // Token validity period (in seconds)
-	Scope       *Scope  `json:"scope,omitempty"`        // Permission scope
-	SessionName *string `json:"session_name,omitempty"` // Session name
-	AccountID   *int64  `json:"account_id,omitempty"`   // Account ID
+	TTL           int     `json:"ttl,omitempty"`            // Token validity period (in seconds)
+	Scope         *Scope  `json:"scope,omitempty"`          // Permission scope
+	SessionName   *string `json:"session_name,omitempty"`   // Session name
+	AccountID     *int64  `json:"account_id,omitempty"`     // Account ID
+	RefreshBefore int64   `json:"refresh_before,omitempty"` // Refresh before expire(in seconds)
 }
 
 // GetAccessToken gets the access token, using options pattern

@@ -28,21 +28,28 @@ func NewTokenAuth(accessToken string) Auth {
 
 func NewJWTAuth(client *JWTOAuthClient, opt *GetJWTAccessTokenReq) Auth {
 	ttl := 900
+	// default refresh token before expire in 30 seconds
+	refreshBefore := int64(30)
 	if opt == nil {
 		return &jwtOAuthImpl{
-			TTL:    ttl,
-			client: client,
+			TTL:           ttl,
+			client:        client,
+			refreshBefore: refreshBefore,
 		}
 	}
 	if opt.TTL > 0 {
 		ttl = opt.TTL
 	}
+	if opt.RefreshBefore > 0 {
+		refreshBefore = opt.RefreshBefore
+	}
 	return &jwtOAuthImpl{
-		TTL:         ttl,
-		Scope:       opt.Scope,
-		SessionName: opt.SessionName,
-		client:      client,
-		accountID:   opt.AccountID,
+		TTL:           ttl,
+		Scope:         opt.Scope,
+		SessionName:   opt.SessionName,
+		refreshBefore: refreshBefore,
+		client:        client,
+		accountID:     opt.AccountID,
 	}
 }
 
@@ -52,17 +59,19 @@ func (r *tokenAuthImpl) Token(ctx context.Context) (string, error) {
 }
 
 type jwtOAuthImpl struct {
-	TTL         int
-	SessionName *string
-	Scope       *Scope
-	client      *JWTOAuthClient
-	accessToken *string
-	expireIn    int64
-	accountID   *int64
+	TTL           int
+	SessionName   *string
+	Scope         *Scope
+	client        *JWTOAuthClient
+	accessToken   *string
+	expireIn      int64
+	refreshBefore int64 // refresh moment before expireIn, unit second
+	refreshAt     int64
+	accountID     *int64
 }
 
 func (r *jwtOAuthImpl) needRefresh() bool {
-	return r.accessToken == nil || time.Now().Unix() > r.expireIn
+	return r.accessToken == nil || time.Now().Unix() > r.refreshAt
 }
 
 func (r *jwtOAuthImpl) Token(ctx context.Context) (string, error) {
@@ -80,5 +89,6 @@ func (r *jwtOAuthImpl) Token(ctx context.Context) (string, error) {
 	}
 	r.accessToken = ptr(resp.AccessToken)
 	r.expireIn = resp.ExpiresIn
+	r.refreshAt = resp.ExpiresIn - r.refreshBefore
 	return resp.AccessToken, nil
 }

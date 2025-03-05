@@ -78,9 +78,10 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 		sessionName := "test_session"
 		scope := BuildBotChat([]string{"bot_id"}, []string{"permission"})
 		auth := NewJWTAuth(client, &GetJWTAccessTokenReq{
-			TTL:         1800,
-			SessionName: &sessionName,
-			Scope:       scope,
+			TTL:           1800,
+			SessionName:   &sessionName,
+			Scope:         scope,
+			RefreshBefore: 60,
 		})
 
 		jwtAuth, ok := auth.(*jwtOAuthImpl)

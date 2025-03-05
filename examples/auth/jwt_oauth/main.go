@@ -63,7 +63,11 @@ func main() {
 	// The jwt oauth process does not support refreshing tokens. When the token expires,
 	// just directly call get_access_token to generate a new token.
 	cozeCli := coze.NewCozeAPI(
-		coze.NewJWTAuth(oauth, nil),
+		coze.NewJWTAuth(oauth, &coze.GetJWTAccessTokenReq{
+			// the sdk will automatically refresh the token before it expires,
+			// the default is 30s, you can also customize the refresh time
+			RefreshBefore: 30,
+		}),
 		coze.WithBaseURL(cozeAPIBase),
 	)
 	_ = cozeCli
