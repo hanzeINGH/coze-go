@@ -594,11 +594,10 @@ func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) 
 
 // GetJWTAccessTokenReq represents options for getting JWT OAuth token
 type GetJWTAccessTokenReq struct {
-	TTL           int     `json:"ttl,omitempty"`            // Token validity period (in seconds)
-	Scope         *Scope  `json:"scope,omitempty"`          // Permission scope
-	SessionName   *string `json:"session_name,omitempty"`   // Session name
-	AccountID     *int64  `json:"account_id,omitempty"`     // Account ID
-	RefreshBefore int64   `json:"refresh_before,omitempty"` // Refresh before expire(in seconds)
+	TTL         int     `json:"ttl,omitempty"`          // Token validity period (in seconds)
+	Scope       *Scope  `json:"scope,omitempty"`        // Permission scope
+	SessionName *string `json:"session_name,omitempty"` // Session name
+	AccountID   *int64  `json:"account_id,omitempty"`   // Account ID
 }
 
 // GetAccessToken gets the access token, using options pattern

@@ -26,6 +26,17 @@ func NewTokenAuth(accessToken string) Auth {
 	}
 }
 
+func getRefreshBefore(ttl int) int64 {
+	if ttl >= 600 {
+		return 30
+	} else if ttl >= 60 {
+		return 10
+	} else if ttl >= 30 {
+		return 5
+	}
+	return 0
+}
+
 func NewJWTAuth(client *JWTOAuthClient, opt *GetJWTAccessTokenReq) Auth {
 	ttl := 900
 	// default refresh token before expire in 30 seconds
@@ -40,14 +51,12 @@ func NewJWTAuth(client *JWTOAuthClient, opt *GetJWTAccessTokenReq) Auth {
 	if opt.TTL > 0 {
 		ttl = opt.TTL
 	}
-	if opt.RefreshBefore > 0 {
-		refreshBefore = opt.RefreshBefore
-	}
+
 	return &jwtOAuthImpl{
 		TTL:           ttl,
 		Scope:         opt.Scope,
 		SessionName:   opt.SessionName,
-		refreshBefore: refreshBefore,
+		refreshBefore: getRefreshBefore(ttl),
 		client:        client,
 		accountID:     opt.AccountID,
 	}

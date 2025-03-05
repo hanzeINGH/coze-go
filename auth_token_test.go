@@ -78,10 +78,9 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 		sessionName := "test_session"
 		scope := BuildBotChat([]string{"bot_id"}, []string{"permission"})
 		auth := NewJWTAuth(client, &GetJWTAccessTokenReq{
-			TTL:           1800,
-			SessionName:   &sessionName,
-			Scope:         scope,
-			RefreshBefore: 60,
+			TTL:         1800,
+			SessionName: &sessionName,
+			Scope:       scope,
 		})
 
 		jwtAuth, ok := auth.(*jwtOAuthImpl)
@@ -210,5 +209,14 @@ qI39/arl6ZhTeQMv7TrpQ6Q=
 		token1, err := auth.Token(context.Background())
 		require.NoError(t, err)
 		assert.Equal(t, "test_access_token", token1)
+	})
+
+	t.Run("Test get RefreshBefore", func(t *testing.T) {
+		assert.Equal(t, int64(30), getRefreshBefore(600))
+		assert.Equal(t, int64(10), getRefreshBefore(599))
+		assert.Equal(t, int64(10), getRefreshBefore(60))
+		assert.Equal(t, int64(5), getRefreshBefore(59))
+		assert.Equal(t, int64(5), getRefreshBefore(30))
+		assert.Equal(t, int64(0), getRefreshBefore(29))
 	})
 }
