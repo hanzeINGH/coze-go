@@ -566,7 +566,6 @@ type NewJWTOAuthClientParam struct {
 	PublicKey     string
 	PrivateKeyPEM string
 	TTL           *int
-	RefreshBefore *int64
 }
 
 // NewJWTOAuthClient creates a new JWT OAuth core
@@ -582,10 +581,6 @@ func NewJWTOAuthClient(param NewJWTOAuthClientParam, opts ...OAuthClientOption) 
 	ttl := param.TTL
 	if ttl == nil {
 		ttl = ptr(900) // Default 15 minutes
-	}
-	refreshBefore := param.RefreshBefore
-	if refreshBefore == nil {
-		refreshBefore = ptr(int64(30))
 	}
 	jwtClient := &JWTOAuthClient{
 		OAuthClient: client,
